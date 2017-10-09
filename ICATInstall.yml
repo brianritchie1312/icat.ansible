@@ -1,0 +1,13 @@
+---
+- hosts: localhost, all
+  roles:
+    - Update
+    - Java
+    - MySQL
+#    - CreateUser
+#    - Glassfish
+#    - Authn
+#    - Icat
+#    - IDS
+#    - LoremIpsum
+#    - TopCat
