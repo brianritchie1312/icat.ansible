@@ -1,0 +1,7 @@
+---
+# Update this to include other distrubutions
+- name: Updating Package list for {{ ansible_distribution }} {{ ansible_distribution_major_version }}
+  yum:
+    name: '*'
+    state: latest
+  when: ansible_os_family == "Scientific" or "Debian"
