@@ -1,0 +1,37 @@
+---
+- name: Downloading Glassfish
+  get_url:
+    url: "{{ glassfish_src }}"
+    dest: ~/
+    
+- name: Unzipping {{ glassfish_zip }} 
+  unarchive:
+    src: "{{ glassfish_zip }}"
+    dest: ~/
+    remote_src: yes
+
+- name: Downloading Glassfish Setup Script
+  get_url:
+    url: "{{ glassfish_setup }}"
+    dest: ~/
+
+- name: Running setup script
+  environment:
+    PATH: "{{ ansible_env.PATH }}:/home/{{ user_name }}/glassfish4/bin"
+  command: python setup-glassfish.py {{ glassfish_domain }} 75% pw
+
+- name: Configuring Glassfish for MySQL
+  copy:
+    src: "{{ glassfish_java }}"
+    dest: "/home/{{ user_name }}/glassfish4/glassfish/glassfish/domain/localhost/lib/ext/"
+
+- name: Stopping {{ glassfish_domain }}
+  environment:
+    PATH: "{{ ansible_env.PATH }}:/home/{{ user_name }}/glassfish4/bin"
+  command: "asadmin stop-domain {{ glassfish_domain }}"
+
+- name: Restarting {{ glassfish_domain }}
+  environment:
+    PATH: "{{ ansible_env.PATH }}:/home/{{ user_name }}/glassfish4/bin"
+  command: "asadmin start-domain {{ glassfish_domain }}"
+

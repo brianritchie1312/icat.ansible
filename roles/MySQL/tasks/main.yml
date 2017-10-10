@@ -4,38 +4,38 @@
     name: "{{ mysql_packages }}" 
     state: latest 
 
-- name: Configuring MySQL - Removing default engine setting 
+- name: Removing default engine setting 
   lineinfile: 
     path: "{{ mysql_cnf_path }}" 
     state: absent 
     regexp: 'default_storage_engine =' 
     
-- name: Configuring MySQL - Setting default engine to '{{ mysql_cnf_eng }}' 
+- name: Setting default engine to '{{ mysql_cnf_eng }}' 
   lineinfile: 
     path: /etc/my.cnf 
     insertafter: '[mysqld] ' 
     line: default_storage_engine = {{ mysql_cnf_eng }} 
  
-- name: Confuguring MySQL - Starting database 
+- name: Starting database 
   service: 
     name: mysqld 
     state: started 
      
-- name: Configuring MySQL - Running '{{ mysql_secure }}' 
+- name: Running '{{ mysql_secure }}' 
   expect: 
     command: "{{ mysql_secure }}" 
     responses: 
-      password: "pw" 
+      password: "pw"               #Current root pass -CHANGE THIS LATER!(pw is not default pass)
       Question: 
-        - y 
-        - "{{ mysql_root_pass }}" 
-        - "{{ mysql_root_pass }}" 
-        - y 
-        - n 
-        - y 
-        - y  
+        - y                        #Reset root password
+        - "{{ mysql_root_pass }}"  #New root password
+        - "{{ mysql_root_pass }}"  #New root password
+        - y                        #Remove anonymous accounts
+        - n                        #Disallow remote root login
+        - y                        #Remove test database
+        - y                        #Reload privilage tables (Above changes take effect)
  
-- name: Creating MySQL Database - {{ mysql_db_name }} 
+- name: Creating database - {{ mysql_db_name }} 
   mysql_db: 
     login_user: root 
     login_password: "{{ mysql_root_pass }}" 

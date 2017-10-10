@@ -1,13 +1,20 @@
 ---
 - hosts: localhost, all
+  vars:
+    #non-root user
+    user_name: user1
+    user_pass: $1$ICat$5zAyObeqGFnoaH4Dz8PSY1
+    #encrypted with 'python -c 'import crypt; print crypt.crypt("{{password}}", "$1$ICat$")'
+
   roles:
-    - Update
-    - Java
-    - MySQL
-#    - CreateUser
-#    - Glassfish
-#    - Authn
-#    - Icat
-#    - IDS
-#    - LoremIpsum
-#    - TopCat
+#    - Update                                                           #Update Package List
+#    - Java                                                             #Install Java
+#    - MySQL                                                            #Instal and configure MySQL
+#    - CreateUser                                                       #Create non-root user
+#    - {role: Glassfish, become: yes, become_user: "{{ user_name }}"}   #Install Glassfish 
+    - {role: Authn, become: yes, become_user: "{{ user_name }}"}        #Install Authn Simple
+#    - {role: Icat, become: yes, become_user: "{{ user_name }}"} 
+#    - {role: IDS, become: yes, become_user: "{{ user_name }}"} 
+#    - {role: TestData, become: yes, become_user: "{{ user_name }}"} 
+#    - {role: Topcat, become: yes, become_user: "{{ user_name }}"} 
+

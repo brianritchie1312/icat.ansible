@@ -1,0 +1,17 @@
+---
+# tasks file for /etc/ansible/roles/Authn
+- name: Downloading Authn Simple
+  get_url:
+    url: "{{ authn_src }}"
+    dest: ~/
+
+- name: Unzipping {{ authn_zip }}
+  unarchive:
+    src: "{{ authn_zip }}"
+    dest: ~/
+    remote_src: yes
+
+- name: Copying {{ authn_setup_prop}}.example
+  copy:
+    src: "/home/{{ user_name }}/authn.simple/{{ authn_setup_prop }}.example"
+    dest: "/home/{{ user_name }}/authn.simple/{{ authn_setup_prop }}"
