@@ -5,6 +5,4 @@
      mysql_secure: mysql_secure_installation
      mysql_root_pass: pw
      mysql_db_name: icat
-     mysql_user_name: icat
-     mysql_user_pass: icat
 

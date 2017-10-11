@@ -25,13 +25,11 @@
     src: "{{ glassfish_java }}"
     dest: "/home/{{ user_name }}/glassfish4/glassfish/glassfish/domain/localhost/lib/ext/"
 
-- name: Stopping {{ glassfish_domain }}
-  environment:
-    PATH: "{{ ansible_env.PATH }}:/home/{{ user_name }}/glassfish4/bin"
-  command: "asadmin stop-domain {{ glassfish_domain }}"
-
 - name: Restarting {{ glassfish_domain }}
   environment:
     PATH: "{{ ansible_env.PATH }}:/home/{{ user_name }}/glassfish4/bin"
-  command: "asadmin start-domain {{ glassfish_domain }}"
+  command: "{{ item }}"
+  with_items:
+  - "asadmin stop-domain {{ glassfish_domain }}"
+  - "asadmin start-domain {{ glassfish_domain }}"
 

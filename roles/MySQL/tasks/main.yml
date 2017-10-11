@@ -22,19 +22,20 @@
     state: started 
      
 - name: Running '{{ mysql_secure }}' 
-  expect: 
-    command: "{{ mysql_secure }}" 
-    responses: 
-      password: "pw"               #Current root pass -CHANGE THIS LATER!(pw is not default pass)
-      Question: 
-        - y                        #Reset root password
-        - "{{ mysql_root_pass }}"  #New root password
-        - "{{ mysql_root_pass }}"  #New root password
-        - y                        #Remove anonymous accounts
-        - n                        #Disallow remote root login
-        - y                        #Remove test database
-        - y                        #Reload privilage tables (Above changes take effect)
- 
+  expect:
+    command: mysql_secure_installation
+    responses:
+      'Enter current password for root \(enter for none\):': "\n"
+      'Set root password?': 'y'
+      'New password:': "{{ mysql_root_pass }}"
+      'Re-enter new password:': "{{ mysql_root_pass }}"
+      'Remove anonymous users?': 'y'
+      'Disallow root login remotely?': 'y'
+      'Remove test database and access to it?': 'y'
+      'Reload privilege tables now?': 'y'
+
+    echo: yes
+
 - name: Creating database - {{ mysql_db_name }} 
   mysql_db: 
     login_user: root 
@@ -42,11 +43,11 @@
     name: "{{ mysql_db_name }}" 
     state: present 
  
-- name: Creating Database login - user={{ mysql_user_name }} pass={{ mysql_user_pass }} 
+- name: Creating Database login - user={{ mysql_user }} pass={{ mysql_pass }} 
   mysql_user: 
     login_user: root 
     login_password: "{{ mysql_root_pass }}" 
-    name: "{{ mysql_user_name }}" 
-    password: "{{ mysql_user_pass }}" 
+    name: "{{ mysql_user }}" 
+    password: "{{ mysql_pass }}" 
     priv: '*.*:ALL,GRANT' 
     state: present 

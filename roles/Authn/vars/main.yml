@@ -1,6 +1,14 @@
 ---
 # vars file for /etc/ansible/roles/Authn
+
+#URL download for authenticator package
 authn_src: http://www.icatproject.org/mvn/repo/org/icatproject/authn.simple/1.1.0/authn.simple-1.1.0-distro.zip
+
+#name/path of the zip file downloaded above
 authn_zip: authn.simple-1.1.0-distro.zip
+
+#filename of the setup.properties file for authnticator
 authn_setup_prop: authn_simple-setup.properties
-authn_setup: authn_simple.properties
+
+#filename of the properties file for authn
+authn_prop: authn_simple.properties

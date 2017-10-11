@@ -1,0 +1,44 @@
+---
+# tasks file for /etc/ansible/roles/ICAT
+
+- name: Downloading {{ icat_zip }}
+  get_url:
+    url: "{{ icat_src }}"
+    dest: ~/
+
+- name: Unzipping {{ icat_zip }}
+  unarchive:
+    src: "/home/{{ user_name }}/{{ icat_zip }}"
+    dest: ~/
+
+- name: Creating {{ icat_setup }}
+  file:
+    path: "/home/{{ user_name }}/icat.server/{{ icat_setup }}"
+    state: touch
+
+- name: Configuring {{ icat_setup }}
+  blockinfile:
+    path: "/home/{{ user_name }}/icat.server/{{ icat_setup }}"
+    block: |
+      {{ glassfish_cnf }}
+
+      # MySQL
+      db.driver      = com.mysql.jdbc.jdbc2.optional.MysqlDataSource
+      db.url         = jdbc:mysql://localhost:3306/icat
+      db.username    = {{ mysql_user }}
+      db.password    = {{ mysql_pass }}
+
+- name: Creating Lucene directory - {{ lucene_dir }}
+  file: 
+    path: "{{ lucene_dir }}"
+    state: directory
+
+- name: Creating script directory - /home/{{ user_name }}/bin
+  file:
+    path: "/home/{{ user_name }}/bin"
+    state: directory
+
+- name: Adding script directory to bashrc
+  lineinfile:
+    path: "/home/{{ user_name }}/.bashrc"
+    line: "export PATH=$PATH:/home/{{ user_name }}/bin"

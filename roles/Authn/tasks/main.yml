@@ -1,6 +1,6 @@
 ---
 # tasks file for /etc/ansible/roles/Authn
-- name: Downloading Authn Simple
+- name: Downloading {{ authn_zip }}
   get_url:
     url: "{{ authn_src }}"
     dest: ~/
@@ -11,7 +11,36 @@
     dest: ~/
     remote_src: yes
 
-- name: Copying {{ authn_setup_prop}}.example
-  copy:
-    src: "/home/{{ user_name }}/authn.simple/{{ authn_setup_prop }}.example"
-    dest: "/home/{{ user_name }}/authn.simple/{{ authn_setup_prop }}"
+- name: Creating {{ authn_setup_prop }}
+  file:
+    path: "/home/{{ user_name }}/authn.simple/{{ authn_setup_prop }}"
+    state: touch
+
+- name: Configuring {{ authn_setup_prop }}
+  blockinfile:
+    path: "/home/{{ user_name }}/authn.simple/{{ authn_setup_prop }}"
+    block: |
+      {{ glassfish_cnf }}
+
+- name: Creating {{ authn_prop }}
+  file:
+    path: "/home/{{ user_name }}/authn.simple/{{ authn_prop }}"
+    state: touch
+
+- name: Creating usernames and passwords in {{ authn_prop }}
+  blockinfile:
+    path: "/home/{{ user_name }}/authn.simple/{{ authn_prop }}"
+    block: |
+      #User list
+      user.list = root ingest {{ user_name }}
+
+      user.root.password = pw
+      user.ingest.password = ingest
+      user.{{ user_name }}.password = {{ user_pass }}
+
+      mechanism = simple
+
+- name: Installing Authentication
+  shell:
+    cmd: ./setup install
+    chdir: "/home/{{ user_name }}/authn.simple"
