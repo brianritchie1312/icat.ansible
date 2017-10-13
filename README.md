@@ -1,6 +1,6 @@
 ## Summary
 
-Features the steps of the install up to end of Icat server
+Features the steps of the install up to end of Lorem Ipsum
 
 ## TODO
 * Complete other roles, see ICATInstall.yml
@@ -12,6 +12,9 @@ Features the steps of the install up to end of Icat server
 * encrypt passwords
 * create system to detect when ansible has already been run so that password don't need to be reset
 * shut down all processes at end of install (eg. asadmin domains)
+* add task to remove files that are no longer needed (eg. zips)
+* improve variable organisation (eg. create single config file for whole install)
+* Improve modular capabilities
 
 ## Notes
 * some Roles are commented out but are needed on clean run
@@ -21,22 +24,27 @@ Features the steps of the install up to end of Icat server
 
 ## Changelog
 
-### 0.1.3
+### 13/10/17
+* completed up to Topcat
+* moved downloads to spcific folder for tidyness
+* INCOMPLETE
+
+### 12/10/17
 * complete ICAT server install
 * INCOMPLETE
 
-### 0.1.2
+### 11/10/17
 * Completed authn simple
 * started Icat server install
 * mysql uses default password '' instead of 'pw'
 * INCOMPLETE
 
-### 0.1.1
+### 10/10/17
 * Completed glassfish install
 * started authn simple install
 * INCOMPLETE
 
-### 0.1.0
+### 09/10/17
 * Initial build
 * INCOMPLETE
 

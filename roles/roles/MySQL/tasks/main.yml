@@ -1,0 +1,55 @@
+---
+#Configur this to inly run on unfresh installs
+#- name: Temporarily reseting password to default - Only Used for non-fresh installs
+#  command: mysqladmin -u root -p'{{ mysql_root_pass }}' password ''
+
+- name: Installing MySQL Packages - Specifically '{{ mysql_packages }}' 
+  yum: 
+    name: "{{ mysql_packages }}" 
+    state: latest 
+
+- name: Removing default engine setting 
+  lineinfile: 
+    path: "{{ mysql_cnf_path }}" 
+    state: absent 
+    regexp: 'default_storage_engine =' 
+    
+- name: Setting default engine to '{{ mysql_cnf_eng }}' 
+  lineinfile: 
+    path: /etc/my.cnf 
+    insertafter: '[mysqld] ' 
+    line: default_storage_engine = {{ mysql_cnf_eng }} 
+ 
+- name: Starting database 
+  service: 
+    name: mysqld 
+    state: started 
+    
+- name: Running '{{ mysql_secure }}' 
+  expect:
+    command: mysql_secure_installation
+    responses:
+      'Enter current password for root \(enter for none\):': "\n"
+      'Set root password?': 'y'
+      'New password:': "{{ mysql_root_pass }}"
+      'Re-enter new password:': "{{ mysql_root_pass }}"
+      'Remove anonymous users?': 'y'
+      'Disallow root login remotely?': 'y'
+      'Remove test database and access to it?': 'y'
+      'Reload privilege tables now?': 'y'   
+  
+- name: Creating database - {{ mysql_db_name }} 
+  mysql_db: 
+    login_user: root 
+    login_password: "{{ mysql_root_pass }}" 
+    name: "{{ mysql_db_name }}" 
+    state: present 
+ 
+- name: Creating Database login - user={{ mysql_user }} pass={{ mysql_pass }} 
+  mysql_user: 
+    login_user: root 
+    login_password: "{{ mysql_root_pass }}" 
+    name: "{{ mysql_user }}" 
+    password: "{{ mysql_pass }}" 
+    priv: '*.*:ALL,GRANT' 
+    state: present

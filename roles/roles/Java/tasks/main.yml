@@ -1,0 +1,5 @@
+---
+- name: Installing Java - Specifically '{{ java_packages }}'
+  yum:
+    name: "{{ java_packages }}"
+    state: latest

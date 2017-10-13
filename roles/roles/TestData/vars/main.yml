@@ -1,0 +1,10 @@
+---
+# vars file for /etc/ansible/roles/TestData
+
+#Ruby
+ruby_packages: patch, libyaml-devel, glibc-headers, autoconf, gcc-c++, glibc-devel, patch, readline-devel, zlib-devel, libffi-devel, openssl-devel, automake, libtool, bison, sqlite-devel
+
+#Lorem
+lorem_src: https://raw.githubusercontent.com/icatproject/topcat/master/tools/lorum_facility_generator.rb
+lorem_script: lorum_facility_generator.rb
+lorem_script_edit: test_data_generator.rb
