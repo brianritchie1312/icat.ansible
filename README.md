@@ -1,20 +1,22 @@
 ## Summary
 
-Features the steps of the install up to end of Lorem Ipsum
+Features the steps of the install
+WARNING THIS DOES NOT YET WORK ON REMOTE MACHINES ONLY LOCALHOST
 
 ## TODO
-* Complete other roles, see ICATInstall.yml
 * Add includes or imports for user accounts
 * add variable for mysql_secure reponses
 * set up for remote install and test
 * set up modular includes/imports for other OSs
 * improve commenting on common problems
-* encrypt passwords
+* encrypt passwords or use vault
 * create system to detect when ansible has already been run so that password don't need to be reset
 * shut down all processes at end of install (eg. asadmin domains)
 * add task to remove files that are no longer needed (eg. zips)
 * improve variable organisation (eg. create single config file for whole install)
 * Improve modular capabilities
+* plan organisation
+* fix remote host glassfish domain bug
 
 ## Notes
 * some Roles are commented out but are needed on clean run
@@ -23,6 +25,11 @@ Features the steps of the install up to end of Lorem Ipsum
 * ICATInstall.yml can go anywhere it can be executed
 
 ## Changelog
+
+### 16/10/17
+* completed Topcat
+* Encountered glassfish remote host bug
+* INCOMPLETE
 
 ### 13/10/17
 * completed up to Topcat
