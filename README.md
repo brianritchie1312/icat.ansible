@@ -16,7 +16,6 @@ WARNING THIS DOES NOT YET WORK ON REMOTE MACHINES ONLY LOCALHOST
 * improve variable organisation (eg. create single config file for whole install)
 * Improve modular capabilities
 * plan organisation
-* fix remote host glassfish domain bug
 
 ## Notes
 * some Roles are commented out but are needed on clean run
@@ -25,6 +24,9 @@ WARNING THIS DOES NOT YET WORK ON REMOTE MACHINES ONLY LOCALHOST
 * ICATInstall.yml can go anywhere it can be executed
 
 ## Changelog
+
+### 17/10/17 test mode
+* fixed glassfish bug
 
 ### 16/10/17
 * completed Topcat
