@@ -14,11 +14,12 @@
   unarchive:
     src: "{{ download_dir }}{{ glassfish_zip }}"
     dest: "/home/{{ user_name }}/"
+    remote_src: yes
 
-- name: Downloading Glassfish setup script
+- name: Downloading Glassfish setup script#
   get_url:
     url: "{{ glassfish_setup }}"
-    dest: ~/
+    dest: "/home/{{ user_name }}"
 
 - name: Running setup script
   environment:
@@ -29,12 +30,15 @@
   copy:
     src: "{{ glassfish_java }}"
     dest: "/home/{{ user_name }}/glassfish4/glassfish/domains/{{ glassfish_domain }}/lib/ext/"
+    remote_src: yes
 
 - name: Restarting {{ glassfish_domain }}
   environment:
     PATH: "{{ ansible_env.PATH }}:/home/{{ user_name }}/glassfish4/bin"
-  command: "{{ item }}"
+  command: "nohup {{ item }}"
   with_items:
   - "asadmin stop-domain {{ glassfish_domain }}"
   - "asadmin start-domain {{ glassfish_domain }}"
+#  - "asadmin restart-domain {{ glassfish_domain}}"
+  - "asadmin list-domains"
 

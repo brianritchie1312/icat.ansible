@@ -27,6 +27,7 @@
   copy:
     src: "{{ download_dir }}{{ lorem_script }}"
     dest: "/home/{{ user_name }}/{{ lorem_script_edit }}"
+    remote_src: yes
 
 - name: Rewriting script
   lineinfile:

@@ -14,6 +14,7 @@
   unarchive:
     src: "{{ download_dir }}{{ ids_zip }}"
     dest: "/home/{{ user_name }}/"
+    remote_src: yes
 
 - name: Making directories to store data - '{{ dir_main }}' and '{{ dir_archive }}'
   file:

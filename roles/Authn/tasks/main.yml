@@ -13,6 +13,7 @@
   unarchive:
     src: "{{ download_dir }}{{ authn_zip }}"
     dest: "/home/{{ user_name }}"
+    remote_src: yes
 
 - name: Creating {{ authn_setup_prop }}
   file:
