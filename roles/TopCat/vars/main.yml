@@ -1,0 +1,20 @@
+---
+# vars file for /etc/ansible/roles/TopCat/
+
+#Topcat Zip
+topcat_src: https://repo.icatproject.org/repo/org/icatproject/topcat/2.2.1/topcat-2.2.1-distro.zip
+topcat_zip: topcat-2.2.1-distro.zip
+
+#Topcat files
+topcat_setup: topcat-setup.properties 
+topcat_prop: topcat.properties
+topcat_json: topcat.json
+topcat_lang: lang.json
+topcat_css: topcat.css
+
+#Email block
+mail_enable: false
+email_cnf: |
+  #Email setup
+  mail.enable = {{ mail_enable }}
+

@@ -10,5 +10,8 @@ icat_zip: icat.server-4.8.0-distro.zip
 #Icat setup properties
 icat_setup: icat-setup.properties
 
+#Icat properties
+icat_prop: icat.properties
+
 #Lucene
 lucene_dir: /home/{{ user_name }}/icat/data/lucene

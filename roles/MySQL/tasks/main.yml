@@ -1,4 +1,8 @@
 ---
+#Configur this to inly run on unfresh installs
+#- name: Temporarily reseting password to default - Only Used for non-fresh installs
+#  command: mysqladmin -u root -p'{{ mysql_root_pass }}' password ''
+
 - name: Installing MySQL Packages - Specifically '{{ mysql_packages }}' 
   yum: 
     name: "{{ mysql_packages }}" 
@@ -20,7 +24,7 @@
   service: 
     name: mysqld 
     state: started 
-     
+    
 - name: Running '{{ mysql_secure }}' 
   expect:
     command: mysql_secure_installation
@@ -32,10 +36,8 @@
       'Remove anonymous users?': 'y'
       'Disallow root login remotely?': 'y'
       'Remove test database and access to it?': 'y'
-      'Reload privilege tables now?': 'y'
-
-    echo: yes
-
+      'Reload privilege tables now?': 'y'   
+  
 - name: Creating database - {{ mysql_db_name }} 
   mysql_db: 
     login_user: root 
@@ -50,4 +52,4 @@
     name: "{{ mysql_user }}" 
     password: "{{ mysql_pass }}" 
     priv: '*.*:ALL,GRANT' 
-    state: present 
+    state: present

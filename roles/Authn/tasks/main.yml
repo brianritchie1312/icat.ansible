@@ -1,15 +1,18 @@
 ---
-# tasks file for /etc/ansible/roles/Authn
+- name: Checking download directory
+  file:
+    path: "{{ download_dir }}"
+    state: directory
+
 - name: Downloading {{ authn_zip }}
   get_url:
     url: "{{ authn_src }}"
-    dest: ~/
+    dest: "{{ download_dir }}"
 
 - name: Unzipping {{ authn_zip }}
   unarchive:
-    src: "{{ authn_zip }}"
-    dest: ~/
-    remote_src: yes
+    src: "{{ download_dir }}{{ authn_zip }}"
+    dest: "/home/{{ user_name }}"
 
 - name: Creating {{ authn_setup_prop }}
   file:

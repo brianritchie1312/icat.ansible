@@ -1,0 +1,10 @@
+---
+# vars file for /etc/ansible/roles/IDS
+
+#Zip
+ids_src: https://repo.icatproject.org/repo/org/icatproject/ids.server/1.7.0/ids.server-1.7.0-distro.zip
+ids_zip: ids.server-1.7.0-distro.zip
+
+#properties
+ids_setup_prop: ids-setup.properties 
+ids_prop: ids.properties

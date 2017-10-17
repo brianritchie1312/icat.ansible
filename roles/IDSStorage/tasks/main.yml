@@ -1,0 +1,52 @@
+---
+# tasks file for /etc/ansible/roles/IDS/
+- name: Checking download directory
+  file:
+    path: "{{ download_dir }}"
+    state: directory
+
+- name: Downloading {{ ids_zip }}
+  get_url:
+    url: "{{ ids_src }}"
+    dest: "{{ download_dir }}"
+
+- name: Unziping {{ ids_zip }}
+  unarchive:
+    src: "{{ download_dir }}{{ ids_zip }}"
+    dest: "/home/{{ user_name }}/"
+
+- name: Making directories to store data - '{{ dir_main }}' and '{{ dir_archive }}'
+  file:
+    path: "{{ item }}"
+    state: directory
+  with_items:
+    - "{{ dir_main }}"
+    - "{{ dir_archive }}"
+
+- name: Creating properties files
+  file:
+    path: "/home/{{ user_name }}/ids.storage_file/{{ item }}"
+    state: touch
+  with_items:
+    - "{{ ids_main_prop }}"
+    - "{{ ids_archive_prop }}"
+    - "{{ ids_setup_prop }}"
+  
+- name: Configuring properties files
+  lineinfile:
+    path: "/home/{{ user_name }}/ids.storage_file/{{ item.file }}"
+    regexp: "dir="
+    line: "{{ item.line }}"
+  with_items:
+    - { file: "{{ ids_main_prop }}", line: "dir={{ dir_main }}" }
+    - { file: "{{ ids_archive_prop }}", line: "dir={{ dir_archive }}" }
+
+- name: Configuring {{ ids_setup_prop }}
+  blockinfile:
+    path: "/home/{{ user_name }}/ids.storage_file/{{ ids_setup_prop }}"
+    block: "{{ glassfish_cnf }}"
+
+- name: Running setup
+  shell:
+    cmd: ./setup install
+    chdir: "/home/{{ user_name }}/ids.storage_file"

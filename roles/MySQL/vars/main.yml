@@ -3,6 +3,5 @@
      mysql_cnf_path: /etc/my.cnf
      mysql_cnf_eng: InnoDB
      mysql_secure: mysql_secure_installation
-     mysql_root_pass: pw
-     mysql_db_name: icat
+     
 

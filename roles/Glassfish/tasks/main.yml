@@ -1,16 +1,21 @@
 ---
+
+- name: Checking download directory
+  file:
+    path: "{{ download_dir }}"
+    state: directory
+
 - name: Downloading Glassfish
   get_url:
     url: "{{ glassfish_src }}"
-    dest: ~/
+    dest: "{{ download_dir }}"
     
 - name: Unzipping {{ glassfish_zip }} 
   unarchive:
-    src: "{{ glassfish_zip }}"
-    dest: ~/
-    remote_src: yes
+    src: "{{ download_dir }}{{ glassfish_zip }}"
+    dest: "/home/{{ user_name }}/"
 
-- name: Downloading Glassfish Setup Script
+- name: Downloading Glassfish setup script
   get_url:
     url: "{{ glassfish_setup }}"
     dest: ~/
@@ -18,12 +23,12 @@
 - name: Running setup script
   environment:
     PATH: "{{ ansible_env.PATH }}:/home/{{ user_name }}/glassfish4/bin"
-  command: python setup-glassfish.py {{ glassfish_domain }} 75% pw
+  command: python setup-glassfish.py {{ glassfish_domain }} 75% {{ mysql_root_pass }}
 
 - name: Configuring Glassfish for MySQL
   copy:
     src: "{{ glassfish_java }}"
-    dest: "/home/{{ user_name }}/glassfish4/glassfish/glassfish/domain/localhost/lib/ext/"
+    dest: "/home/{{ user_name }}/glassfish4/glassfish/domains/{{ glassfish_domain }}/lib/ext/"
 
 - name: Restarting {{ glassfish_domain }}
   environment:
