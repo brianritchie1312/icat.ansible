@@ -1,0 +1,91 @@
+---
+- name: "{{ play_name }}Checking download directory"
+  file:
+    path: "{{ download_dir }}"
+    state: directory
+
+- name: "{{ play_name }}Downloading {{ icat_zip }}"
+  get_url:
+    url: "{{ icat_src }}"
+    dest: "{{ download_dir }}"
+
+- name: "{{ play_name }}Unzipping {{ icat_zip }}"
+  unarchive:
+    src: "{{ download_dir }}{{ icat_zip }}"
+    dest: "/home/{{ user_name }}/"
+    remote_src: yes
+
+- name: "{{ play_name }}Creating {{ icat_setup }}"
+  file:
+    path: "/home/{{ user_name }}/icat.server/{{ icat_setup }}"
+    state: touch
+
+- name: "{{ play_name }}Configuring {{ icat_setup }}"
+  blockinfile:
+    path: "/home/{{ user_name }}/icat.server/{{ icat_setup }}"
+    block: |
+      {{ glassfish_cnf }}
+
+      # MySQL
+      db.driver      = com.mysql.jdbc.jdbc2.optional.MysqlDataSource
+      db.url         = jdbc:mysql://localhost:3306/icat
+      db.username    = {{ mysql_user }}
+      db.password    = {{ mysql_pass }}
+
+- name: "{{ play_name }}Creating Lucene directory - {{ lucene_dir }}"
+  file: 
+    path: "{{ lucene_dir }}"
+    state: directory
+
+- name: "{{ play_name }}Creating script directory - /home/{{ user_name }}/bin"
+  file:
+    path: "/home/{{ user_name }}/bin"
+    state: directory
+
+- name: "{{ play_name }}Adding script directory to bashrc"
+  lineinfile:
+    path: "/home/{{ user_name }}/.bashrc"
+    line: "export PATH=$PATH:/home/{{ user_name }}/bin"
+
+- name: "{{ play_name }}Source bashrc"
+  shell: "source /home/{{ user_name }}/.bashrc"
+
+- name: "{{ play_name }}Creating {{ icat_prop }}"
+  copy:
+    src: "/home/{{ user_name }}/icat.server/{{ icat_prop }}.example"
+    dest: "/home/{{ user_name }}/icat.server/{{ icat_prop }}"
+    remote_src: yes
+
+- name: "{{ play_name }}Configuring {{ icat_prop }} - Rewriting lines for authn.simple"
+  lineinfile:
+    dest: "/home/{{ user_name }}/icat.server/{{ icat_prop }}"
+    regexp: "{{ item.regexp }}"
+    line: "{{ item.line }}"
+  with_items:
+    - { regexp: 'rootUserNames', line: 'rootUserNames = simple/root' }
+    - { regexp: 'authn.list', line: 'authn.list = simple' }
+    - { regexp: 'lucene.directory', line: 'lucene.directory = {{ lucene_dir }}' }
+
+- name: "{{ play_name }}Configuring {{ icat_prop }} - Configuring commenting for authn.simple"
+  replace:
+    path: "/home/{{ user_name }}/icat.server/{{ icat_prop }}"
+    regexp: "{{ item.regexp }}"
+    replace: "{{ item.replace }}"
+  with_items:
+    - { regexp: '!authn.simple.jndi', replace: 'authn.simple.jndi' }
+    - { regexp: '!authn.simple.friendly', replace: 'authn.simple.friendly' }
+    - { regexp: 'authn.db', replace: '!authn.db' }
+    - { regexp: 'authn.ldap', replace: '!authn.ldap' }
+    - { regexp: 'authn.anon', replace: '!authn.anon' }
+
+- name: "{{ play_name }}Configuring {{ icat_prop }} - adding authn.simple.friendly line"
+  lineinfile:
+    dest: "/home/{{ user_name }}/icat.server/{{ icat_prop }}"
+    insertafter: 'authn.simple.jndi'
+    line: 'authn.simple.friendly = Simple'
+  
+- name: "{{ play_name }}Installing ICAT server"
+  shell:
+    cmd: ./setup install
+    chdir: "/home/{{ user_name }}/icat.server"
+

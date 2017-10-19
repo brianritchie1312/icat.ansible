@@ -1,0 +1,6 @@
+---
+
+- name: "{{ play_name }}Installing {{ java_package }}"
+  yum:
+    name: "{{ java_package }}"
+    state: latest

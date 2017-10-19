@@ -1,7 +1,0 @@
----
-# vars file for /etc/ansible/roles/Glassfish
-glassfish_src: http://download.java.net/glassfish/4.0/release/glassfish-4.0.zip
-glassfish_zip: glassfish-4.0.zip
-glassfish_setup: https://icatproject.org/misc/scripts/setup-glassfish.py
-glassfish_domain: domain1
-glassfish_java: /usr/share/java/mysql-connector-java-5.1.17.jar

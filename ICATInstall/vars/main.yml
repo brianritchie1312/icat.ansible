@@ -1,0 +1,141 @@
+---
+# vars file for /etc/ansible/roles/ICATInstall/
+
+#---Java---
+java_package: java-1.8.0-openjdk-devel 
+
+
+#---MySQL---
+
+mysql_packages: mysql-server, mysql, MySQL-python, python-suds, python-requests, mysql-connector-java
+mysql_cnf_path: /etc/my.cnf
+mysql_cnf_eng: InnoDB
+mysql_secure: mysql_secure_installation
+mysql_root_pass: pw
+
+mysql_db_name: icat
+mysql_user: icat
+mysql_pass: icat
+
+mysql_cnf: |
+  # MySQL
+  db.target      = mysql
+  db.driver      = com.mysql.jdbc.jdbc2.optional.MysqlDataSource
+  db.url         = jdbc:mysql://localhost:3306/icat
+  db.username    = {{ mysql_user }}
+  db.password    = {{ mysql_pass }}
+
+
+#---Create user---
+user_name: user1
+user_pass: pass
+download_dir: /home/{{ user_name }}/icatdownloads/
+
+
+#---Glassfish---
+
+glassfish_src: http://download.java.net/glassfish/4.0/release/glassfish-4.0.zip
+glassfish_zip: glassfish-4.0.zip
+glassfish_setup: https://icatproject.org/misc/scripts/setup-glassfish.py
+glassfish_java: /usr/share/java/mysql-connector-java-5.1.17.jar
+
+glassfish_domain: domain1
+glassfish_cnf: |
+  #Glassfish
+  secure    = false
+  container = Glassfish
+  home      = /home/{{ user_name }}/glassfish4
+  port      = 4848
+
+#---Authn Simple---
+
+#URL download for authenticator package
+authn_src: http://www.icatproject.org/mvn/repo/org/icatproject/authn.simple/1.1.0/authn.simple-1.1.0-distro.zip
+
+#name/path of the zip file downloaded above
+authn_zip: authn.simple-1.1.0-distro.zip
+
+#filename of the setup.properties file for authnticator
+authn_setup_prop: authn_simple-setup.properties
+
+#filename of the properties file for authn
+authn_prop: authn_simple.properties
+
+
+#---ICAT Server---
+
+#Download URL for ICAT zip
+icat_src: https://repo.icatproject.org/repo/org/icatproject/icat.server/4.8.0/icat.server-4.8.0-distro.zip
+
+#zip file for ICAT
+icat_zip: icat.server-4.8.0-distro.zip
+
+#Icat setup properties
+icat_setup: icat-setup.properties
+
+#Icat properties
+icat_prop: icat.properties
+
+#Lucene
+lucene_dir: /home/{{ user_name }}/icat/data/lucene
+
+
+
+#---Storage---
+
+#IDS zip
+storage_src: http://www.icatproject.org/mvn/repo/org/icatproject/ids.storage_file/1.3.3/ids.storage_file-1.3.3-distro.zip
+storage_zip: ids.storage_file-1.3.3-distro.zip
+
+#Directories
+dir_main: /home/{{ user_name }}/{{ mysql_db_name }}/main
+dir_archive: /home/{{ user_name }}/{{ mysql_db_name }}/archive
+
+#properties
+storage_main: ids.storage_file.main.properties
+storage_archive: ids.storage_file.archive.properties
+storage_setup: ids.storage_file-setup.properties
+
+
+#---IDS---
+
+#Zip
+ids_src: https://repo.icatproject.org/repo/org/icatproject/ids.server/1.7.0/ids.server-1.7.0-distro.zip
+ids_zip: ids.server-1.7.0-distro.zip
+
+#properties
+ids_setup_prop: ids-setup.properties
+ids_prop: ids.properties
+
+
+#---Lorem---
+
+#Ruby
+ruby_packages: patch, libyaml-devel, glibc-headers, autoconf, gcc-c++, glibc-devel, patch, readline-devel, zlib-devel, libffi-devel, openssl-devel, automake, libtool, bison, sqlite-devel
+
+#Lorem
+lorem_src: https://raw.githubusercontent.com/icatproject/topcat/master/tools/lorum_facility_generator.rb
+lorem_script: lorum_facility_generator.rb
+lorem_script_edit: test_data_generator.rb
+
+
+#---TopCat---
+
+#Topcat Zip
+topcat_src: https://repo.icatproject.org/repo/org/icatproject/topcat/2.2.1/topcat-2.2.1-distro.zip
+topcat_zip: topcat-2.2.1-distro.zip
+
+#Topcat files
+topcat_setup: topcat-setup.properties
+topcat_prop: topcat.properties
+topcat_json: topcat.json
+topcat_lang: lang.json
+topcat_css: topcat.css
+
+#Email block
+mail_enable: false
+email_cnf: |
+  #Email setup
+  mail.enable = {{ mail_enable }}
+
+

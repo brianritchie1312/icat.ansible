@@ -1,0 +1,254 @@
+---
+#Master file for ICATInstall
+
+#---NOTES---
+#playbooks are currently separated by os-family, any playbooks that will work across all relevent OSs should be moved to 'Universal' (or 'Linux'/'Windows'/'Mac')
+#Variables are currently stored in a single YAML file, these could be separated by OS (eg. Ubuntu, Debian etc) or by function (eg. logins, package versions etc)
+
+#---TODO---
+# Check which plays need separate install for other OSs
+# Move universal plays to apropriate directory
+# If the entire role has very little change needed for different OSs use universal and run OS checks on individual tasks
+# Organise variables for easy customisation
+# Improve non-fresh install checking to skip tasks rather than ignoring errors
+# Improve feedback
+
+
+
+#---Plays---
+
+#---Update Package Lists---
+
+- name: Starting Setup
+  set_fact:
+    play_name: "Setup : "
+  tags:
+    - setup
+    - root
+    - update
+    - tested
+
+- name: "{{ play_name }}Updating package list for {{ ansible_os_family }}"
+  yum:
+    name: '*'
+    state: latest
+  when: ansible_os_family == 'RedHat'
+  tags:
+    - setup
+    - root
+    - update
+    - tested
+
+
+#---Install java---
+
+- name: Starting Java Install
+  set_fact:
+    play_name: "Java : "
+  tags:
+    - root
+    - java
+    - tested
+
+- name: "{{ play_name }}Loading Java Install"
+  include: "{{ ansible_os_family }}/java.yml"
+  tags:
+    - root
+    - java
+    - tested
+
+
+#---Install MySQL---
+
+- name: Starting MySQL Install and Config
+  set_fact:
+    play_name: "MySQL : "
+
+- name: "{{ play_name }}Loading Pexpect Install"
+  include: "{{ ansible_os_family }}/pexpect.yml"
+  tags:
+    - root
+    - mysql
+    - python
+    - tested
+
+- name: "{{ play_name}}Loading MySQl Install and Config"
+  include: "{{ ansible_os_family }}/mysql.yml"
+  tags:
+    - root
+    - mysql  
+    - tested
+
+
+#---Creating non-root user
+
+- name: Starting Non-Root User Creation
+  set_fact:
+    play_name: "Create Non-Root User : "
+  tags:
+    - root
+    - createuser
+    - tested
+
+- name: "{{ play_name }}Loading Non-Root User Creation"
+  include: "{{ ansible_os_family }}/user.yml"
+  tags:
+    - root
+    - createuser
+    - tested
+
+
+#---Glassfish---
+
+- name: Starting Glassfish Install
+  set_fact:
+    play_name: "Glassfish : "
+  tags:
+    - user
+    - glassfish
+    - tested
+
+- name: "{{ play_name }}Loading Glassfish install" 
+  include: "{{ ansible_os_family }}/glassfish.yml" 
+  become: yes
+  become_user: "{{ user_name }}"
+  tags:
+    - user
+    - glassfish
+    - tested
+
+
+#---Authentication---
+
+- name: Starting Authentication Install
+  set_fact:
+    play_name: "Authn : "
+    authn_plugin: simple      #---TODO!---move this to a config/variable file for easy change
+  tags:
+    - user
+    - authn
+    - tested
+
+- name: "{{ play_name }}Loading Simple Authenticaton install"
+  include: "{{ ansible_os_family }}/simpleauthn.yml"
+  become: yes
+  become_user: "{{ user_name }}"
+  when: authn_plugin == "simple"
+  tags:
+    - user
+    - authn
+    - tested
+
+- name: "{{ play_name }}Loading OTHER Authenticaton install"
+  include: "{{ ansible_os_family }}/otherauthn.yml"
+  become: yes
+  become_user: "{{ user_name }}"
+  when: authn_plugin == "other"
+  tags:
+    - user
+    - authn
+    - tested
+
+
+#---ICATServer---
+
+- name: Starting ICAT server Install
+  set_fact:
+    play_name: "ICAT Server : "
+  tags:
+    - user
+    - icat
+    - tested
+
+- name: "{{ play_name }}Loading ICAT server install"
+  include: "{{ ansible_os_family }}/icatserver.yml"
+  become: yes
+  become_user: "{{ user_name }}"
+  tags:
+    - user
+    - icat
+    - tested
+
+
+#---Storage Plugin---
+
+- name: Starting IDS Storage Plugin Install
+  set_fact:
+    play_name: "Storage Plugin : "
+  tags:
+    - user
+    - storage
+    - tested
+
+- name: "{{ play_name }}Loading Storage Plugin Install"
+  include: "{{ ansible_os_family }}/storage.yml"
+  become: yes
+  become_user: "{{ user_name }}"
+  tags:
+    - user
+    - storage
+    - tested
+
+
+#---IDS---
+
+- name: Starting IDS Install
+  set_fact:
+    play_name: "IDS : "
+  tags:
+    - user
+    - ids
+    - tested
+
+- name: "{{ play_name }}Loading IDS Install"
+  include: "{{ ansible_os_family }}/ids.yml"
+  become: yes
+  become_user: "{{ user_name }}"
+  tags:
+    - user
+    - ids
+    - tested
+
+
+#---Test Data---
+
+- name: Starting Lorem Ipsum Tester Install
+  set_fact:
+    play_name: "Test : "
+  tags:
+    - user
+    - test
+    - tested
+
+- name: "{{ play_name }}Loading Test Data Install"
+  include: "{{ ansible_os_family }}/lorem.yml"
+  become: yes
+  become_user: "{{ user_name }}"
+  tags:
+    - user
+    - test
+    - tested
+
+
+#---TopCat---
+
+- name: Starting TopCat Install
+  set_fact:
+    play_name: "TopCat : "
+  tags:
+    - user
+    - topcat
+#    - tested
+
+- name: "{{ play_name }}Loading IDS Install"
+  include: "{{ ansible_os_family }}/topcat.yml"
+  become: yes
+  become_user: "{{ user_name }}"
+  tags:
+    - user
+    - topcat
+#    - tested
+
+
+#---Cleanup---
+#removing downloads, scripts and zip files that are no longer needed
