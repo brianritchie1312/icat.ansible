@@ -1,0 +1,25 @@
+---
+
+- name: "{{ play_name }}Installing {{ java_package_redhat }} on RedHat"
+  yum:
+    name: "{{ java_package_redhat }}"
+    state: latest
+  when: ansible_os_family == "RedHat"
+  tags:
+    - redhat
+
+- name: "{{ play_name }}Adding Java repository"
+  apt_repository:
+    repo: "{{ java_repo_debian }}"
+    state: present
+  when: ansible_os_family == "Debian"
+  tags:
+    - debian
+    
+- name: "{{ play_name }}Installing {{ java_package_debian }}"
+  apt:
+    name: "{{ java_package_debian }}"
+    state: latest
+  when: ansible_os_family == "Debian"
+  tags:
+    - debian

@@ -1,0 +1,71 @@
+---
+
+- name: "{{ play_name }}Starting {{ glassfish_domain }}"
+  environment:
+    PATH: "{{ ansible_env.PATH }}:/home/{{ user_name }}/glassfish4/bin"
+  command: "nohup {{ item }}"
+  with_items:
+  - "asadmin restart-domain {{ glassfish_domain }}"
+  - "asadmin list-domains"
+
+- name: "{{ play_name }}Checking download directory '{{ download_dir }}' - Creating if non-existent"
+  file:
+    path: "{{ download_dir }}"
+    state: directory
+
+- name: "Downloading {{ ids_zip }} to '{{ download_dir }}'"
+  get_url:
+    url: "{{ ids_src }}"
+    dest: "{{ download_dir }}"
+    
+- name: "{{ play_name }}Unzipping {{ ids_zip }} to '/home/{{ user_name }}/'"
+  unarchive:
+    src: "{{ download_dir }}{{ ids_zip }}"
+    dest: "/home/{{ user_name }}/"
+    remote_src: yes
+
+- name: "{{ play_name }}Creating {{ ids_setup_prop }} - Creating empty file"
+  file:
+    path: "/home/{{ user_name }}/ids.server/{{ ids_setup_prop }}"
+    state: touch 
+
+- name: "{{ play_name }}Configuring {{ ids_setup_prop }} - Adding glassfish container block"
+  blockinfile:
+    path: "/home/{{ user_name }}/ids.server/{{ ids_setup_prop }}"
+    block: "{{ glassfish_cnf }}"
+    state: present
+
+- name: "{{ play_name }}Configuring {{ ids_setup_prop }} - Configuring Libraries"
+  lineinfile:
+    path: "/home/{{ user_name }}/ids.server/{{ ids_setup_prop }}"
+    regexp: "libraries"
+    line: libraries=ids.storage_file*.jar
+    state: present
+
+- name: "{{ play_name }}Creating cache at '/home/{{ user_name }}/{{ mysql_db_name }}/main/ids/cache/'"
+  file:
+    path: "/home/{{ user_name }}/{{ mysql_db_name }}/main/ids/cache/"
+    state: directory
+
+- name: "{{ play_name }}Creating {{ ids_prop }} - Copying example file in '/home/{{ user_name }}/ids.server/'"
+  copy:
+    src: "/home/{{ user_name }}/ids.server/{{ ids_prop }}.example"
+    dest: "/home/{{ user_name }}/ids.server/{{ ids_prop }}"
+    remote_src: yes
+    
+- name: "{{ play_name }}Configuring {{ ids_prop }} - Adding icat url, cache dir, user details and last file id"
+  lineinfile:
+    path: "/home/{{ user_name }}/ids.server/{{ ids_prop }}"
+    regexp: "{{ item.regexp }}"
+    line: "{{ item.line }}"
+  with_items:
+    - { regexp: "icat.url",    line: "icat.url = http://localhost:8080" }
+    - { regexp: "cache.dir",   line: "cache.dir = /home/{{ user_name }}/{{ mysql_db_name }}/main/ids/cache/" }
+    - { regexp: "reader",      line: "reader = simple username root password {{ mysql_root_pass }}" }
+    - { regexp: ".lastIdFile", line: "filesCheck.lastIdFile = /home/{{ user_name }}/{{ mysql_db_name }}/main/ids/lasIdFile" }
+    - { regexp: ".errorlog",   line: "filesCheck.errorLog = /home/{{ user_name }}/{{ mysql_db_name }}/main/ids/errorLog" }
+
+- name: "{{ play_name }}Installing IDS"
+  shell:
+    cmd: ./setup install
+    chdir: "/home/{{ user_name }}/ids.server/"

@@ -1,0 +1,70 @@
+---
+
+- name: "{{ play_name }}Checking download directory"
+  file:
+    path: "{{ download_dir }}"
+    state: directory
+
+- name: "{{ play_name }}Installing Ruby Dependencies - Specifically '{{ ruby_packages }}'"
+  yum:
+    name: "{{ ruby_packages }}"
+    state: latest
+  become: yes
+  become_user: root
+  become_method: sudo
+  tags:
+  - tested
+
+- name: "{{ play_name }}Installing 'Ruby 2.3.1' via rvm"
+  shell:
+    cmd: "{{ item }}"
+  with_items:
+    - curl -sSL {{ rvm_url }} | bash 
+#    - source /home/{{ user_name }}/.rvm/scripts/rvm 
+    - /home/{{ user_name }}/.rvm/scripts/rvm install 2.3.1 --default --debug
+#    - gem install faker rest-client 
+
+- name: "{{ play_name }}Check Ruby version"
+  command: "{{ item }}"
+  with_items:
+    - /home/{{ user_name }}/.rvm/scripts/rvm ruby --version
+    - ruby --version
+
+- name: "{{ play_name }}Checking Ruby Version with shell"
+  shell: "{{ item }}"
+  with_items:
+    - /home/{{ user_name }}/.rvm/scripts/rvm ruby --version
+    - ruby --version
+
+#---
+#---TODO---Add ruby version tester here--------------------------
+#---
+
+- name: "{{ play_name }}Downloading Lorem Ipsum script"
+  get_url:
+    url: "{{ lorem_src }}"
+    dest: "{{ download_dir }}"
+  tags:
+    - tested
+
+- name: "{{ play_name }}Moving {{ lorem_script }} to home directory as {{ lorem_script_edit }}"
+  copy:
+    src: "{{ download_dir }}{{ lorem_script }}"
+    dest: "/home/{{ user_name }}/{{ lorem_script_edit }}"
+    remote_src: yes
+  tags:
+    - tested
+
+- name: "{{ play_name }}Rewriting script" 
+  lineinfile:
+    path: "/home/{{ user_name }}/{{ lorem_script_edit }}"
+    regexp: "password =>"
+    line: "{:password => \"{{ mysql_root_pass }}\"}"
+  tags:
+    - tested
+
+
+- name: "{{ play_name}}Running Lorem Ipsum Script to populate Icat database"
+  shell:
+   cmd: "ruby {{ lorem_script_edit }}"
+   chdir: "/home/{{ user_name }}"
