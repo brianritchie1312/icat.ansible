@@ -66,6 +66,8 @@
     - { regexp: ".errorlog",   line: "filesCheck.errorLog = /home/{{ user_name }}/{{ mysql_db_name }}/main/ids/errorLog" }
 
 - name: "{{ play_name }}Installing IDS"
+  environment:
+    PATH: "{{ ansible_env.PATH }}:/home/{{ user_name }}/glassfish4/bin"
   shell:
     cmd: ./setup install
     chdir: "/home/{{ user_name }}/ids.server/"

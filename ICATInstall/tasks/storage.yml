@@ -55,10 +55,16 @@
     path: "/home/{{ user_name }}/ids.storage_file/{{ storage_setup }}"
     block: "{{ glassfish_cnf }}"
 
+
+#NOTE
+#This task needs work as it returns errors on the first run, however the setup is actually succesful.
+#Currently it simply ignores errors, this is not ideal as any genuine errors will be ignored.
+
 - name: "{{ play_name }}Installing IDS Storage"
+  environment:
+    PATH: "{{ ansible_env.PATH }}:/home/{{ user_name }}/glassfish4/bin"
   shell:
     cmd: ./setup install
     chdir: "/home/{{ user_name }}/ids.storage_file"
-
-
+  ignore_errors: yes
 

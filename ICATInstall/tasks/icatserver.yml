@@ -35,11 +35,7 @@
     block: |
       {{ glassfish_cnf }}
 
-      # MySQL
-      db.driver      = com.mysql.jdbc.jdbc2.optional.MysqlDataSource
-      db.url         = jdbc:mysql://localhost:3306/icat
-      db.username    = {{ mysql_user }}
-      db.password    = {{ mysql_pass }}
+      {{ mysql_cnf }}
 
 - name: "{{ play_name }}Creating Lucene directory - {{ lucene_dir }}"
   file: 
@@ -55,9 +51,6 @@
   lineinfile:
     path: "/home/{{ user_name }}/.bashrc"
     line: "export PATH=$PATH:/home/{{ user_name }}/bin"
-
-#- name: "{{ play_name }}Source bashrc"
-#  shell: "source /home/{{ user_name }}/.bashrc"
 
 - name: "{{ play_name }}Creating {{ icat_prop }}"
   copy:

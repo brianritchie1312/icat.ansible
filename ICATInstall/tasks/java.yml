@@ -23,3 +23,6 @@
   when: ansible_os_family == "Debian"
   tags:
     - debian
+
+- name: "{{ play_name }}Checking Java version"
+  command: javac -version

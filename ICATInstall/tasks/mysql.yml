@@ -77,4 +77,3 @@
     password: "{{ mysql_pass }}"
     priv: '*.*:ALL,GRANT'
     state: present
-

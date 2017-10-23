@@ -1,5 +1,5 @@
 ---
- - hosts: vm100.nubes.stfc.ac.uk
+ - hosts: localhost
    roles:
      - {role: ICATInstall, become: yes, become_user: root}
 

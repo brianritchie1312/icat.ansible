@@ -53,7 +53,7 @@
     - { regexp: "ids.getstatus",  line: "ids.getStatus.max = 100" }
     - { regexp: "poll.delay",     line: "poll.delay = 600" }
     - { regexp: "poll.interval",  line: "poll.interval.wait = 600" }
-    - { regexp: "adminUserNames", line: "adminUserNames = simple/root" }
+    - { regexp: "adminUserNames", line: "adminUserNames = {{ authn_plugin }}/root" }
 
 - name: "{{ play_name }}Creating {{ topcat_json }}, {{ topcat_lang }} and {{ topcat_css }} - Copying example files"
   copy:

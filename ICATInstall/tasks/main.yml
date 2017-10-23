@@ -2,17 +2,14 @@
 #Master file for ICATInstall
 
 #---NOTES---
-#playbooks are currently separated by os-family, any playbooks that will work across all relevent OSs should be moved to 'Universal' (or 'Linux'/'Windows'/'Mac')
 #Variables are currently stored in a single YAML file, these should be separated by OS (eg. Ubuntu, Debian etc) or by function (eg. logins, package versions etc)
 
 #---TODO---
 # Check which plays need separate install for other OSs
-# Move universal plays to apropriate directory
-# If the entire role has very little change needed for different OSs use universal and run OS checks on individual tasks
 # Organise variables for easy customisation
-# Improve non-fresh install checking to skip tasks rather than ignoring errors
+# Improve non-fresh install checking to skip tasks rather than ignoring errors (see mysql.yml and storage.yml)
 # Improve feedback
-
+# Add autotests
 
 
 #---Plays---
@@ -50,6 +47,7 @@
    - tested
 
 
+
 #---Install java---
 
 - name: "{{ play_name }}Loading Java Install"
@@ -60,6 +58,7 @@
     - root
     - java
     - tested
+
 
 
 #---Install MySQL---
@@ -84,6 +83,7 @@
     - tested
 
 
+
 #---Creating non-root user
 
 - name: "{{ play_name }}Loading Non-Root User Creation"
@@ -93,6 +93,7 @@
   tags:
     - createuser
     - tested
+
 
 
 #---Glassfish---
@@ -109,14 +110,8 @@
     - tested
 
 
-#---Authentication---
 
-- set_fact:
-    authn_plugin: simple      #---TODO!---move this to a config/variable file for easy change
-  tags:
-    - user
-    - authn
-    - tested
+#---Authentication---
 
 - name: "{{ play_name }}Loading Simple Authenticaton install"
   include: "simpleauthn.yml"
@@ -131,7 +126,7 @@
     - tested
 
 - name: "{{ play_name }}Loading OTHER Authenticaton install"
-  include: "{{ ansible_os_family }}/otherauthn.yml"
+  include: "otherauthn.yml"
   become: yes
   become_user: "{{ user_name }}"
   when: authn_plugin == "other"
@@ -139,6 +134,7 @@
     - user
     - authn
     - tested
+
 
 
 #---ICATServer---
@@ -166,7 +162,7 @@
   tags:
     - user
     - storage
-    - tested
+#    - tested
 
 
 #---IDS---
@@ -183,7 +179,20 @@
     - tested
 
 
+
 #---Test Data---
+
+- name: "{{ play_name }}Loading Ruby Install"
+  include: "ruby.yml"
+  become: yes
+  become_user: "{{ user_name }}"
+  vars:
+    play_name: "TestData : "
+  tags:
+    - user
+    - test
+    - ruby
+    - broken
 
 - name: "{{ play_name }}Loading Test Data Install"
   include: "lorem.yml"
@@ -194,7 +203,9 @@
   tags:
     - user
     - test
+    - lorem
     - broken
+
 
 
 #---TopCat---
@@ -211,5 +222,17 @@
     - tested
 
 
+
 #---Cleanup---
-#removing downloads, scripts and zip files that are no longer needed
+
+- name: "Cleanup : Removing uneeded files"
+  file:
+    path: "{{ item }}"
+    state: absent
+  with_items:
+    - "{{ download_dir }}"
+    - "/home/{{ user_name }}/setup-glassfish.py"
+    - "/home/{{ user_name }}/{{ lorem_script_edit }}"
+  tags:
+    - user
+    - cleanup
