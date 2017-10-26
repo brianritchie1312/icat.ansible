@@ -1,0 +1,76 @@
+---
+
+- name: "{{ play_name }}Setting variables for Ruby"
+  set_fact:
+    lorem_src: "{{ lorem_src }}.rb"
+    lorem_script: "{{ lorem_script }}.rb"
+    lorem_script_edit: "{{ lorem_script_edit }}.rb"
+
+- name: "{{ play_name }}Downloading ruby dependencies for RedHat"
+  yum:
+    name: "{{ ruby_packages }}, rubygems, ruby-devel"
+  become: yes
+  become_user: root
+  become_method: sudo
+  when: ansible_os_family == "RedHat"
+  tags:
+   - redhat
+#   - tested
+
+- name: "{{ play_name }}Downloading ruby dependencies for Debian"
+  apt:
+    name: "{{ ruby_packages }}"
+  become: yes
+  become_user: root
+  become_method: sudo
+  when: ansible_os_family == "Debian"
+  tags:
+   - debian
+#   - tested
+
+- name: "{{ play_name }}Creating ruby install script"
+  template:
+    src: "../templates/ruby.sh"
+    dest: "/home/{{ user_name }}/ruby.sh"
+
+- name: "{{ play_name }}Installing ruby-2.3.1"
+  script: "/home/{{ user_name }}/ruby.sh"
+  ignore_errors: yes
+  environment:
+    GEM_PATH: "/home/{{ user_name }}/.rvm/gems/ruby-2.4.2:\
+               /home/{{ user_name }}/.rvm/gems/ruby-2.4.2@global"
+
+#---lorem---
+
+- name: "{{ play_name }}Checking download directory"
+  file:
+    path: "{{ download_dir }}"
+    state: directory
+
+- name: "{{ play_name }}Downloading Lorem Ipsum script"
+  get_url:
+    url: "{{ lorem_src }}"
+    dest: "{{ download_dir }}"
+
+- name: "{{ play_name }}Moving {{ lorem_script }} to home directory as {{ lorem_script_edit }}"
+  copy:
+    src: "{{ download_dir }}{{ lorem_script }}"
+    dest: "/home/{{ user_name }}/{{ lorem_script_edit }}"
+    remote_src: yes
+
+- name: "{{ play_name }}Rewriting script" 
+  lineinfile:
+    path: "/home/{{ user_name }}/{{ lorem_script_edit }}"
+    regexp: "password =>"
+    line: "{:password => \"{{ mysql_root_pass }}\"}"
+  tags:
+    - tested
+
+- name: "{{ play_name}}Running Lorem Ipsum Script to populate Icat database"
+  shell:
+   cmd: "~/.rvm/rubies/ruby-2.4.2/bin/ruby {{ lorem_script_edit }}"
+   chdir: "/home/{{ user_name }}"
+  environment:
+    GEM_PATH: "/home/{{ user_name }}/.rvm/gems/ruby-2.4.2:\
+               /home/{{ user_name }}/.rvm/gems/ruby-2.4.2@global"
+
