@@ -13,16 +13,36 @@
     path: "{{ download_dir }}"
     state: directory
 
+#---Downloading Simple Authn---
+
+- stat:
+    path: "{{ download_dir }}{{ authn_zip }}"
+  register: sa_zip
+
 - name: "{{ play_name }}Downloading {{ authn_zip }}"
   get_url:
     url: "{{ authn_src }}"
     dest: "{{ download_dir }}"
+  when: sa_zip.stat.exists == false
+
+#---
+
+#---Unzipping Simple Authn---
+
+- stat:
+    path: "/home/{{ user_name }}/authn.simple"
+  register: sa_dir
 
 - name: "{{ play_name }}Unzipping {{ authn_zip }}"
   unarchive:
     src: "{{ download_dir }}{{ authn_zip }}"
     dest: "/home/{{ user_name }}"
     remote_src: yes
+  when: sa_dir.stat.exists == false
+
+#---
+
+#---Setup-Properties---
 
 - name: "{{ play_name }}Creating {{ authn_setup_prop }}"
   file:
@@ -35,10 +55,16 @@
     block: |
       {{ glassfish_cnf }}
 
+#---
+
+#---Properties---
+
 - name: "{{ play_name }}Creating {{ authn_prop }}"
   file:
     path: "/home/{{ user_name }}/authn.simple/{{ authn_prop }}"
     state: touch
+
+#--TODO!--Move block to variable
 
 - name: "{{ play_name }}Creating usernames and passwords in {{ authn_prop }}"
   blockinfile:
@@ -52,6 +78,10 @@
       user.{{ user_name }}.password = {{ user_pass }}
 
       mechanism = simple
+
+#---
+
+#---Running Setup---
 
 - name: "{{ play_name }}Installing Simple Authentication"
   shell:

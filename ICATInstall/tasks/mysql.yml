@@ -1,5 +1,7 @@
 ---
 
+#---Setting Variables for RedHat/Debian---
+
 - name: "{{ play_name }}Setting variables for RedHat"
   set_fact:
      mysql_cnf_path: "{{ mysql_cnf_path_redhat }}"
@@ -15,6 +17,10 @@
   when: ansible_os_family == "Debian"
   tags:
     - debian
+
+#---
+
+#---Downloading Packages for RedHat/Debian---
 
 - name: "{{ play_name }}Installing MySQL Packages for RedHat"
   yum:
@@ -32,22 +38,38 @@
   tags:
     - debian
 
+#---
+
+#---
+
+- name: "{{ play_name }}Checking mysqld version"
+  command: mysql --version
+
+#---Modifying Config File---
+
 - name: "{{ play_name }}Setting default engine to '{{ mysql_cnf_eng }}'"
   lineinfile:
     path: "{{ mysql_cnf_path }}"
     insertafter: '[mysqld] '
     regexp: "default_storage_engine"
     line: default_storage_engine = {{ mysql_cnf_eng }}
+
+#---
+
+#---Running Secure Install---
  
 - name: "{{ play_name }}Starting database"
   service:
     name: "{{ mysqld }}"
     state: started
 
-#TODO! - Improve this task so it doesn't run at all if not first install
+#---TODO!---Improve this task so it doesn't run at all if first install
+
 - name: "{{ play_name }}Temporarly reseting MySQL root password (This will return an error on first run but should ignore it)"
   command: "mysqladmin -u root -p'{{ mysql_root_pass }}' password ''"
   ignore_errors: true
+
+#---TODO!---add responses to variable
 
 - name: "{{ play_name }}Running '{{ mysql_secure }}'"
   expect:
@@ -61,6 +83,10 @@
       'Disallow root login remotely?': 'y'
       'Remove test database and access to it?': 'y'
       'Reload privilege tables now?': 'y'
+
+#---
+
+#---Creating Database and Login---
 
 - name: "{{ play_name }}Creating database - {{ mysql_db_name }}"
   mysql_db:
@@ -77,3 +103,5 @@
     password: "{{ mysql_pass }}"
     priv: '*.*:ALL,GRANT'
     state: present
+
+#---

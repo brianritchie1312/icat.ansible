@@ -182,33 +182,20 @@
 
 #---Test Data---
 
-- name: "{{ play_name }}Loading Ruby Install"
-  include: "ruby.yml"
+- name: "{{ play_name }}Loading Python Icat Install"
+  include: "pycat.yml"
   become: yes
   become_user: "{{ user_name }}"
   vars:
     play_name: "TestData : "
   tags:
     - user
-    - test
-    - ruby
-    - broken
-
-- name: "{{ play_name }}Loading Test Data Install"
-  include: "lorem.yml"
-  become: yes
-  become_user: "{{ user_name }}"
-  vars:
-    play_name: "TestData : "
-  tags:
-    - user
-    - test
+    - pycat
     - lorem
     - broken
+  
 
-
-
-#---TopCat---
+#---lorem---
 
 - name: "{{ play_name }}Loading TopCat Install"
   include: "topcat.yml"
@@ -233,6 +220,9 @@
     - "{{ download_dir }}"
     - "/home/{{ user_name }}/setup-glassfish.py"
     - "/home/{{ user_name }}/{{ lorem_script_edit }}"
+  when: cleanup == true
+  vars:
+    cleanup: false
   tags:
     - user
     - cleanup

@@ -59,7 +59,7 @@
     regexp: "{{ item.regexp }}"
     line: "{{ item.line }}"
   with_items:
-    - { regexp: "icat.url",    line: "icat.url = http://localhost:8080" }
+    - { regexp: "icat.url",    line: "icat.url = http://{{ inventory_hostname }}:8080" }
     - { regexp: "cache.dir",   line: "cache.dir = /home/{{ user_name }}/{{ mysql_db_name }}/main/ids/cache/" }
     - { regexp: "reader",      line: "reader = simple username root password {{ mysql_root_pass }}" }
     - { regexp: ".lastIdFile", line: "filesCheck.lastIdFile = /home/{{ user_name }}/{{ mysql_db_name }}/main/ids/lasIdFile" }
@@ -71,3 +71,9 @@
   shell:
     cmd: ./setup install
     chdir: "/home/{{ user_name }}/ids.server/"
+
+- name: "{{ play_name }}Checking IDS"
+  command: "curl -k {{ icat_url }}/ids/ping"
+  register: ids_out
+
+- debug: var=ids_out.stdout

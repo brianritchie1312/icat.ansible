@@ -13,7 +13,7 @@
     path: "{{ download_dir }}"
     state: directory
 
-- name: "{{ play_name }}Downloading {{ topcat_zip }} to '{[ download_dir }}'"
+- name: "{{ play_name }}Downloading {{ topcat_zip }} to '{{ download_dir }}'"
   get_url:
     url: "{{ topcat_src }}"
     dest: "{{ download_dir }}"
@@ -73,6 +73,7 @@
   with_items:
     - { regexp: "https", rep: "http" }
     - { regexp: "8181",  rep: "8080" }
+    - { regexp: "localhost", rep: "{{ inventory_hostname }}" }
     - { regexp: 'your facility name[^"]*', rep: "LILS" }
 
 - name: "{{ play_name }}Installing TopCat"

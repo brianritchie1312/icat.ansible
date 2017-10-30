@@ -1,5 +1,7 @@
 ---
 
+#---Downloading Packages for RedHat---
+
 - name: "{{ play_name }}Installing {{ java_package_redhat }} on RedHat"
   yum:
     name: "{{ java_package_redhat }}"
@@ -8,7 +10,11 @@
   tags:
     - redhat
 
-- name: "{{ play_name }}Adding Java repository"
+#---
+
+#---Downloading packages for Debian---
+
+- name: "{{ play_name }}Adding Java repository to Debian"
   apt_repository:
     repo: "{{ java_repo_debian }}"
     state: present
@@ -16,13 +22,15 @@
   tags:
     - debian
     
-- name: "{{ play_name }}Installing {{ java_package_debian }}"
+- name: "{{ play_name }}Installing {{ java_package_debian }} on Debian"
   apt:
     name: "{{ java_package_debian }}"
     state: latest
   when: ansible_os_family == "Debian"
   tags:
     - debian
+
+#---
 
 - name: "{{ play_name }}Checking Java version"
   command: javac -version

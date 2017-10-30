@@ -14,31 +14,65 @@
     glassfish_java: "{{ glassfish_java_debian }}"
   when: ansible_os_family == "Debian"   
 
-- name: "{{ play_name }}Checking download directory"
+- name: "{{ play_name }}Creating download directory if non-existent"
   file:
     path: "{{ download_dir }}"
     state: directory
+
+#---Download Glassfish---
+
+- stat:
+    path: "{{ download_dir }}{{ glassfish_zip }}"
+  register: gf_zip
 
 - name: "{{ play_name }}Downloading Glassfish"
   get_url:
     url: "{{ glassfish_src }}"
     dest: "{{ download_dir }}"
+  when: gf_zip.stat.exists == false
+
+#---
+
+#---Unzip Glassfish---
+
+- stat:
+    path: "/home/{{ user_name }}/glassfish4"
+  register: gf_dir
 
 - name: "{{ play_name }}Unzipping {{ glassfish_zip }}"
   unarchive:
     src: "{{ download_dir }}{{ glassfish_zip }}"
     dest: "/home/{{ user_name }}/"
     remote_src: yes
+  when:
+    - gf_dir.stat.exists == false
+
+#---
+
+#---Download Glassfish setup script---
+
+- stat:
+    path: "{{ script_path }}"
+  register: gf_script
 
 - name: "{{ play_name }}Downloading Glassfish setup script"
   get_url:
     url: "{{ glassfish_setup }}"
     dest: "/home/{{ user_name }}"
+  when: gf_script.stat.exists == false
+
+#---
+
+#---Run Glassfish setup script---
 
 - name: "{{ play_name }}Running setup script"
   environment:
     PATH: "{{ ansible_env.PATH }}:/home/{{ user_name }}/glassfish4/bin"
   command: python {{ script_path }} {{ glassfish_domain }} 75% {{ mysql_root_pass }}
+
+#---
+
+#---
 
 - name: "{{ play_name }}Configuring Glassfish for MySQL"
   copy:

@@ -13,16 +13,36 @@
     path: "{{ download_dir }}"
     state: directory
 
+#---Downloading ICAT Server---
+
+- stat:
+    path: "{{ download_dir }}{{ icat_zip }}"
+  register: is_zip
+
 - name: "{{ play_name }}Downloading {{ icat_zip }}"
   get_url:
     url: "{{ icat_src }}"
     dest: "{{ download_dir }}"
+  when: is_zip.stat.exists == false
+
+#---
+
+#---Unzipping Icat Server---
+
+- stat:
+    path: "/home/{{ user_name }}/icat.server/"
+  register: is_dir
 
 - name: "{{ play_name }}Unzipping {{ icat_zip }}"
   unarchive:
     src: "{{ download_dir }}{{ icat_zip }}"
     dest: "/home/{{ user_name }}/"
     remote_src: yes
+  when: is_dir.stat.exists == false
+
+#---
+
+#---Setup file---
 
 - name: "{{ play_name }}Creating {{ icat_setup }}"
   file:
@@ -36,6 +56,8 @@
       {{ glassfish_cnf }}
 
       {{ mysql_cnf }}
+
+#---
 
 - name: "{{ play_name }}Creating Lucene directory - {{ lucene_dir }}"
   file: 
@@ -91,3 +113,8 @@
     cmd: ./setup install
     chdir: "/home/{{ user_name }}/icat.server"
 
+- name: "{{ play_name }}Checking ICAT"
+  command: "curl -k {{ icat_url }}/icat/version"
+  register: icat_out
+
+- debug: var=icat_out.stdout_lines

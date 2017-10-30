@@ -1,6 +1,9 @@
 ---
 # vars file for /etc/ansible/roles/ICATInstall/
 
+#---master---
+icat_url: http://localhost:8080/
+
 #---Java---
 java_package_redhat: java-1.8.0-openjdk-devel 
 java_repo_debian: 'ppa:openjdk-r/ppa'
@@ -128,14 +131,16 @@ ids_prop: ids.properties
 
 #---Lorem---
 
-#Ruby
-ruby_packages: patch, libyaml-devel, glibc-headers, autoconf, gcc-c++, glibc-devel, patch, readline-devel, zlib-devel, libffi-devel, openssl-devel, automake, libtool, bison, sqlite-devel
-rvm_url: https://get.rvm.io 
+delete_fac: true
+wipe_icat: true
 
-#Lorem
-lorem_src: https://raw.githubusercontent.com/icatproject/topcat/master/tools/lorum_facility_generator.rb
-lorem_script: lorum_facility_generator.rb
-lorem_script_edit: test_data_generator.rb
+pycat_url: https://icatproject.org/misc/python-icat/download/python-icat-0.13.1.tar.gz
+pycat_zip: python-icat-0.13.1.tar.gz
+pycat_path: /root/python-icat-0.13.1
+
+pycat_login: "curl -k -X POST -d 'json={\"plugin\" : \"{{ authn_plugin }}\", \"credentials\" : [{\"username\":\"root\"},{\"password\":\"{{ mysql_root_pass}}\"}]}' {{ icat_url }}/icat/session"
+pycat_check: "curl -k -G --data-urlencode \"{{ icat_id }}\" --data-urlencode \"query=SELECT f from Facility f\" {{ icat_url }}/icat/entityManager"
+pycat_delete: "curl -k --get -X DELETE --data-urlencode \"{{ icat_id }}\" --data-urlencode 'entities={\"Facility\": {\"id\" : {{ icat_fac_id }} }}' {{ icat_url }}/icat/entityManager"
 
 
 
