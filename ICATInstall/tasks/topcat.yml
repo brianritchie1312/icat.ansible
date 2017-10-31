@@ -1,51 +1,67 @@
 ---
 
-- name: "{{ play_name }}Starting {{ glassfish_domain }}"
-  environment:
-    PATH: "{{ ansible_env.PATH }}:/home/{{ user_name }}/glassfish4/bin"
-  command: "nohup {{ item }}"
-  with_items:
-  - "asadmin restart-domain {{ glassfish_domain }}"
-  - "asadmin list-domains"
+- name: "{{ play_name }}Loading Pre-playbook Check"
+  include: "preplay.yml"
 
-- name: "{{ play_name }}Checking download directory '{{ download_dir }}' - Creating if non-existent"
-  file:
-    path: "{{ download_dir }}"
-    state: directory
+#---
+
+#---Downloading TopCat---
+
+- stat:
+    path: "{{ download_dir }}{{ topcat_zip }}"
+  register: tc_zip
 
 - name: "{{ play_name }}Downloading {{ topcat_zip }} to '{{ download_dir }}'"
   get_url:
     url: "{{ topcat_src }}"
     dest: "{{ download_dir }}"
-    
-- name: "{{ play_name }}Unzipping {{ topcat_zip }} to '/home/{{ user_name }}'"
+  when: tc_zip.stat.exists == false
+
+#---
+
+#---Unzipping TopCat
+
+- stat:
+    path: "{{ topcat_path }}"
+  register: tc_dir    
+
+- name: "{{ play_name }}Unzipping {{ topcat_zip }}"
   unarchive:
     src: "{{ download_dir }}{{ topcat_zip }}"
-    dest: "/home/{{ user_name }}/"
+    dest: "{{ user_home }}/"
     remote_src: yes
+  when: tc_dir.stat.exists == false
 
-- name: "{{ play_name }}Creating {{ topcat_setup }} - Creating empty file in '/home/{{ user_name }}/topcat/'"
+#---
+
+#---Setup Properties File
+
+- name: "{{ play_name }}Creating {{ topcat_setup }}"
   file:
-    path: "/home/{{ user_name }}/topcat/{{ topcat_setup }}"
+    path: "{{ topcat_path }}/{{ topcat_setup }}"
     state: touch
 
-- name: "{{ play_name }}Configuring {{ topcat_setup }} - Adding Glassfish container, MySQL container and Email Config"
+- name: "{{ play_name }}Configuring {{ topcat_setup }}"
   blockinfile:
-    path: "/home/{{ user_name }}/topcat/{{ topcat_setup }}"
+    path: "{{ topcat_path }}/{{ topcat_setup }}"
     block: |
       {{ glassfish_cnf }}    
       {{ mysql_cnf }}
       {{ email_cnf }}
+
+#---
+
+#---Properties File---
       
-- name: "{{ play_name }}Creating {{ topcat_prop }} - Copying example file from '/home/{{ user_name }}/topcat/{{ topcat_prop }}.example'"
+- name: "{{ play_name }}Creating {{ topcat_prop }}"
   copy:
-    src: "/home/{{ user_name }}/topcat/{{ topcat_prop }}.example"
-    dest: "/home/{{ user_name }}/topcat/{{ topcat_prop }}"
+    src: "{{ topcat_path }}/{{ topcat_prop }}.example"
+    dest: "{{ topcat_path }}/{{ topcat_prop }}"
     remote_src: yes
   
-- name: "{{ play_name }}Configuring {{ topcat_prop }} - Adding lines"
+- name: "{{ play_name }}Configuring {{ topcat_prop }}"
   lineinfile:
-    path: "/home/{{ user_name }}/topcat/{{ topcat_prop }}"
+    path: "{{ topcat_path }}/{{ topcat_prop }}"
     regexp: "{{ item.regexp }}"
     line: "{{ item.line }}"
   with_items:
@@ -55,19 +71,23 @@
     - { regexp: "poll.interval",  line: "poll.interval.wait = 600" }
     - { regexp: "adminUserNames", line: "adminUserNames = simple/root" }
 
-- name: "{{ play_name }}Creating {{ topcat_json }}, {{ topcat_lang }} and {{ topcat_css }} - Copying example files"
+#---
+
+#---Json File---
+
+- name: "{{ play_name }}Creating {{ topcat_json }}, {{ topcat_lang }} and {{ topcat_css }}"
   copy:
-    src: "/home/{{ user_name}}/topcat/{{ item }}.example"
-    dest: "/home/{{ user_name}}/topcat/{{ item }}"
+    src: "{{ topcat_path }}/{{ item }}.example"
+    dest: "{{ topcat_path }}/{{ item }}"
     remote_src: yes
   with_items:
     - "{{ topcat_json }}"
     - "{{ topcat_lang }}"
     - "{{ topcat_css }}"
 
-- name: "{{ play_name }}Configuring {{ topcat_json }} - Replacing https with http, port 8181 with 8080, and facility name with LILS"
+- name: "{{ play_name }}Configuring {{ topcat_json }}"
   replace:
-    path: "/home/{{ user_name }}/topcat/{{ topcat_json }}"
+    path: "{{ topcat_path }}/{{ topcat_json }}"
     regexp: "{{ item.regexp }}"
     replace: "{{ item.rep }}"
   with_items:
@@ -76,10 +96,15 @@
     - { regexp: "localhost", rep: "{{ inventory_hostname }}" }
     - { regexp: 'your facility name[^"]*', rep: "LILS" }
 
+#---
+
+#---Running Setup---
+
 - name: "{{ play_name }}Installing TopCat"
   environment:
-    PATH: "{{ ansible_env.PATH }}:/home/{{ user_name }}/glassfish4/bin"
+    PATH: "{{ ansible_env.PATH }}:{{ glassfish_path }}/bin"
   shell:
     cmd: ./setup install
     chdir: "/home/{{ user_name }}/topcat"
 
+#---

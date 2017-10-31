@@ -45,6 +45,8 @@
 - name: "{{ play_name }}Checking mysqld version"
   command: mysql --version
 
+#---
+
 #---Modifying Config File---
 
 - name: "{{ play_name }}Setting default engine to '{{ mysql_cnf_eng }}'"

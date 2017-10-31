@@ -1,5 +1,10 @@
 ---
 
+- name: "{{ play_name }}Loading Pre-playbook Check"
+  include: "preplay.yml"
+
+#---Setting Variables for RedHat/Debian---
+
 - name: "{{ play_name }}Setting variables for RedHat"
   set_fact:
      script_path: setup-glassfish.py
@@ -14,10 +19,7 @@
     glassfish_java: "{{ glassfish_java_debian }}"
   when: ansible_os_family == "Debian"   
 
-- name: "{{ play_name }}Creating download directory if non-existent"
-  file:
-    path: "{{ download_dir }}"
-    state: directory
+#---
 
 #---Download Glassfish---
 
@@ -36,13 +38,13 @@
 #---Unzip Glassfish---
 
 - stat:
-    path: "/home/{{ user_name }}/glassfish4"
+    path: "{{ glassfish_path }}"
   register: gf_dir
 
 - name: "{{ play_name }}Unzipping {{ glassfish_zip }}"
   unarchive:
     src: "{{ download_dir }}{{ glassfish_zip }}"
-    dest: "/home/{{ user_name }}/"
+    dest: "{{ user_home }}"
     remote_src: yes
   when:
     - gf_dir.stat.exists == false
@@ -58,12 +60,22 @@
 - name: "{{ play_name }}Downloading Glassfish setup script"
   get_url:
     url: "{{ glassfish_setup }}"
-    dest: "/home/{{ user_name }}"
+    dest: "{{ user_home }}"
   when: gf_script.stat.exists == false
 
 #---
 
 #---Run Glassfish setup script---
+
+- stat:
+    path: "{{ glassfish_path }}/glassfish/domains/{{ glassfish_domain }}"
+  register: gf_dom
+
+- name: "{{ play_name }}Stopping {{ glassfish_domain }}"
+  environment:
+    PATH: "{{ ansible_env.PATH }}:{{ glassfish_path }}/bin"
+  command: "nohup asadmin stop-domain {{ glassfish_domain }}"
+  when: gf_dom.stat.exists == true
 
 - name: "{{ play_name }}Running setup script"
   environment:
@@ -72,19 +84,20 @@
 
 #---
 
-#---
+#---Configuring Glassfish Domain---
 
-- name: "{{ play_name }}Configuring Glassfish for MySQL"
+- name: "{{ play_name }}Configuring {{ glassfish_domain }} for MySQL"
   copy:
     src: "{{ glassfish_java }}"
-    dest: "/home/{{ user_name }}/glassfish4/glassfish/domains/{{ glassfish_domain }}/lib/ext/"
+    dest: "{{ glassfish_path }}/glassfish/domains/{{ glassfish_domain }}/lib/ext/"
     remote_src: yes
 
 - name: "{{ play_name }}Restarting {{ glassfish_domain }}"
   environment:
-    PATH: "{{ ansible_env.PATH }}:/home/{{ user_name }}/glassfish4/bin"
+    PATH: "{{ ansible_env.PATH }}:{{ glassfish_path }}/bin"
   command: "nohup {{ item }}"
   with_items:
   - "asadmin restart-domain {{ glassfish_domain }}"
   - "asadmin list-domains"
-   
+  
+#---

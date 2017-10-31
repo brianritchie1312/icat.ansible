@@ -1,9 +1,15 @@
 ---
 
+- name: "{{ play_name }}Loading Pre-playbook Check"
+  include: "preplay.yml"
+
+#---
+
+#---Checking existing facilities---
+
 - name: "{{ play_name }}Getting ICAT session ID"
   command: "{{ pycat_login }}"
   register: icat_sess
-
 
 - set_fact:
      icat_id: "{{ icat_sess.stdout | replace('\":\"','=') | replace('\"','') | replace('{','') | replace('}','') }}"
@@ -19,11 +25,16 @@
   register: icat_facs
 #  when: '"sessionId=" in icat_id'
 
-#---Delete Facility
+#---
+
+#---Deleting Facility if requested---
+
 #---TODO---Find less destructive deletion method
 
+#---TODO---Improve ID grab in case of multiple facilities
+
 - set_fact:
-     icat_fac_id: "{{ icat_facs.stdout[19:21] }}"  #Improve this
+     icat_fac_id: "{{ icat_facs.stdout[19:21] }}"  #Improve this!
   when: 
     - '"LILS" in icat_facs.stdout'
     - delete_fac == true
@@ -46,26 +57,7 @@
 
 #---
 
-
-- name: "{{ play_name }}Downloading Python ICAT"
-  get_url:
-    url: "{{ pycat_url }}"
-    dest: /root/
-  become: yes
-  become_user: root
-  become_method: sudo
-  when: '"LILS" not in icat_facs.stdout'
-
-- name: "{{ play_name }}Unzipping {{ pycat_zip }}"
-  unarchive:
-    src: "{{ pycat_zip }}"
-    dest: "/root/"
-    owner: root
-    group: root
-  become: yes
-  become_user: root
-  become_method: sudo
-  when: '"LILS" not in icat_facs.stdout'
+#---Install dependencies for RedHat/Debian---
 
 - name: "{{ play_name }}Installing dependencies"
   pip:
@@ -88,7 +80,7 @@
   become: yes
   become_user: root
   become_method: sudo
-  when: 
+  when:
     - ansible_os_family == "RedHat"
     - '"LILS" not in icat_facs.stdout'
   tags:
@@ -104,7 +96,7 @@
   become: yes
   become_user: root
   become_method: sudo
-  when: 
+  when:
     - ansible_os_family == "Debian"
     - '"LILS" not in icat_facs.stdout'
   tags:
@@ -114,6 +106,56 @@
   command: python --version
   register: pyv
   when: '"LILS" not in icat_facs.stdout'
+
+#---
+
+#---Downloading PyCAT---
+
+- stat:
+    path: "{{ download_dir }}{{ pycat_zip }}"
+  register: pi_zip
+  become: yes
+  become_user: root
+  become_method: sudo
+
+- name: "{{ play_name }}Downloading Python ICAT"
+  get_url:
+    url: "{{ pycat_url }}"
+    dest: /root/
+  become: yes
+  become_user: root
+  become_method: sudo
+  when: 
+    - '"LILS" not in icat_facs.stdout'
+    - pi_zip.stat.exists == false
+
+#---
+
+#---Unzipping PyCAT
+
+- stat:
+    path: "{{ pycat_path }}"
+  register: pi_dir
+  become: yes
+  become_user: root
+  become_method: sudo
+
+- name: "{{ play_name }}Unzipping {{ pycat_zip }}"
+  unarchive:
+    src: "{{ pycat_zip }}"
+    dest: "/root/"
+    owner: root
+    group: root
+  become: yes
+  become_user: root
+  become_method: sudo
+  when: 
+    - '"LILS" not in icat_facs.stdout'
+    - pi_dir.stat.exists == false
+
+#---
+
+#---Patching for Python 2.6---
 
 - name: "{{ play_name }}Patching for Python 2.6"
   patch:
@@ -128,6 +170,10 @@
     - '"LILS" not in icat_facs.stdout'
     - '"2.6." in pyv.stderr'
 
+#---
+
+#---Installing PyCAT---
+
 - name: "{{ play_name }}Building and Installing Python ICAT"
   command: "python setup.py {{ item }}"
   args:
@@ -140,11 +186,21 @@
   become_method: sudo
   when: '"LILS" not in icat_facs.stdout'
 
+#---Populating Database---
+
+- stat:
+    path: "{{ user_home }}"
+  register: pi_lils
+
 - name: "{{ play_name }}Copying Dump file"
   copy:
     src: ../files/lils.yml
-    dest: "/home/{{ user_name }}/"
-  when: '"LILS" not in icat_facs.stdout'
+    dest: "{{ user_home }}/"
+  when: 
+    - '"LILS" not in icat_facs.stdout'
+    - pi_lils.stat.exists == false
+
+#---TODO---create smaller file so forced timeout is not required
 
 - name: "{{ play_name }}Running ICAT ingest"
   command: 'icatingest.py --url "http://localhost:8080/ICATService/ICAT?wsdl" -u root -p {{ mysql_root_pass }} -i ~/lils.yml -a simple'
@@ -152,3 +208,5 @@
   ignore_errors: yes
   async: 60
   poll: 5
+
+#---

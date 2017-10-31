@@ -1,61 +1,81 @@
 ---
 
-- name: "{{ play_name }}Starting {{ glassfish_domain }}"
-  environment:
-    PATH: "{{ ansible_env.PATH }}:/home/{{ user_name }}/glassfish4/bin"
-  command: "nohup {{ item }}"
-  with_items:
-  - "asadmin restart-domain {{ glassfish_domain }}"
-  - "asadmin list-domains"
+- name: "{{ play_name }}Loading Pre-playbook Check"
+  include: "preplay.yml"
 
-- name: "{{ play_name }}Checking download directory '{{ download_dir }}' - Creating if non-existent"
-  file:
-    path: "{{ download_dir }}"
-    state: directory
+#---
 
-- name: "Downloading {{ ids_zip }} to '{{ download_dir }}'"
+#---Downloading IDS---
+
+- stat:
+    path: "{{ download_dir }}{{ ids_zip }}"
+  register: ip_zip
+
+- name: "Downloading {{ ids_zip }}"
   get_url:
     url: "{{ ids_src }}"
     dest: "{{ download_dir }}"
-    
-- name: "{{ play_name }}Unzipping {{ ids_zip }} to '/home/{{ user_name }}/'"
+  when: ip_zip.stat.exists == false
+
+#---
+
+#---Unzipping IDS---
+
+- stat:
+    path: "{{ ids_path }}"
+  register: ip_dir    
+
+- name: "{{ play_name }}Unzipping {{ ids_zip }}"
   unarchive:
     src: "{{ download_dir }}{{ ids_zip }}"
-    dest: "/home/{{ user_name }}/"
+    dest: "{{ user_home }}/"
     remote_src: yes
+  when: ip_dir.stat.exists == false
 
-- name: "{{ play_name }}Creating {{ ids_setup_prop }} - Creating empty file"
+#---
+
+#---Setup Properties file---
+
+- name: "{{ play_name }}Creating {{ ids_setup }} - Creating empty file"
   file:
-    path: "/home/{{ user_name }}/ids.server/{{ ids_setup_prop }}"
+    path: "{{ ids_path }}/{{ ids_setup }}"
     state: touch 
 
-- name: "{{ play_name }}Configuring {{ ids_setup_prop }} - Adding glassfish container block"
+- name: "{{ play_name }}Configuring {{ ids_setup }} - Adding glassfish container block"
   blockinfile:
-    path: "/home/{{ user_name }}/ids.server/{{ ids_setup_prop }}"
+    path: "{{ ids_path }}/{{ ids_setup }}"
     block: "{{ glassfish_cnf }}"
     state: present
 
-- name: "{{ play_name }}Configuring {{ ids_setup_prop }} - Configuring Libraries"
+- name: "{{ play_name }}Configuring {{ ids_setup }} - Configuring Libraries"
   lineinfile:
-    path: "/home/{{ user_name }}/ids.server/{{ ids_setup_prop }}"
+    path: "{{ ids_path }}/{{ ids_setup }}"
     regexp: "libraries"
     line: libraries=ids.storage_file*.jar
     state: present
 
-- name: "{{ play_name }}Creating cache at '/home/{{ user_name }}/{{ mysql_db_name }}/main/ids/cache/'"
+#---
+
+#---Creating Cache---
+
+- name: "{{ play_name }}Creating Cache"
   file:
-    path: "/home/{{ user_name }}/{{ mysql_db_name }}/main/ids/cache/"
+    path: "{{ user_home }}/{{ mysql_db_name }}/main/ids/cache/"
     state: directory
 
-- name: "{{ play_name }}Creating {{ ids_prop }} - Copying example file in '/home/{{ user_name }}/ids.server/'"
+#---
+
+#---Properties file---
+
+- name: "{{ play_name }}Creating {{ ids_prop }}"
   copy:
-    src: "/home/{{ user_name }}/ids.server/{{ ids_prop }}.example"
-    dest: "/home/{{ user_name }}/ids.server/{{ ids_prop }}"
+    src: "{{ ids_path }}/{{ ids_prop }}.example"
+    dest: "{{ ids_path }}/{{ ids_prop }}"
     remote_src: yes
     
-- name: "{{ play_name }}Configuring {{ ids_prop }} - Adding icat url, cache dir, user details and last file id"
+- name: "{{ play_name }}Configuring {{ ids_prop }}"
   lineinfile:
-    path: "/home/{{ user_name }}/ids.server/{{ ids_prop }}"
+    path: "{{ ids_path }}/{{ ids_prop }}"
     regexp: "{{ item.regexp }}"
     line: "{{ item.line }}"
   with_items:
@@ -65,15 +85,21 @@
     - { regexp: ".lastIdFile", line: "filesCheck.lastIdFile = /home/{{ user_name }}/{{ mysql_db_name }}/main/ids/lasIdFile" }
     - { regexp: ".errorlog",   line: "filesCheck.errorLog = /home/{{ user_name }}/{{ mysql_db_name }}/main/ids/errorLog" }
 
+#---
+
+#---Running Setup---
+
 - name: "{{ play_name }}Installing IDS"
   environment:
-    PATH: "{{ ansible_env.PATH }}:/home/{{ user_name }}/glassfish4/bin"
+    PATH: "{{ ansible_env.PATH }}:{{ glassfish_path }}/bin"
   shell:
     cmd: ./setup install
-    chdir: "/home/{{ user_name }}/ids.server/"
+    chdir: "{{ ids_path }}"
 
 - name: "{{ play_name }}Checking IDS"
   command: "curl -k {{ icat_url }}/ids/ping"
   register: ids_out
 
 - debug: var=ids_out.stdout
+
+#---

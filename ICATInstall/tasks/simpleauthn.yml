@@ -1,27 +1,19 @@
 ---
 
-- name: "{{ play_name }}Starting {{ glassfish_domain }}"
-  environment:
-    PATH: "{{ ansible_env.PATH }}:/home/{{ user_name }}/glassfish4/bin"
-  command: "nohup {{ item }}"
-  with_items:
-  - "asadmin restart-domain {{ glassfish_domain }}"
-  - "asadmin list-domains"
+- name: "{{ play_name }}Loading Pre-playbook Check"
+  include: "preplay.yml"
 
-- name: "{{ play_name }}Checking download directory"
-  file:
-    path: "{{ download_dir }}"
-    state: directory
+#---
 
 #---Downloading Simple Authn---
 
 - stat:
-    path: "{{ download_dir }}{{ authn_zip }}"
+    path: "{{ download_dir }}{{ authn_zip_s }}"
   register: sa_zip
 
-- name: "{{ play_name }}Downloading {{ authn_zip }}"
+- name: "{{ play_name }}Downloading {{ authn_zip_s }}"
   get_url:
-    url: "{{ authn_src }}"
+    url: "{{ authn_src_s }}"
     dest: "{{ download_dir }}"
   when: sa_zip.stat.exists == false
 
@@ -30,13 +22,13 @@
 #---Unzipping Simple Authn---
 
 - stat:
-    path: "/home/{{ user_name }}/authn.simple"
+    path: "{{ authn_path_s }}"
   register: sa_dir
 
-- name: "{{ play_name }}Unzipping {{ authn_zip }}"
+- name: "{{ play_name }}Unzipping {{ authn_zip_s }}"
   unarchive:
-    src: "{{ download_dir }}{{ authn_zip }}"
-    dest: "/home/{{ user_name }}"
+    src: "{{ download_dir }}{{ authn_zip_s }}"
+    dest: "{{ user_home }}"
     remote_src: yes
   when: sa_dir.stat.exists == false
 
@@ -44,14 +36,14 @@
 
 #---Setup-Properties---
 
-- name: "{{ play_name }}Creating {{ authn_setup_prop }}"
+- name: "{{ play_name }}Creating {{ authn_setup_s }}"
   file:
-    path: "/home/{{ user_name }}/authn.simple/{{ authn_setup_prop }}"
+    path: "{{ authn_path_s }}/{{ authn_setup_s }}"
     state: touch
 
-- name: "{{ play_name }}Configuring {{ authn_setup_prop }}"
+- name: "{{ play_name }}Configuring {{ authn_setup_s }}"
   blockinfile:
-    path: "/home/{{ user_name }}/authn.simple/{{ authn_setup_prop }}"
+    path: "{{ authn_path_s }}/{{ authn_setup_s }}"
     block: |
       {{ glassfish_cnf }}
 
@@ -59,26 +51,16 @@
 
 #---Properties---
 
-- name: "{{ play_name }}Creating {{ authn_prop }}"
+- name: "{{ play_name }}Creating {{ authn_prop_s }}"
   file:
-    path: "/home/{{ user_name }}/authn.simple/{{ authn_prop }}"
+    path: "{{ authn_path_s }}/{{ authn_prop_s }}"
     state: touch
 
-#--TODO!--Move block to variable
-
-- name: "{{ play_name }}Creating usernames and passwords in {{ authn_prop }}"
+- name: "{{ play_name }}Creating usernames and passwords in {{ authn_prop_s }}"
   blockinfile:
-    path: "/home/{{ user_name }}/authn.simple/{{ authn_prop }}"
-    block: |
-      #User list
-      user.list = root ingest {{ user_name }}
-
-      user.root.password = {{ mysql_root_pass }}
-      user.ingest.password = ingest
-      user.{{ user_name }}.password = {{ user_pass }}
-
-      mechanism = simple
-
+    path: "{{ authn_path_s }}/{{ authn_prop_s }}"
+    block: "{{ authn_block_s }}"
+      
 #---
 
 #---Running Setup---
@@ -86,5 +68,6 @@
 - name: "{{ play_name }}Installing Simple Authentication"
   shell:
     cmd: ./setup install
-    chdir: "/home/{{ user_name }}/authn.simple"
+    chdir: "{{ authn_path_s }}"
 
+#---

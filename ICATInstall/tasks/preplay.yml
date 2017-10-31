@@ -1,0 +1,35 @@
+---
+
+#This meant to be run at the begining of each non-root playbook
+# I may move this to handlers if they are more convinient
+
+#---Glassfish Domain---
+
+- stat:
+    path: "{{ glassfish_path }}"
+  register: check_gf
+
+- name: "{{ play_name }}Starting {{ glassfish_domain }}"
+  environment:
+    PATH: "{{ ansible_env.PATH }}:{{ glassfish_path }}/bin"
+  command: "nohup asadmin list-domains"
+  when: check_gf.stat.exists == true
+  register: check_gf_doms
+
+- name: "{{ play_name }}Starting {{ glassfish_domain }}"
+  environment:
+    PATH: "{{ ansible_env.PATH }}:{{ glassfish_path }}/bin"
+  command: "nohup {{ item }}"
+  with_items:
+  - "asadmin restart-domain {{ glassfish_domain }}"
+  - "asadmin list-domains"
+  when: 'glassfish_domain in check_gf_doms.stdout'
+
+
+#---Download Directory---
+
+- name: "{{ play_name }}Checking download directory '{{ download_dir }}' - Creating if non-existent"
+  file:
+    path: "{{ download_dir }}"
+    state: directory
+

@@ -1,17 +1,9 @@
 ---
 
-- name: "{{ play_name }}Starting {{ glassfish_domain }}"
-  environment:
-    PATH: "{{ ansible_env.PATH }}:/home/{{ user_name }}/glassfish4/bin"
-  command: "nohup {{ item }}"
-  with_items:
-  - "asadmin restart-domain {{ glassfish_domain }}"
-  - "asadmin list-domains"
+- name: "{{ play_name }}Loading Pre-playbook Check"
+  include: "preplay.yml"
 
-- name: "{{ play_name }}Checking download directory"
-  file:
-    path: "{{ download_dir }}"
-    state: directory
+#---
 
 #---Downloading ICAT Server---
 
@@ -30,13 +22,13 @@
 #---Unzipping Icat Server---
 
 - stat:
-    path: "/home/{{ user_name }}/icat.server/"
+    path: "{{ icat_path }}"
   register: is_dir
 
 - name: "{{ play_name }}Unzipping {{ icat_zip }}"
   unarchive:
     src: "{{ download_dir }}{{ icat_zip }}"
-    dest: "/home/{{ user_name }}/"
+    dest: "{{ user_home }}/"
     remote_src: yes
   when: is_dir.stat.exists == false
 
@@ -46,12 +38,12 @@
 
 - name: "{{ play_name }}Creating {{ icat_setup }}"
   file:
-    path: "/home/{{ user_name }}/icat.server/{{ icat_setup }}"
+    path: "{{ icat_path }}/{{ icat_setup }}"
     state: touch
 
 - name: "{{ play_name }}Configuring {{ icat_setup }}"
   blockinfile:
-    path: "/home/{{ user_name }}/icat.server/{{ icat_setup }}"
+    path: "{{ icat_path }}/{{ icat_setup }}"
     block: |
       {{ glassfish_cnf }}
 
@@ -59,30 +51,40 @@
 
 #---
 
-- name: "{{ play_name }}Creating Lucene directory - {{ lucene_dir }}"
+#---Lucene Directory---
+
+- name: "{{ play_name }}Creating Lucene directory"
   file: 
     path: "{{ lucene_dir }}"
     state: directory
 
-- name: "{{ play_name }}Creating script directory - /home/{{ user_name }}/bin"
+#---
+
+#---Script Directory---
+
+- name: "{{ play_name }}Creating script directory"
   file:
-    path: "/home/{{ user_name }}/bin"
+    path: "{{ user_home }}/bin"
     state: directory
 
 - name: "{{ play_name }}Adding script directory to bashrc"
   lineinfile:
-    path: "/home/{{ user_name }}/.bashrc"
-    line: "export PATH=$PATH:/home/{{ user_name }}/bin"
+    path: "{{ user_home }}/.bashrc"
+    line: "export PATH=$PATH:{{ user_home }}/bin"
+
+#---
+
+#---Icat Properties---
 
 - name: "{{ play_name }}Creating {{ icat_prop }}"
   copy:
-    src: "/home/{{ user_name }}/icat.server/{{ icat_prop }}.example"
-    dest: "/home/{{ user_name }}/icat.server/{{ icat_prop }}"
+    src: "{{ icat_path }}/{{ icat_prop }}.example"
+    dest: "{{ icat_path }}/{{ icat_prop }}"
     remote_src: yes
 
 - name: "{{ play_name }}Configuring {{ icat_prop }} - Rewriting lines for authn.simple"
   lineinfile:
-    dest: "/home/{{ user_name }}/icat.server/{{ icat_prop }}"
+    dest: "{{ icat_path }}/{{ icat_prop }}"
     regexp: "{{ item.regexp }}"
     line: "{{ item.line }}"
   with_items:
@@ -92,7 +94,7 @@
 
 - name: "{{ play_name }}Configuring {{ icat_prop }} - Configuring commenting for authn.simple"
   replace:
-    path: "/home/{{ user_name }}/icat.server/{{ icat_prop }}"
+    path: "{{ icat_path }}/{{ icat_prop }}"
     regexp: "{{ item.regexp }}"
     replace: "{{ item.replace }}"
   with_items:
@@ -104,17 +106,23 @@
 
 - name: "{{ play_name }}Configuring {{ icat_prop }} - adding authn.simple.friendly line"
   lineinfile:
-    dest: "/home/{{ user_name }}/icat.server/{{ icat_prop }}"
+    dest: "{{ icat_path }}/{{ icat_prop }}"
     insertafter: 'authn.simple.jndi'
     line: 'authn.simple.friendly = Simple'
   
+#---
+
+#---Running Setup---
+
 - name: "{{ play_name }}Installing ICAT server"
   shell:
     cmd: ./setup install
-    chdir: "/home/{{ user_name }}/icat.server"
+    chdir: "{{ icat_path }}"
 
 - name: "{{ play_name }}Checking ICAT"
   command: "curl -k {{ icat_url }}/icat/version"
   register: icat_out
 
 - debug: var=icat_out.stdout_lines
+
+#---

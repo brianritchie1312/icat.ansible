@@ -14,7 +14,7 @@
 
 #---Plays---
 
-#---Update Package Lists---
+#---Update Package Lists---This seems to break stfc cloud vms, use with caution
 
 - name: "{{ play_name }}Updating package list for RedHat"
   yum:
@@ -46,7 +46,7 @@
    - debian
    - tested
 
-
+#---
 
 #---Install java---
 
@@ -59,7 +59,7 @@
     - java
     - tested
 
-
+#---
 
 #---Install MySQL---
 
@@ -82,7 +82,7 @@
     - mysql  
     - tested
 
-
+#---
 
 #---Creating non-root user
 
@@ -94,7 +94,7 @@
     - createuser
     - tested
 
-
+#---
 
 #---Glassfish---
 
@@ -109,7 +109,7 @@
     - glassfish
     - tested
 
-
+#---
 
 #---Authentication---
 
@@ -130,12 +130,14 @@
   become: yes
   become_user: "{{ user_name }}"
   when: authn_plugin == "other"
+  vars:
+    play_name: "Authn Other : "
   tags:
     - user
     - authn
     - tested
 
-
+#---
 
 #---ICATServer---
 
@@ -150,8 +152,9 @@
     - icat
     - tested
 
+#---
 
-#---Storage Plugin---
+#---Storage Plugin---Problem with setup script (currently ignored)
 
 - name: "{{ play_name }}Loading Storage Plugin Install"
   include: "storage.yml"
@@ -162,8 +165,9 @@
   tags:
     - user
     - storage
-#    - tested
+    - tested
 
+#---
 
 #---IDS---
 
@@ -178,9 +182,9 @@
     - ids
     - tested
 
+#---
 
-
-#---Test Data---
+#---Test Data---ingest script currently forced to timeout (replace with smaller file)
 
 - name: "{{ play_name }}Loading Python Icat Install"
   include: "pycat.yml"
@@ -194,8 +198,9 @@
     - lorem
     - broken
   
+#---
 
-#---lorem---
+#---Topcat Interface---
 
 - name: "{{ play_name }}Loading TopCat Install"
   include: "topcat.yml"
@@ -208,9 +213,9 @@
     - topcat
     - tested
 
+#---
 
-
-#---Cleanup---
+#---Cleanup---add variables to specify level of cleanup (eg. move all files to single directory or delete all of them)
 
 - name: "Cleanup : Removing uneeded files"
   file:
@@ -226,3 +231,5 @@
   tags:
     - user
     - cleanup
+
+#---

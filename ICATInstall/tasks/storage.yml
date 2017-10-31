@@ -1,28 +1,40 @@
 ---
 
-- name: "{{ play_name }}Starting {{ glassfish_domain }}"
-  environment:
-    PATH: "{{ ansible_env.PATH }}:/home/{{ user_name }}/glassfish4/bin"
-  command: "nohup {{ item }}"
-  with_items:
-  - "asadmin restart-domain {{ glassfish_domain }}"
-  - "asadmin list-domains"
+- name: "{{ play_name }}Loading Pre-playbook Check"
+  include: "preplay.yml"
 
-- name: "{{ play_name }}Checking download directory '{{ download_dir }}' - Creating if non existent"
-  file:
-    path: "{{ download_dir }}"
-    state: directory
+#---
+
+#---Downloading Storage plugin---
+
+- stat:
+    path: "{{ download_dir }}{{ storage_zip }}"
+  register: sp_zip
 
 - name: "{{ play_name }}Downloading '{{ storage_zip }}' to '{{ download_dir }}'"
   get_url:
     url: "{{ storage_src }}"
     dest: "{{ download_dir }}"
+  when: sp_zip.stat.exists == false
 
-- name: "{{ play_name }}Unziping {{ storage_zip }} to '/home/{{ user_name }}/'"
+#---
+
+#---Unziping Storage Plugin---
+
+- stat:
+    path: "{{ storage_path }}"
+  register: sp_dir
+
+- name: "{{ play_name }}Unziping {{ storage_zip }}"
   unarchive:
     src: "{{ download_dir }}{{ storage_zip }}"
-    dest: "/home/{{ user_name }}/"
+    dest: "{{ user_home }}/"
     remote_src: yes
+  when: sp_dir.stat.exists == false
+
+#---
+
+#---Creating Directories---
 
 - name: "{{ play_name }}Making directories to store data - '{{ dir_main }}' and '{{ dir_archive }}'"
   file:
@@ -32,9 +44,13 @@
     - "{{ dir_main }}"
     - "{{ dir_archive }}"
 
+#---
+
+#---Properties files---
+
 - name: "{{ play_name }}Creating properties files in '/home/{{ user_name }}/ids.storage_file/'"
   file:
-    path: "/home/{{ user_name }}/ids.storage_file/{{ item }}"
+    path: "{{ storage_path }}/{{ item }}"
     state: touch
   with_items:
     - "{{ storage_main }}"
@@ -43,7 +59,7 @@
   
 - name: "{{ play_name }}Configuring properties files - Adding storage directories"
   lineinfile:
-    path: "/home/{{ user_name }}/ids.storage_file/{{ item.file }}"
+    path: "{{ storage_path }}/{{ item.file }}"
     regexp: "dir="
     line: "{{ item.line }}"
   with_items:
@@ -52,9 +68,13 @@
 
 - name: "{{ play_name }}Configuring {{ storage_setup }} - Adding Glassfish block"
   blockinfile:
-    path: "/home/{{ user_name }}/ids.storage_file/{{ storage_setup }}"
+    path: "{{ storage_path }}/{{ storage_setup }}"
     block: "{{ glassfish_cnf }}"
 
+#---
+
+
+#---Running Setup---
 
 #NOTE
 #This task needs work as it returns errors on the first run, however the setup is actually succesful.
@@ -62,9 +82,10 @@
 
 - name: "{{ play_name }}Installing IDS Storage"
   environment:
-    PATH: "{{ ansible_env.PATH }}:/home/{{ user_name }}/glassfish4/bin"
+    PATH: "{{ ansible_env.PATH }}:{{ glassfish_path }}/bin"
   shell:
     cmd: ./setup install
-    chdir: "/home/{{ user_name }}/ids.storage_file"
+    chdir: "{{ storage_path }}"
   ignore_errors: yes
 
+#---
