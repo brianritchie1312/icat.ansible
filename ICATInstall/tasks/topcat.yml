@@ -69,7 +69,7 @@
     - { regexp: "ids.getstatus",  line: "ids.getStatus.max = 100" }
     - { regexp: "poll.delay",     line: "poll.delay = 600" }
     - { regexp: "poll.interval",  line: "poll.interval.wait = 600" }
-    - { regexp: "adminUserNames", line: "adminUserNames = simple/root" }
+    - { regexp: "adminUserNames", line: "adminUserNames = {{ topcat_admin }}" }
 
 #---
 
@@ -105,6 +105,6 @@
     PATH: "{{ ansible_env.PATH }}:{{ glassfish_path }}/bin"
   shell:
     cmd: ./setup install
-    chdir: "/home/{{ user_name }}/topcat"
+    chdir: "{{ topcat_path }}"
 
 #---

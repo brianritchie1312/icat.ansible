@@ -117,25 +117,56 @@
   include: "simpleauthn.yml"
   become: yes
   become_user: "{{ user_name }}"
-  when: authn_plugin == "simple"
+  when: authn_simple == true
   vars:
     play_name: "Authn Simple : "
   tags:
     - user
     - authn
+    - simple
     - tested
 
-- name: "{{ play_name }}Loading OTHER Authenticaton install"
-  include: "otherauthn.yml"
+- name: "{{ play_name }}Loading DB Authenticaton install"
+  include: "dbauthn.yml"
   become: yes
   become_user: "{{ user_name }}"
-  when: authn_plugin == "other"
+  when: authn_db == true
   vars:
-    play_name: "Authn Other : "
+    play_name: "Authn DB : "
   tags:
     - user
     - authn
+    - db
     - tested
+
+- name: "{{ play_name }}Loading LDAP Authenticaton install"
+  include: "ldapauthn.yml"
+  become: yes
+  become_user: "{{ user_name }}"
+  when: authn_ldap == true
+  vars:
+    play_name: "Authn LDAP : "
+  tags:
+    - user
+    - authn
+    - ldap
+    - tested
+
+
+- name: "{{ play_name }}Loading Anonymous Authenticaton install"
+  include: "anonauthn.yml"
+  become: yes
+  become_user: "{{ user_name }}"
+  when: authn_anon == true
+  vars:
+    play_name: "Authn anon : "
+  tags:
+    - user
+    - authn
+    - anon
+    - tested
+
+
 
 #---
 

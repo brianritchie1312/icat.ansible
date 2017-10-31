@@ -82,6 +82,8 @@
     dest: "{{ icat_path }}/{{ icat_prop }}"
     remote_src: yes
 
+#--Authn Simple--
+
 - name: "{{ play_name }}Configuring {{ icat_prop }} - Rewriting lines for authn.simple"
   lineinfile:
     dest: "{{ icat_path }}/{{ icat_prop }}"
@@ -100,15 +102,32 @@
   with_items:
     - { regexp: '!authn.simple.jndi', replace: 'authn.simple.jndi' }
     - { regexp: '!authn.simple.friendly', replace: 'authn.simple.friendly' }
-    - { regexp: 'authn.db', replace: '!authn.db' }
-    - { regexp: 'authn.ldap', replace: '!authn.ldap' }
-    - { regexp: 'authn.anon', replace: '!authn.anon' }
+  when: authn_simple == true
+
+#    - { regexp: 'authn.db', replace: '!authn.db' }
+#    - { regexp: 'authn.ldap', replace: '!authn.ldap' }
+#    - { regexp: 'authn.anon', replace: '!authn.anon' }
 
 - name: "{{ play_name }}Configuring {{ icat_prop }} - adding authn.simple.friendly line"
   lineinfile:
     dest: "{{ icat_path }}/{{ icat_prop }}"
     insertafter: 'authn.simple.jndi'
     line: 'authn.simple.friendly = Simple'
+
+#--
+
+#--Authn DB--
+
+#--
+
+#--Authn LDAP--
+
+#--
+
+#--Authn Anon--
+
+#--
+
   
 #---
 

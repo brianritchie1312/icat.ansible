@@ -1,0 +1,86 @@
+---
+
+#- name: "{{ play_name }}Loading Pre-playbook Check"
+#  include: "preplay.yml"
+
+#---
+
+#---Downloading DB Authn---
+
+- stat:
+    path: "{{ download_dir }}{{ authn_zip_db }}"
+  register: da_zip
+
+- name: "{{ play_name }}Downloading {{ authn_zip_db }}"
+  get_url:
+    url: "{{ authn_src_db }}"
+    dest: "{{ download_dir }}"
+  when: da_zip.stat.exists == false
+
+#---
+
+#---Unzipping DB Authn---
+
+- stat:
+    path: "{{ authn_path_db }}"
+  register: da_dir
+
+- name: "{{ play_name }}Unzipping {{ authn_zip_db }}"
+  unarchive:
+    src: "{{ download_dir }}{{ authn_zip_db}}"
+    dest: "{{ user_home }}"
+  when: da_dir.stat.exists == false
+
+#---
+
+#---Setup-Properties---
+
+- name: "{{ play_name }}Creating {{ authn_setup_db }}"
+  file:
+    path: "{{ authn_path_db }}/{{ authn_setup_db }}"
+    state: touch
+
+- name: "{{ play_name }}Configuring {{ authn_setup_db }}"
+  blockinfile:
+    path: "{{ authn_path_db }}/{{ authn_setup_db }}"
+    block: |
+      {{ glassfish_cnf }}
+      {{ mysql_cnf | replace('target','vendor') }}
+
+#---
+
+#---Properties---
+
+- name: asd
+  copy:
+    src: "{{ authn_path_db }}/{{ authn_prop_db }}.example"
+    dest: "{{ authn_path_db }}/{{ authn_prop_db }}"
+
+#---Adding users to DB---
+
+- name: "{{ play_name }}Copying files for database import" 
+  template:
+    src: "../templates/{{ item }}"
+    dest: "{{ download_dir }}"
+  with_items:
+    - PASSWD.text
+    - passwd.sql
+
+- name: "{{ play_name }}Importing data into passwd table"
+  mysql_db:
+    state: import
+    target: "{{ download_dir }}passwd.sql"
+    login_user: root
+    login_password: "{{ mysql_root_pass }}"
+    name: "{{ mysql_db_name }}"
+
+#---
+
+#---Running Setup---
+
+- name: "{{ play_name }}Installing Simple Authentication"
+  shell:
+    cmd: ./setup install
+    chdir: "{{ authn_path_db }}"
+
+#---

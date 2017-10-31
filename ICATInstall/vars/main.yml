@@ -66,9 +66,12 @@ glassfish_cnf: |
 
 #---Authn---
 
-authn_plugin: simple
+authn_simple: true
+authn_db: true
+authn_ldap: false
+authn_anon: false
 
-#----Authn Simple---
+#--Authn Simple---
 
 authn_src_s: "http://www.icatproject.org/mvn/repo/org/icatproject/authn.simple/1.1.0/{{ authn_zip_s }}"
 authn_zip_s: authn.simple-1.1.0-distro.zip
@@ -86,6 +89,15 @@ authn_block_s: |
   user.{{ user_name }}.password = {{ user_pass }}
 
   mechanism = simple
+
+#--Authn DB--
+
+authn_src_db: "http://www.icatproject.org/mvn/repo/org/icatproject/authn.db/1.2.0/{{ authn_zip_db }}"
+authn_zip_db: authn.db-1.2.0-distro.zip
+authn_path_db: "{{ user_home }}/authn.db"
+
+authn_setup_db: authn_db-setup.properties
+authn_prop_db: authn_db.properties
 
 
 #---ICAT Server---
@@ -140,12 +152,12 @@ pycat_delete: "curl -k --get -X DELETE --data-urlencode \"{{ icat_id }}\" --data
 
 #---TopCat---
 
-#Topcat Zip
+topcat_admin: simple/root
+
 topcat_src: "https://repo.icatproject.org/repo/org/icatproject/topcat/2.2.1/{{ topcat_zip }}"
 topcat_zip: topcat-2.2.1-distro.zip
 topcat_path: "{{ user_home }}/topcat"
 
-#Topcat files
 topcat_setup: topcat-setup.properties
 topcat_prop: topcat.properties
 topcat_json: topcat.json

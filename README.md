@@ -6,7 +6,7 @@ This contains the ICAT Install in a single role. It should be operational for Re
 * The setup excutable for the storage plugin returns a fatal error but still performs it's function (currently it's set to ignore this error but this needs to be improved)
 * Currently the mysql root password is automatically reset to default before running mysqld_secure_installation, it ignores errors. So having the password set to any other than the variable mysql_root_pass will return an error but will be skipped (including the default password). THIS NEEDS TO BE REPLACED!
 * ICATInstall/ must go into '/etc/ansible/roles/'. ICATInstall.yml can go anywhere
-* Currently only Simple Authentication is included but the foundations of a system to choose one of several plugin is implemented
+* Currently only Simple Authentication is properly implemented
 
 ### TODO
 * Improve commenting and documentation
@@ -14,10 +14,16 @@ This contains the ICAT Install in a single role. It should be operational for Re
 * Improve feedback (eg. run automatic tests and report back with the debug module)
 * fix Storage setup script not working
 * better workaround for mysql root pass
-* Add other authn options
+* Allow any configuration of Authn plugins (see icat server)
 * use smaller file for icat ingest
+* verify that db authn install works
 
 ### Changelog
+
+#### 31/10/2017(2)
+* Added albility to choose more than one authn plugin (INCOMPLETE)
+* Slightly more tidy
+* Added DB Authn install (NOT FULLY TESTED)
 
 #### 31/10/2017
 * Tidied up tasks
