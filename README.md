@@ -13,10 +13,16 @@ This contains the ICAT Install in a single role. It should be operational for Re
 * Split variables and organise by either OS, function(eg. logins, linesinfiles) or task
 * Improve feedback (eg. run automatic tests and report back with the debug module)
 * fix Storage setup script not working
-* add checking to prevent uneccesary downloading
-* tidy up
+* better workaround for mysql root pass
+* Add other authn options
+* use smaller file for icat ingest
 
 ### Changelog
+
+#### 31/10/2017
+* Tidied up tasks
+* Moved user home and working directories to variables (only 11 typos were made!)
+* Removed ruby.sh and templates folders
 
 #### 30/10/2017
 * Removed Ruby lorem
