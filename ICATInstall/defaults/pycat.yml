@@ -1,0 +1,17 @@
+---
+
+pycat_url: "https://icatproject.org/misc/python-icat/download/{{ pycat_zip }}"
+pycat_zip: python-icat-0.13.1.tar.gz
+pycat_path: "/root/python-icat-0.13.1"
+
+
+#--TODO-- Organise this in a clearer method
+
+pycat_login: "curl -k -X POST -d 'json={\"plugin\" : \"{{ icat_mech }}\", \"credentials\" : [{\"username\":\"root\"},{\"password\":\"{{ mysql_root_pass}}\"}]}' {{ icat_url }}/{{ icat_name }}/session"
+
+pycat_check: "curl -k -G --data-urlencode \"{{ icat_id }}\" --data-urlencode \"query=SELECT f from Facility f\" {{ icat_url }}/icat/entityManager"
+
+pycat_delete: "curl -k --get -X DELETE --data-urlencode \"{{ icat_id }}\" --data-urlencode 'entities={\"Facility\": {\"id\" : {{ icat_fac_id }} }}' {{ icat_url }}/{{ icat_name }}/entityManager"
+
+pycat_ingest: icatingest.py --url {{ icat_url }}/ICATService/ICAT?wsdl -u {{ mysql_root_user }} -p {{ mysql_root_pass }} -i {{ user_home }}/lils.yml -a {{ icat_mech }}
+

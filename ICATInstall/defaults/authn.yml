@@ -1,0 +1,65 @@
+---
+
+#---Authn Simple---
+
+simple_version: 1.1.0		# Only tested with 1.1.0
+
+authn_src_s: "http://www.icatproject.org/mvn/repo/org/icatproject/authn.simple/{{ simple_version }}/{{ authn_zip_s }}"
+authn_zip_s: authn.simple-{{ simple_version  }}-distro.zip
+authn_path_s: "{{ user_home }}/authn.simple"
+
+authn_setup_s: authn_simple-setup.properties
+authn_prop_s: authn_simple.properties
+
+authn_setup_block_s: |
+  {{ glassfish_cnf }}
+
+
+#---Authn DB---
+
+db_version: 1.2.0		# Only tested with 1.2.0
+
+authn_src_db: "http://www.icatproject.org/mvn/repo/org/icatproject/authn.db/{{ db_version }}/{{ authn_zip_db }}"
+authn_zip_db: authn.db-{{ db_version }}-distro.zip
+authn_path_db: "{{ user_home }}/authn.db"
+
+authn_setup_db: authn_db-setup.properties
+authn_prop_db: authn_db.properties
+
+authn_setup_block_db: |
+  {{ glassfish_cnf }}
+  {{ mysql_cnf | replace('target','vendor') }}
+
+#--Authn LDAP--
+
+ldap_version: 1.2.0		# Only tested with 1.2.0
+
+authn_src_ldap: "http://www.icatproject.org/mvn/repo/org/icatproject/authn.ldap/{{ ldap_version }}/{{ authn_zip_ldap }}"
+authn_zip_ldap: "authn.ldap-{{ ldap_version }}-distro.zip"
+authn_path_ldap: "{{ user_home }}/authn.ldap"
+
+authn_setup_ldap: authn_ldap-setup.properties
+authn_prop_ldap: authn_ldap.properties
+
+authn_setup_block_ldap: |
+  {{ glassfish_cnf }}
+
+#ldap_provider: ldap://logon05.fed.cclrc.ac.uk
+#ldap_principal: \%\@fed.cclrc.ac.uk
+
+
+#---Authn Anon---
+
+anon_version: 1.1.1		# Only tested with 1.1.1
+
+authn_src_anon: "http://www.icatproject.org/mvn/repo/org/icatproject/authn.anon/{{ anon_version }}/{{ authn_zip_anon }}"
+authn_zip_anon: "authn.anon-{{ anon_version }}-distro.zip"
+authn_path_anon: "{{ user_home }}/authn.anon"
+
+authn_setup_anon: authn_anon-setup.properties
+authn_prop_anon: authn_anon.properties
+
+authn_setup_block_anon: |
+  {{ glassfish_cnf }}
+
+

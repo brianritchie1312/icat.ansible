@@ -1,0 +1,27 @@
+---
+
+mysql_packages:
+mysql_packages_redhat: mysql-server,mysql,MySQL-python,python-suds,python-requests,mysql-connector-java
+mysql_packages_debian: mysql-server,mysql-client,python-mysqldb,python-suds,python-requests,libmysql-java
+
+mysql_cnf_path_redhat: /etc/my.cnf
+mysql_cnf_path_debian: /etc/mysql/my.cnf
+mysql_cnf_eng: InnoDB
+
+mysql_secure: mysql_secure_installation
+
+#mysql_root_user: {{ mysql_root_user }} #Set in Master Playbook
+#mysql_root_pass: {{ mysql_root_pass }} #Set in Master Playbook
+
+#mysql_db_name: {{ icat_name }} 	#Set in Master Playbook
+#mysql_user: {{ mysql_user }}		#Set in Master Playbook
+#mysql_pass: {{ mysql_pass }}		#Set in Master Playbook
+
+mysql_cnf: |
+  # MySQL
+  db.target      = mysql
+  db.driver      = com.mysql.jdbc.jdbc2.optional.MysqlDataSource
+  db.url         = jdbc:mysql://localhost:3306/{{ icat_name }}
+  db.username    = {{ mysql_user }}
+  db.password    = {{ mysql_pass }}
+

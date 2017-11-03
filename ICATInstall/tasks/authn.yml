@@ -1,0 +1,209 @@
+---
+
+- name: "{{ play_name }}Loading Pre-playbook Check"
+  include: "preplay.yml"
+
+#---
+
+- name: "{{ play_name }}Setting Variables for Authn Simple"
+  set_fact:
+    authn_src: "{{ authn_src_s }}"
+    authn_zip: "{{ authn_zip_s }}"
+    authn_path: "{{ authn_path_s }}"
+    authn_setup: "{{ authn_setup_s }}"
+    authn_setup_block: "{{ authn_setup_block_s }}"
+    authn_prop: "{{ authn_prop_s }}"
+    authn_users_s: 
+  when: authn_plugin == "simple"
+
+- name: "{{ play_name }}Setting Variables for Authn DB"
+  set_fact:
+    authn_src: "{{ authn_src_db }}"
+    authn_zip: "{{ authn_zip_db }}"
+    authn_path: "{{ authn_path_db }}"
+    authn_setup: "{{ authn_setup_db }}"
+    authn_setup_block: "{{ authn_setup_block_db }}"
+    authn_prop: "{{ authn_prop_db }}"
+  when: authn_plugin == "db"
+
+- name: "{{ play_name }}Setting Variables for Authn LDAP"
+  set_fact:
+    authn_src: "{{ authn_src_ldap }}"
+    authn_zip: "{{ authn_zip_ldap }}"
+    authn_path: "{{ authn_path_ldap }}"
+    authn_setup: "{{ authn_setup_ldap }}"
+    authn_setup_block: "{{ authn_setup_block_ldap }}"
+    authn_prop: "{{ authn_prop_ldap }}"
+  when: authn_plugin == "ldap"
+
+- name: "{{ play_name }}Setting Variables for Authn Anon"
+  set_fact:
+    authn_src: "{{ authn_src_anon }}"
+    authn_zip: "{{ authn_zip_anon }}"
+    authn_path: "{{ authn_path_anon }}"
+    authn_setup: "{{ authn_setup_anon }}"
+    authn_setup_block: "{{ authn_setup_block_anon }}"
+    authn_prop: "{{ authn_prop_anon }}"
+  when: authn_plugin == "anon"
+
+#---
+
+#---Downloading Authn---
+
+- stat:
+    path: "{{ download_dir }}{{ authn_zip }}"
+  register: sa_zip
+
+- name: "{{ play_name }}Downloading {{ authn_zip }}"
+  get_url:
+    url: "{{ authn_src }}"
+    dest: "{{ download_dir }}"
+  when: sa_zip.stat.exists == false
+
+#---
+
+#---Unzipping Authn---
+
+- stat:
+    path: "{{ authn_path }}"
+  register: sa_dir
+
+- name: "{{ play_name }}Unzipping {{ authn_zip }}"
+  unarchive:
+    src: "{{ download_dir }}{{ authn_zip }}"
+    dest: "{{ user_home }}"
+    remote_src: yes
+  when: sa_dir.stat.exists == false
+
+#---
+
+#---Setup-Properties---
+
+- name: "{{ play_name }}Creating {{ authn_setup }}"
+  file:
+    path: "{{ authn_path }}/{{ authn_setup }}"
+    state: touch
+
+- name: "{{ play_name }}Configuring {{ authn_setup }}"
+  blockinfile:
+    path: "{{ authn_path }}/{{ authn_setup }}"
+    block: |
+      {{ authn_setup_block }}
+
+#---
+
+#---Properties---
+
+- name: "{{ play_name }}Copying {{ authn_prop }}.example"
+  copy:
+    src: "{{ authn_path }}/{{ authn_prop }}.example"
+    dest: "{{ authn_path }}/{{ authn_prop }}"
+    remote_src: yes
+
+#---
+
+#---Setup Users---
+
+#--Simple--
+
+- name: "{{ play_name }}Gathering User list for Authn Simple"
+  set_fact:
+    authn_users_s: "{{ authn_users_s }} {{ item.user }}"
+  with_items:
+    - "{{ authn_simple_users }}"
+  when: authn_plugin == "simple"
+  tags:
+    - simple
+
+- name: "{{ play_name }}Creating usernames in {{ authn_prop }} (Simple Only)"
+  lineinfile:
+    path: "{{ authn_path }}/{{ authn_prop }}"
+    regexp: 'user.list'
+    line: "user.list = {{ authn_users_s }}"
+  when: authn_plugin == "simple"      
+  tags:
+    - simple
+
+- name: "{{ play_name }}Adding passwords to {{ authn_prop }} (Simple Only)"
+  lineinfile:
+    path: "{{ authn_path }}/{{ authn_prop }}"
+    regexp: "user.{{ item.user }}"
+    line: "user.{{ item.user }}.password = {{ item.pass }}"
+    insertafter: "usere"
+  with_items:
+    - "{{ authn_simple_users }}"
+  when: authn_plugin == "simple"
+  tags:
+    - simple
+
+
+#--DB--
+
+- name: "{{ play_name }}Creating list of Users and Passwords for import (DB Only)"
+  file:
+    path: "{{ download_dir }}/PASSWD.text"
+    state: touch
+  when: authn_plugin == "db"
+  tags:
+    - db
+
+- name: "{{ play_name }}Adding users and passwords to file for import (DB Only)"
+  lineinfile:
+    path: "{{ download_dir }}/PASSWD.text"
+    regexp: "{{ item.user }}"
+    line: "{{ item.user }},{{ item.pass }}"
+  with_items:
+    - "{{ authn_db_users }}"
+  when: authn_plugin == "db"
+  tags:
+    - db
+ 
+- name: "{{ play_name }}Copying files for database import (DB Only)"
+  template:
+    src: "../templates/{{ item }}"
+    dest: "{{ download_dir }}"
+  with_items:
+#    - PASSWD.text
+    - passwd.sql
+  when: authn_plugin == "db"
+  tags:
+    - db
+ 
+- name: "{{ play_name }}Importing data into passwd table (DB Only)"
+  mysql_db:
+    state: import
+    target: "{{ download_dir }}passwd.sql"
+    login_user: root
+    login_password: "{{ mysql_root_pass }}"
+    name: "{{ icat_name }}"
+  when: authn_plugin == "db"
+  tags:
+    - db
+
+
+#--LDAP--
+
+- name: "{{ play_name }}Adding Ldap server to {{ authn_prop }}"
+  lineinfile:
+    path: "{{ authn_path }}/{{ authn_prop }}"
+    regexp: "{{ item.regexp }}"
+    line: "{{ item.line }}"
+  with_items:
+    - { regexp: "provider_url",       line: "provider_url = {{ ldap_provider }}" }
+    - { regexp: "security_principal", line: "security_principal = {{ ldap_principal }}" }
+  when: authn_plugin == "ldap"
+
+#--Anon--
+
+#No user setup required
+
+#---
+
+#---Running Setup---
+
+- name: "{{ play_name }}Installing {{ authn_plugin }} Authentication"
+  shell:
+    cmd: ./setup install
+    chdir: "{{ authn_path }}"
+
+#---

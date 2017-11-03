@@ -69,7 +69,7 @@
     - { regexp: "ids.getstatus",  line: "ids.getStatus.max = 100" }
     - { regexp: "poll.delay",     line: "poll.delay = 600" }
     - { regexp: "poll.interval",  line: "poll.interval.wait = 600" }
-    - { regexp: "adminUserNames", line: "adminUserNames = {{ topcat_admin }}" }
+    - { regexp: "adminUserNames", line: "adminUserNames = {{ icat_mech }}/{{ icat_root }}" }
 
 #---
 
@@ -92,7 +92,7 @@
     replace: "{{ item.rep }}"
   with_items:
     - { regexp: "https", rep: "http" }
-    - { regexp: "8181",  rep: "8080" }
+    - { regexp: "8181",  rep: "{{ icat_port }}" }
     - { regexp: "localhost", rep: "{{ inventory_hostname }}" }
     - { regexp: 'your facility name[^"]*', rep: "LILS" }
 

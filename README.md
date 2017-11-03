@@ -1,24 +1,36 @@
 ### Summary
 
-This contains the ICAT Install in a single role. It should be operational for RedHat and Debian.
+This contains the ICAT Install in a single role. It should be operational for RedHat and Debian. It is fuctional but very lightly tested and still a little disorganised.
 
 ### Notes
 * The setup excutable for the storage plugin returns a fatal error but still performs it's function (currently it's set to ignore this error but this needs to be improved)
 * Currently the mysql root password is automatically reset to default before running mysqld_secure_installation, it ignores errors. So having the password set to any other than the variable mysql_root_pass will return an error but will be skipped (including the default password). THIS NEEDS TO BE REPLACED!
 * ICATInstall/ must go into '/etc/ansible/roles/'. ICATInstall.yml can go anywhere
 * Currently only Simple Authentication is properly implemented
+* hosts must be added to /etc/ansible/hosts and have valid ssh keys
 
 ### TODO
 * Improve commenting and documentation
-* Split variables and organise by either OS, function(eg. logins, linesinfiles) or task
 * Improve feedback (eg. run automatic tests and report back with the debug module)
 * fix Storage setup script not working
 * better workaround for mysql root pass
-* Allow any configuration of Authn plugins (see icat server)
+* Learn how ldap works
+* figure out how to automatically test plugin installs
 * use smaller file for icat ingest
-* verify that db authn install works
+* add checks before package installs and scripts
+* Fix delete facility (delete users in facility, specifically delete LILS facilty not first one)
 
 ### Changelog
+
+#### 03/11/2017
+* Split variables into /defaults
+* added version variables into default files
+* added users and passwords to master playbook
+* added configurable user list allowing any number of users above 1 for simple and db
+* moved user creation to main.yml
+* added boolean for each playbook (tags still apply)
+* added all for authn plugins (no fatal errors but still need deeper testing)
+* fixed mysql import module for debian...I think
 
 #### 31/10/2017(2)
 * Added albility to choose more than one authn plugin (INCOMPLETE)

@@ -1,0 +1,14 @@
+---
+
+# Default Variables for java.yml
+
+#---RedHat---
+
+java_package_redhat: java-1.8.0-openjdk-devel
+
+
+#---Debian---
+
+java_repo_debian: 'ppa:openjdk-r/ppa'
+java_package_debian: openjdk-8-jdk
+

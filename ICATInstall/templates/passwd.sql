@@ -1,4 +1,4 @@
-use {{ mysql_db_name }};
+use {{ icat_name }};
 
 create table IF NOT EXISTS PASSWD (UserName VARCHAR(20), encodedPassword VARCHAR(20));
 

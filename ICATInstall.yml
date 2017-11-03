@@ -1,5 +1,166 @@
 ---
- - hosts: localhost
-   roles:
-     - {role: ICATInstall, become: yes, become_user: root}
+- hosts: localhost	
+  # ^ comma separated list of hosts, SEE /etc/ansible/hosts
 
+#---VARIABLES---
+  vars:
+  # More variables can be found in /defaults and /vars within the role
+
+ #---CONFIGURATION---
+
+   #---Playbooks---
+    # Choose what you want installed
+
+#   Playbook			|Description								| /tasks/
+
+    update: true		# Updates package lists, not essential					(main.yml)
+    java: true			# Installs java and some dependencies					(java.yml)
+    mysql: true	        	# Installs and configures Mysql						(pexpect.yml, mysql.yml)
+    user: true			# Creates non-root user, almost all tasks after this don't use root	(main.yml)
+    glassfish: true		# Installs and configures glassfish					(glassfish.yml)
+    authn: true			# Installs and configures authentication plugin(s) -See Below  		(authn.yml)
+    icat: true			# Installs and configures ICAT Server					(icat.yml)
+    storage: true		# Installs and configures IDS Storage Plugin				(storage.yml)
+    ids: true			# Installs and configures ICAT Data Service				(ids.yml)
+    testdata: true		# Installs Python-ICAT and ingests data into database 			(pycat.yml)
+    topcat: true		# Installs and configures TopCat interface				(topcat.yml)
+#     cleanup: false      	# Removes scripts and zip files after they have been used.		(main.yml)
+
+
+   #---Authentication Plugins---
+    # At least one of these must be installed but any combination of multiple should work
+    # Anon authenticator should work on it's own but it is recomended that you use one of the other plugins for the root user     
+
+    authn_simple: true		# Simple Authenticator 		(version 1.1.0) https://icatproject.org/mvn/site/authn/simple/1.1.0/
+    authn_db: true		# DB Authenticator 		(version 1.2.0) https://icatproject.org/mvn/site/authn/db/1.2.0/
+    authn_ldap: false       	# LDAP Authenticator 		(version 1.2.0) https://icatproject.org/mvn/site/authn/ldap/1.2.0/
+    authn_anon: false 		# Anonymous Authenticator 	(version 1.1.1) https://icatproject.org/mvn/site/authn/anon/1.1.1/	
+
+   
+   #---ICAT Configure---
+    # inventory_hostname = name used in hosts above
+    # It's similar to using 'localhost' except topcat interface can used by browsers on remote machines
+ 
+    icat_url: http://{{ inventory_hostname }}:{{ icat_port }}/ 	# URL of the database
+    icat_port: 8080             				# Port for the database access
+    icat_name: icat						# Name of the database
+
+  
+  #---Reponse to duplicate facilities---
+   # The ingest script for TestData cannot overwrite existing facilities and users
+   # If wipe_icat is set to true it will remove all facilities
+   # If set to false it will simply skip the ingest stage if a LILS faciltiy is found and leave it as it is
+
+    delete_fac: false		# Currently not working! this deletes the first facility it finds but not users (this cause errors with ingest)
+    wipe_icat: false		# WARNING! this will remove all facilities
+
+
+ #---END OF CONFIGURATION---
+
+ #---Users---
+  # Passwords can be clear text or hash encrypted with '$'
+ 
+   #---Non-Root System User---
+    # The user that will run all non-root tasks
+
+    user_name: user1
+    user_pass: pass
+
+
+   #---MySQL User---
+    # All MySQL commands will be run as root user if needed
+
+    mysql_root_pass: pw
+
+    mysql_user: icat
+    mysql_pass: icat
+
+
+   #---Database Admin User---
+    # This will be the user that acts as root for the interface, must have mechanism from enabled plugin
+    # eg. 'simple/root' will be a user called root when using simple authenticator
+    # This should be one of the users set below or on ldap sever
+
+#---TODO--- set this to automatically select the first entry of the list below
+
+    icat_mech: simple
+    icat_root: root
+    icat_pass: pass
+
+   #---Simple Authn Users---
+    # These users will be added to authn_simple.properties
+    # In theory this should handle as many users as you wish so long as you use the format below    
+   
+    authn_simple_users:
+      - user: root
+        pass: pass
+ 
+      - user: user1
+        pass: pass1
+     
+    #-end of simple users-
+
+
+   #---DB Authn Users---
+    # These users will be added to a PASSWD table within the database
+
+    authn_db_users: 
+      - user: root
+        pass: password
+  
+      - user: notroot
+        pass: password
+      
+      - user: piOne
+        pass: piOne
+
+      - user: piTwo
+        pass: piTwo
+
+      - user: guest
+        pass: guess
+
+    #-end of db users-
+
+   #---Ldap Users---
+    # I don't actually know how ldap works yet but I think these are important
+    
+    ldap_provider: ldap://logon05.fed.cclrc.ac.uk  	# provider_url =
+    ldap_principal: \%\@fed.cclrc.ac.uk			# security_principal =
+
+    #-end of ldap users---
+
+ #---END OF USERS---
+
+#---END OF VARIABLES---
+
+#---ICAT Role---
+   # Where the magic happens
+  roles:
+    - {role: ICATInstall, become: yes, become_user: root}
+
+
+# If you wish to run the role in your own playbook simply 
+ # put the role into /etc/ansible/roles/
+ # copy and paste the above variables into /tasks/main.yml or /vars/main.yml
+ # then add the above line to your playbook
+
+# There are a number of conditional tasks that will run but skip when set to false
+ # if you would like to not show the conditional checks in output to clutter
+ # add '--skip-tags "tags"' to command line when executing playbook
+ # eg. '--skip-tags "debian, db, testdata"' will skipp all tasks tagged with debian, db or testdata
+ # and won't show any output for those tasks.
+
+# The authn.yml playbook will be run multiple times for each plugin set to true.
+ # Inside this playbook are several tasks that will fail conditionals if a plugin is false for each run
+ # This means that even if you have simple and db set to true, it will report skipping db tasks on the first run
+ # then automatically run again reporting skips on simple tasks.
+ # The task name will tell you which plugin is currently being handled.
+
+# Some tasks have ignore_errors: yes on them
+ # This means they will move on to the next task even if a fatal error is returned
+ # current tasks with ignore errors:
+ # MySQL root pass reset 	(mysql.yml)		Will return errors on first run since password won't be mysql_root_pass
+ # Storage setup script 	(storage.yml)		Final line of script fails but job is still accomplished
+ # icatingest.py		(pycat.yml)		Takes too long, forced timeout still produces data
+ # I shall attempt to find a better workaround for these in future

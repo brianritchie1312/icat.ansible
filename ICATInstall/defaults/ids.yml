@@ -1,0 +1,11 @@
+---
+
+ids_version: 1.7.0			# Only tested with 1.7.0
+
+ids_src: "https://repo.icatproject.org/repo/org/icatproject/ids.server/{{ ids_version }}/{{ ids_zip }}"
+ids_zip: ids.server-{{ ids_version }}-distro.zip
+ids_path: "{{ user_home }}/ids.server"
+
+ids_setup: ids-setup.properties
+ids_prop: ids.properties
+

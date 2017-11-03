@@ -11,6 +11,16 @@
 # Improve feedback
 # Add autotests
 
+- name: Gathering Variables
+  include_vars: 
+    dir: "{{ item }}"
+    extensions:
+        - yml  
+  with_items:
+    - '../defaults/'
+    - '../vars/'
+  tags:
+    - always  
 
 #---Plays---
 
@@ -20,7 +30,9 @@
   yum:
     name: '*'
     state: latest
-  when: ansible_os_family == 'RedHat'
+  when: 
+    - ansible_os_family == 'RedHat'
+    - update == true  
   vars:
     play_name: "Update : "
   tags:
@@ -28,7 +40,6 @@
     - root
     - update
     - redhat
-    - tested
 
 - name: "{{ play_name }}Updating package cache for Debian"
   apt:
@@ -36,7 +47,9 @@
   become: yes
   become_user: root
   become_method: sudo
-  when: ansible_os_family == "Debian"
+  when: 
+    - ansible_os_family == "Debian"
+    - update == true
   vars:
     play_name: "Update : "
   tags:
@@ -44,55 +57,66 @@
    - root
    - update
    - debian
-   - tested
-
+  
 #---
 
 #---Install java---
 
 - name: "{{ play_name }}Loading Java Install"
   include: "java.yml"
+  when:
+    - java == true
   vars:
     play_name: "Java : "
   tags:
     - root
     - java
-    - tested
-
+  
 #---
 
 #---Install MySQL---
 
 - name: "{{ play_name }}Loading Pexpect Install"
   include: "pexpect.yml"
+  become: yes
+  become_user: root
+  become_method: sudo
+  when:
+    - mysql == true
   vars:
     play_name: "MySQl Pexpect : "
   tags:
     - root
     - mysql
     - python
-    - tested
-
+  
 - name: "{{ play_name }}Loading MySQl Install and Config"
   include: "mysql.yml"
+  become: yes
+  become_user: root
+  become_method: sudo
+  when:
+    - mysql == true
   vars:
     play_name: "MySQL : "
   tags:
     - root
     - mysql  
-    - tested
 
 #---
 
 #---Creating non-root user
 
-- name: "{{ play_name }}Loading Non-Root User Creation"
-  include: "user.yml"
-  vars:
-    play_name: "Non-Root User : "
+
+- name: "{{ play_name }} Creating '{{ user_name }}' with password '{{ user_pass }}'"
+  user:
+    name: "{{ user_name }}"
+    password: "{{ user_pass }}"
+    state: present
+  when:
+    - createuser == true
   tags:
     - createuser
-    - tested
 
 #---
 
@@ -102,71 +126,85 @@
   include: "glassfish.yml" 
   become: yes
   become_user: "{{ user_name }}"
+  when:
+    - glassfish == true
   vars:
     play_name: "Glassfish : "
   tags:
     - user
     - glassfish
-    - tested
 
 #---
 
 #---Authentication---
 
 - name: "{{ play_name }}Loading Simple Authenticaton install"
-  include: "simpleauthn.yml"
+  include: "{{ item }}"
   become: yes
   become_user: "{{ user_name }}"
-  when: authn_simple == true
+  with_items:
+    - authn.yml
   vars:
     play_name: "Authn Simple : "
+    authn_plugin: simple
+  when:
+    - authn == true 
+    - authn_simple == true
   tags:
     - user
     - authn
     - simple
-    - tested
 
 - name: "{{ play_name }}Loading DB Authenticaton install"
-  include: "dbauthn.yml"
+  include: "{{ item }}"
   become: yes
   become_user: "{{ user_name }}"
-  when: authn_db == true
+  with_items:
+    - authn.yml
   vars:
     play_name: "Authn DB : "
+    authn_plugin: db
+  when: 
+    - authn== true 
+    - authn_db == true
   tags:
     - user
     - authn
     - db
-    - tested
 
 - name: "{{ play_name }}Loading LDAP Authenticaton install"
-  include: "ldapauthn.yml"
+  include: "{{ item }}"
   become: yes
   become_user: "{{ user_name }}"
-  when: authn_ldap == true
+  with_items:
+    - authn.yml
   vars:
-    play_name: "Authn LDAP : "
+    play_name: "Authn Ldap : "
+    authn_plugin: ldap 
+  when: 
+    - authn == true
+    - authn_ldap == true
   tags:
     - user
     - authn
     - ldap
-    - tested
 
-
-- name: "{{ play_name }}Loading Anonymous Authenticaton install"
-  include: "anonauthn.yml"
+- name: "{{ play_name }}Loading Anon Authenticaton install"
+  include: "{{ item }}"
   become: yes
   become_user: "{{ user_name }}"
-  when: authn_anon == true
+  with_items:
+    - authn.yml
   vars:
-    play_name: "Authn anon : "
+    play_name: "Authn Anon : "
+    authn_plugin: anon
+  when: 
+    - authn == true
+    - authn_anon == true
   tags:
     - user
     - authn
     - anon
-    - tested
-
-
 
 #---
 
@@ -178,10 +216,11 @@
   become_user: "{{ user_name }}"
   vars:
     play_name: "ICAT Server : "
+  when:
+    - icat == true
   tags:
     - user
     - icat
-    - tested
 
 #---
 
@@ -193,10 +232,11 @@
   become_user: "{{ user_name }}"
   vars:
     play_name: "IDS Storage : "
+  when:
+    - storage == true
   tags:
     - user
     - storage
-    - tested
 
 #---
 
@@ -208,10 +248,11 @@
   become_user: "{{ user_name }}"
   vars:
     play_name: "IDS : "
+  when:
+    - ids == true
   tags:
     - user
     - ids
-    - tested
 
 #---
 
@@ -223,11 +264,13 @@
   become_user: "{{ user_name }}"
   vars:
     play_name: "TestData : "
+  when:
+    - testdata == true
   tags:
     - user
+    - testdata
     - pycat
     - lorem
-    - broken
   
 #---
 
@@ -239,28 +282,24 @@
   become_user: "{{ user_name }}"
   vars:
     play_name: "TopCat : "
+  when:
+    - topcat == true
   tags:
     - user
     - topcat
-    - tested
-
+  
 #---
 
 #---Cleanup---add variables to specify level of cleanup (eg. move all files to single directory or delete all of them)
 
-- name: "Cleanup : Removing uneeded files"
-  file:
-    path: "{{ item }}"
-    state: absent
-  with_items:
-    - "{{ download_dir }}"
-    - "/home/{{ user_name }}/setup-glassfish.py"
-    - "/home/{{ user_name }}/{{ lorem_script_edit }}"
-  when: cleanup == true
-  vars:
-    cleanup: false
-  tags:
-    - user
-    - cleanup
+# Task 1
+ # move all uneeded files to {{ download_dir }}
+#- name: "Cleanup : Moving all uneeded files to {{ download_dir }}"
+  
+
+
+
+# Task 2
+ # Delete {{ download_dir }}
 
 #---

@@ -60,7 +60,7 @@
 
 - name: "{{ play_name }}Creating Cache"
   file:
-    path: "{{ user_home }}/{{ mysql_db_name }}/main/ids/cache/"
+    path: "{{ user_home }}/{{ icat_name }}/main/ids/cache/"
     state: directory
 
 #---
@@ -79,11 +79,12 @@
     regexp: "{{ item.regexp }}"
     line: "{{ item.line }}"
   with_items:
-    - { regexp: "icat.url",    line: "icat.url = http://{{ inventory_hostname }}:8080" }
-    - { regexp: "cache.dir",   line: "cache.dir = /home/{{ user_name }}/{{ mysql_db_name }}/main/ids/cache/" }
-    - { regexp: "reader",      line: "reader = simple username root password {{ mysql_root_pass }}" }
-    - { regexp: ".lastIdFile", line: "filesCheck.lastIdFile = /home/{{ user_name }}/{{ mysql_db_name }}/main/ids/lasIdFile" }
-    - { regexp: ".errorlog",   line: "filesCheck.errorLog = /home/{{ user_name }}/{{ mysql_db_name }}/main/ids/errorLog" }
+    - { regexp: "icat.url",      line: "icat.url = {{ icat_url }}" }
+    - { regexp: "cache.dir",     line: "cache.dir = {{ user_home }}/{{ icat_name }}/main/ids/cache/" }
+    - { regexp: "rootUserNames", line: "rootUserNames = {{ icat_mech }}/{{ icat_root }}" }
+    - { regexp: "reader",        line: "reader = {{ icat_mech }} username {{ icat_root }} password {{ icat_pass }}" }
+    - { regexp: ".lastIdFile",   line: "filesCheck.lastIdFile = {{ user_home }}/{{ icat_name }}/main/ids/lasIdFile" }
+    - { regexp: ".errorlog",     line: "filesCheck.errorLog = {{ user_home }}/{{ icat_name }}/main/ids/errorLog" }
 
 #---
 

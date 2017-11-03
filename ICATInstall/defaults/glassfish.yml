@@ -1,0 +1,20 @@
+---
+
+glassfish_src: "http://download.java.net/glassfish/4.0/release/{{ glassfish_zip }}"
+glassfish_zip: glassfish-4.0.zip
+glassfish_path: "{{ user_home }}/glassfish4"
+
+glassfish_setup: https://icatproject.org/misc/scripts/setup-glassfish.py
+glassfish_java_redhat: /usr/share/java/mysql-connector-java-5.1.17.jar
+glassfish_java_debian: /usr/share/java/mysql-connector-java-5.1.28.jar
+
+glassfish_domain: domain1
+
+
+# This block is used by multiple playbooks
+glassfish_cnf: |
+  #Glassfish
+  secure    = false
+  container = Glassfish
+  home      = {{ glassfish_path }}
+  port      = 4848

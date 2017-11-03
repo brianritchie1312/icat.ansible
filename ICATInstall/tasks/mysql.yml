@@ -40,21 +40,20 @@
 
 #---
 
-#---
-
-- name: "{{ play_name }}Checking mysqld version"
+- name: "{{ play_name }}Checking MySQL Version"
   command: mysql --version
-
-#---
 
 #---Modifying Config File---
 
-- name: "{{ play_name }}Setting default engine to '{{ mysql_cnf_eng }}'"
+- name: "{{ play_name }}Configuring my.cnf"
   lineinfile:
     path: "{{ mysql_cnf_path }}"
-    insertafter: '[mysqld] '
-    regexp: "default_storage_engine"
-    line: default_storage_engine = {{ mysql_cnf_eng }}
+    insertafter: "{{ item.after }}"
+    regexp: "{{ item.regexp }}"
+    line: "{{ item.line }}"
+  with_items:
+    - { after: '^\[mysqld\]', regexp: "default_storage_engine", line: "default_storage_engine = {{ mysql_cnf_eng }}" }
+    - { after: '^\[mysql\]',  regexp: "local-infile",           line: "local-infile=1" }
 
 #---
 
@@ -90,11 +89,11 @@
 
 #---Creating Database and Login---
 
-- name: "{{ play_name }}Creating database - {{ mysql_db_name }}"
+- name: "{{ play_name }}Creating database - {{ icat_name }}"
   mysql_db:
     login_user: root
     login_password: "{{ mysql_root_pass }}"
-    name: "{{ mysql_db_name }}"
+    name: "{{ icat_name }}"
     state: present
 
 - name: "{{ play_name }}Creating Database login - user={{ mysql_user }} pass={{ mysql_pass }}"
