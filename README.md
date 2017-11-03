@@ -22,6 +22,9 @@ This contains the ICAT Install in a single role. It should be operational for Re
 
 ### Changelog
 
+### 03/11/17(2)
+* added cleanup
+
 #### 03/11/2017
 * Split variables into /defaults
 * added version variables into default files

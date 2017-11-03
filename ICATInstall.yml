@@ -1,5 +1,5 @@
 ---
-- hosts: localhost	
+- hosts: vm304.nubes.stfc.ac.uk	
   # ^ comma separated list of hosts, SEE /etc/ansible/hosts
 
 #---VARIABLES---
@@ -10,13 +10,14 @@
 
    #---Playbooks---
     # Choose what you want installed
+    # Most of these are dependent on each other so be careful when changing
 
 #   Playbook			|Description								| /tasks/
 
-    update: true		# Updates package lists, not essential					(main.yml)
+    update: false		# Updates package lists							(main.yml)
     java: true			# Installs java and some dependencies					(java.yml)
     mysql: true	        	# Installs and configures Mysql						(pexpect.yml, mysql.yml)
-    user: true			# Creates non-root user, almost all tasks after this don't use root	(main.yml)
+    createuser: true		# Creates non-root user, almost all tasks after this don't use root	(main.yml)
     glassfish: true		# Installs and configures glassfish					(glassfish.yml)
     authn: true			# Installs and configures authentication plugin(s) -See Below  		(authn.yml)
     icat: true			# Installs and configures ICAT Server					(icat.yml)
@@ -24,7 +25,7 @@
     ids: true			# Installs and configures ICAT Data Service				(ids.yml)
     testdata: true		# Installs Python-ICAT and ingests data into database 			(pycat.yml)
     topcat: true		# Installs and configures TopCat interface				(topcat.yml)
-#     cleanup: false      	# Removes scripts and zip files after they have been used.		(main.yml)
+    cleanup: false      	# Moves used files to download_dir after finish to reduce clutter	(main.yml)
 
 
    #---Authentication Plugins---
