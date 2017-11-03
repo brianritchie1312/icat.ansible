@@ -1,9 +1,5 @@
 ---
-- hosts: vm304.nubes.stfc.ac.uk	
-  # ^ comma separated list of hosts, SEE /etc/ansible/hosts
-
 #---VARIABLES---
-  vars:
   # More variables can be found in /defaults and /vars within the role
 
  #---CONFIGURATION---
@@ -134,17 +130,6 @@
  #---END OF USERS---
 
 #---END OF VARIABLES---
-
-#---ICAT Role---
-   # Where the magic happens
-  roles:
-    - {role: ICATInstall, become: yes, become_user: root}
-
-
-# If you wish to run the role in your own playbook simply 
- # put the role into /etc/ansible/roles/
- # copy and paste the above variables into /tasks/main.yml or /vars/main.yml
- # then add the above line to your playbook
 
 # There are a number of conditional tasks that will run but skip when set to false
  # if you would like to not show the conditional checks in output to clutter
