@@ -1,7 +1,7 @@
 ---
 
 #---VARIABLES---
-  vars:
+#  vars:
   # More variables can be found in /defaults and /vars within the role
 
  #---CONFIGURATION---

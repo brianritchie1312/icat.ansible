@@ -1,7 +1,8 @@
 ---
 #main.yml file for ICATInstall
 
-- include_vars: ../config.yml
+- name: Reading Config
+  include_vars: ../config.yml
 
 - name: Gathering Variables
   include_vars: 
