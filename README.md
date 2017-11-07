@@ -24,15 +24,18 @@ How to use
 
 ##### TODO! Improve this tutorial
 
-1. Install ansible with Yum or Apt
+Install ansible with Yum or Apt
 
 	sudo yum install ansible
 
+
 	sudo apt install ansible 
 
-2. Download or clone this repository
-3. Ensure contents are in '/etc/ansible/roles/ICATInstall/'
-4. Create Master Playbook or copy 'exampleplaybook.yml'
+Download or clone this repository
+
+Ensure contents are in '/etc/ansible/roles/ICATInstall/'
+
+Create Master Playbook or copy 'exampleplaybook.yml'
 	
 
     - hosts: servers       
@@ -44,8 +47,9 @@ How to use
          - { role: ICATInstall, become: yes, become_user: root }
 	
 
-5. Modify config.yml and yml files in 'defaults/' as desired
-6. Run
+Modify config.yml and yml files in 'defaults/' as desired
+
+Run
 
 	ansible-playbook {MASTER PLAYBOOK NAME}
 
