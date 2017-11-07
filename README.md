@@ -24,7 +24,7 @@ How to use
 
 ##### TODO! Improve this tutorial
 
-1. Install ansible with Yum
+1.Install ansible with Yum
 
 	sudo yum install ansible
 
@@ -32,11 +32,11 @@ Or Apt
 
 	sudo apt install ansible 
 
-2. Download or clone this repository
+2.Download or clone this repository
 
-3. Ensure contents are in '/etc/ansible/roles/ICATInstall/'
+3.Ensure contents are in '/etc/ansible/roles/ICATInstall/'
 
-4. Create Master Playbook or copy 'exampleplaybook.yml'
+4.Create Master Playbook or copy 'exampleplaybook.yml'
 	
 
     - hosts: localhost #Space separated list of hosts. MUST be added to '/etc/ansible/hosts'
@@ -44,9 +44,9 @@ Or Apt
          - { role: ICATInstall, become: yes, become_user: root }
 	
 
-5. Modify config.yml and yml files in 'defaults/' as desired
+5.Modify config.yml and yml files in 'defaults/' as desired
 
-6. Run
+6.Run
 
 	ansible-playbook {MASTER PLAYBOOK NAME}
 
