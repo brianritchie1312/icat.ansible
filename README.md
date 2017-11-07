@@ -39,13 +39,22 @@ Or Apt
 
 3.Move contents to '/etc/ansible/roles/Icat-Ansible'
 
-You can place the role anywhere else but make sure to specify the path in 'etc/ansible/ansible.cfg'
+You can place the role anywhere else but make sure to specify the path in 'etc/ansible/ansible.cfg' under 'roles_path = {PATH TO DIR CONTAINING ROLE}'
+eg.
+
+	[defaults]
+	roles_path = ~/
+
+Or use
+
+	printf '[defaults]\nroles_path = ../' > /etc/ansible/ansible.cfg
 
 4.Modify config.yml and yml files in 'defaults/' as desired
 
 5.Add hosts to 'etc/ansible/hosts' 
 
 Or 'tests/inventory'
+
 
 6a.Navigate to role directory and run:
 
@@ -54,6 +63,16 @@ Or 'tests/inventory'
 If you put hosts in '/etc/ansible/hosts' you can just run
 
 	ansible-playbook tests/test.yml
+
+If you are running on remote hosts, add hostname to inventory and run add the following options
+
+        --user {SUDO USER ON REMOTE HOST} --ask-pass
+
+If remote hosts include debian systems add
+
+        --user {SUDO USER ON REMOTE HOST} --ask-pass --ask-sudo-pass
+
+
 
 6b.If you prefer you can create an external playbook to launch the role simply copy 'tests/test.yml' or the following block into your own yml playbook.
 
@@ -65,21 +84,11 @@ Then run
 
 	ansible-playbook {YOUR PLAYBOOK NAME}
 
-
-
-If running on remote hosts, add hostname to inventory and run add the following options
-
- 	--user {SUDO USER ON REMOTE HOST} --ask-pass
-
-If remote hosts include debian systems add
-
-	--user {SUDO USER ON REMOTE HOST} --ask-pass --ask-sudo-pass
-
 ##### Notes
 * You may need to get valid ssh key before running.
 * You can add '-vvvv' to the end of the ansible-playbook command to see better debugging
 * You can use '--tags "tag"' or '--skip-tags "tag"' to control which tasks run
-
+* If you use the inventory instead of '/etc/ansible/hosts' you may need to add '--connection=local' onto the command for localhost
 
   
 Author Information
