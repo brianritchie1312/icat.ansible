@@ -23,19 +23,23 @@ How to use
 ----------
 
 1. Install ansible with Yum or Apt
+
 	sudo yum install ansible
+
 	sudo apt install ansible 
+
 2. Download or clone this repository
 3. Ensure contents are in '/etc/ansible/roles/ICATInstall/'
 4. Create Master Playbook or copy 'exampleplaybook.yml'
 	
-    - hosts: localhost #Space separated list of hosts. MUST be added to '/etc/ansible/hosts'
-      roles:
-         - { role: ICATInstall, become: yes, become_user: root }
+	- hosts: localhost #Space separated list of hosts. MUST be added to '/etc/ansible/hosts'
+          roles:
+          - { role: ICATInstall, become: yes, become_user: root }
 	
 
 5. Modify config.yml and yml files in 'defaults/' as desired
 6. Run
+
 	ansible-playbook {MASTER PLAYBOOK NAME}
 
 If running on remote host, add hostname to '/etc/ansible/hosts' and run add the following options
@@ -46,8 +50,10 @@ If remote hosts include debian systems run
 
 	ansible-playbook {MASTER PLAYBOOK NAME} --user {SUDO USER ON REMOTE HOST} --ask-pass --ask-sudo-pass
 
-# Note
-You may need to get valid ssh key before running
+##### Notes
+* You may need to get valid ssh key before running.
+* You can add '-vvvv' to the end of the ansible-playbook command to see better debugging
+* You can use '--tags "tag"' or '--skip-tags "tag"' to control which tasks run
 
 
 
