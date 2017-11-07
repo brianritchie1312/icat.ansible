@@ -22,6 +22,8 @@ See config.yml and .yml files in 'defaults/'
 How to use
 ----------
 
+##### TODO! Improve this tutorial
+
 1. Install ansible with Yum or Apt
 
 	sudo yum install ansible
@@ -32,8 +34,8 @@ How to use
 3. Ensure contents are in '/etc/ansible/roles/ICATInstall/'
 4. Create Master Playbook or copy 'exampleplaybook.yml'
 	
-	- hosts: localhost #Space separated list of hosts. MUST be added to '/etc/ansible/hosts'
-          roles:
+     - hosts: localhost #Space separated list of hosts. MUST be added to '/etc/ansible/hosts'
+       roles:
           - { role: ICATInstall, become: yes, become_user: root }
 	
 
