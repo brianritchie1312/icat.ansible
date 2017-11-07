@@ -17,16 +17,21 @@ Patience
 Role Variables
 --------------
 
-See config.yml and defaults/
+See config.yml and .yml files in 'defaults/'
 
-Example Playbook
-----------------
+How to use
+----------
 
-Including an example of how to use your role (for instance, with variables passed in as parameters) is always nice for users too:
-
-    - hosts: servers
+    - hosts: localhost
       roles:
          - { role: ICATInstall, become: yes, become_user: root }
+
+You can use exampleplaybook.yml or add the above line to your own playbook then run:
+
+    ansible-playbook {PATH TO PLAYBOOK}
+
+TODO create tutorial on how use
+
 
 License
 -------
