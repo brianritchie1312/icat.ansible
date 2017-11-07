@@ -1,38 +1,174 @@
-Role Name
-=========
+ICAT Installer
+=============
+ 
+Installer for ICAT, Topcat and all their dependencies.
+Intended for testing purposes.
 
-A brief description of the role goes here.
+https://github.com/icatproject
+https://icatproject.org/
+ 
 
 Requirements
 ------------
 
-Any pre-requisites that may not be covered by Ansible itself or the role should be mentioned here. For instance, if the role uses the EC2 module, it may be a good idea to mention in this section that the boto package is required.
-
+* RedHat or Debian flavoured OS
+* At least python 2.6
+* Ideally fresh machine but should work regardless
+* Probably a bunch of other stuff I forgot
+* Patience
+  
 Role Variables
---------------
+-------------
 
-A description of the settable variables for this role should go here, including any variables that are in defaults/main.yml, vars/main.yml, and any variables that can/should be set via parameters to the role. Any variables that are read from other roles and/or the global scope (ie. hostvars, group vars, etc.) should be mentioned here as well.
+-See config.yml and .yml files in 'defaults/'
 
-Dependencies
-------------
+How to use
+----------
 
-A list of other roles hosted on Galaxy should go here, plus any details in regards to parameters that may need to be set for other roles, or variables that are used from other roles.
+##### TODO! Improve this tutorial
 
-Example Playbook
-----------------
+1.Install ansible with Yum
 
-Including an example of how to use your role (for instance, with variables passed in as parameters) is always nice for users too:
+	sudo yum install ansible
+ 
+Or Apt
 
-    - hosts: servers
+	sudo apt install ansible 
+ 
+2.Download or clone this repository
+
+3.Move contents to '/etc/ansible/roles/Icat-Ansible'
+
+You can place the role anywhere else but make sure to specify the path in 'etc/ansible/ansible.cfg'
+
+4.Modify config.yml and yml files in 'defaults/' as desired
+
+5.Add hosts to 'etc/ansible/hosts' 
+
+Or 'tests/inventory'
+
+6a.Navigate to role directory and run:
+
+	ansible-playbook -i tests/inventory tests/test.yml 
+
+If you put hosts in '/etc/ansible/hosts' you can just run
+
+	ansible-playbook tests/test.yml
+
+6b.If you prefer you can create an external playbook to launch the role simply copy 'tests/test.yml' or the following block into your own yml playbook.
+
+    - hosts: localhost # You can add any host listed in 'etc/ansible/hosts' or 'tests/inventory'
       roles:
-         - { role: username.rolename, x: 42 }
+         - { role: Icat-Ansible, become: yes, become_user: root}
 
-License
--------
+Then run
 
-BSD
+	ansible-playbook {YOUR PLAYBOOK NAME}
 
+
+
+If running on remote hosts, add hostname to inventory and run add the following options
+
+ 	--user {SUDO USER ON REMOTE HOST} --ask-pass
+
+If remote hosts include debian systems add
+
+	--user {SUDO USER ON REMOTE HOST} --ask-pass --ask-sudo-pass
+
+##### Notes
+* You may need to get valid ssh key before running.
+* You can add '-vvvv' to the end of the ansible-playbook command to see better debugging
+* You can use '--tags "tag"' or '--skip-tags "tag"' to control which tasks run
+
+
+  
 Author Information
 ------------------
 
-An optional section for the role authors to include contact information, or a website (HTML is not allowed).
+
+Jack Haydock, Computing Apprentice, Science and Technology Facilities Council
+
+
+Notes
+-----
+
+* The setup excutable for the storage plugin returns a fatal error but still performs it's function (currently it's set to ignore this error but this needs to be improved)
+* Currently the mysql root password is automatically reset to default before running mysqld_secure_installation, it ignores errors. So having the password set to any other than the variable mysql_root_pass will return an error but will be skipped (including the default password). THIS NEEDS TO BE REPLACED!
+* ICATInstall/ must go into '/etc/ansible/roles/'. ICATInstall.yml can go anywhere
+* Currently only Simple Authentication is properly implemented
+* hosts must be added to /etc/ansible/hosts and have valid ssh keys
+
+
+TODO
+----
+
+* Improve commenting and documentation
+* Improve feedback (eg. run automatic tests and report back with the debug module)
+* fix Storage setup script not working
+* better workaround for mysql root pass
+* Learn how ldap works
+* figure out how to automatically test plugin installs
+* use smaller file for icat ingest
+* add checks before package installs and scripts
+* Consider replacing env_path with shell scripts for sourcing
+* Improve Debug feedback
+* Auto grab icat root from first entry in enabled authn user lists
+
+
+Changelog
+---------
+
+#### 07/11/17
+* Removed old files...again (there's always one that gets away)
+* Minor tidying and comment improvements
+* Added SQL script for deleting FACILITY and USER_ entities if requsted
+* Fixed pycat_zip check to root dir not user
+* Mysql packages are now in a list not a single line string
+* Fixed DB users import to prevent duplicate users
+
+#### 03/11/17(2)
+* added cleanup
+
+#### 03/11/2017
+* Split variables into /defaults
+* added version variables into default files
+* added users and passwords to master playbook
+* added configurable user list allowing any number of users above 1 for simple and db
+* moved user creation to main.yml
+* added boolean for each playbook (tags still apply)
+* added all for authn plugins (no fatal errors but still need deeper testing)
+* fixed mysql import module for debian...I think
+
+#### 31/10/2017(2)
+* Added albility to choose more than one authn plugin (INCOMPLETE)
+* Slightly more tidy
+* Added DB Authn install (NOT FULLY TESTED)
+
+#### 31/10/2017
+* Tidied up tasks
+* Moved user home and working directories to variables (only 11 typos were made!)
+* Removed ruby.sh and templates folders
+
+#### 30/10/2017
+* Removed Ruby lorem
+* Removed Python Lorem
+* Added Python ICAT lorem
+* started adding checks and comments to playbooks
+
+#### 26/10/2017
+* replaced ruby install with python-icat (ICOMPLETE)
+* added basic feedback tests to ids and icat playbooks
+
+#### 23/10/2017
+* Added ignore error to storage setup bug
+* split lorem and ruby into separate playbooks
+* fixed ruby and rvm install but gem is still non-functional
+* completed multiple OS reorganisation
+
+#### 20/10/2017
+* Moved all play to Universal, so they should run on both redhat and debian
+* added restart domain to each playbook after glassfish
+
+#### 18/10/2017
+* migrated to single role
+* split playbooks by OS family and task
