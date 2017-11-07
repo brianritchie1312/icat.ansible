@@ -22,19 +22,33 @@ See config.yml and .yml files in 'defaults/'
 How to use
 ----------
 
-    - hosts: localhost
+1. Install ansible with Yum or Apt
+	sudo yum install ansible
+	sudo apt install ansible 
+2. Download or clone this repository
+3. Ensure contents are in '/etc/ansible/roles/ICATInstall/'
+4. Create Master Playbook or copy 'exampleplaybook.yml'
+	
+    - hosts: localhost #Space separated list of hosts. MUST be added to '/etc/ansible/hosts'
       roles:
          - { role: ICATInstall, become: yes, become_user: root }
+	
 
-You can use exampleplaybook.yml or add the above line to your own playbook then run:
+5. Modify config.yml and yml files in 'defaults/' as desired
+6. Run
+	ansible-playbook {MASTER PLAYBOOK NAME}
 
-    ansible-playbook {PATH TO PLAYBOOK}
+If running on remote host, add hostname to '/etc/ansible/hosts' and run add the following options
 
-TODO create tutorial on how use
+ 	ansible-playbook {MASTER PLAYBOOK NAME} --user {SUDO USER ON REMOTE HOST} --ask-pass
 
+If remote hosts include debian systems run
 
-License
--------
+	ansible-playbook {MASTER PLAYBOOK NAME} --user {SUDO USER ON REMOTE HOST} --ask-pass --ask-sudo-pass
+
+# Note
+You may need to get valid ssh key before running
+
 
 
 Author Information
