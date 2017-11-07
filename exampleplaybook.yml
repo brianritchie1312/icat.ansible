@@ -1,7 +1,0 @@
----
-- hosts: localhost
-#        ^ space separated list of host to run on
-#         all hosts but localhost should be added to '/etc/ansible/hosts'
- 
-  roles:
-     - { role: ICATInstall, become: yes, become_user: root }
