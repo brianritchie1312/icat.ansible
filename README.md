@@ -34,9 +34,14 @@ How to use
 3. Ensure contents are in '/etc/ansible/roles/ICATInstall/'
 4. Create Master Playbook or copy 'exampleplaybook.yml'
 	
-     - hosts: localhost #Space separated list of hosts. MUST be added to '/etc/ansible/hosts'
-       roles:
-          - { role: ICATInstall, become: yes, become_user: root }
+
+    - hosts: servers       
+      roles:
+         - { role: username.rolename, x: 42 }
+
+    - hosts: localhost #Space separated list of hosts. MUST be added to '/etc/ansible/hosts'
+      roles:
+         - { role: ICATInstall, become: yes, become_user: root }
 	
 
 5. Modify config.yml and yml files in 'defaults/' as desired
