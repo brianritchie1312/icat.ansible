@@ -1,7 +1,7 @@
 ---
 #main.yml file for ICATInstall
 
-- include_vars: '../config.yml'
+- include_vars: ../config.yml
 
 - name: Gathering Variables
   include_vars: 
@@ -284,8 +284,6 @@
 
 #---Cleanup---add variables to specify level of cleanup (eg. move all files to single directory or delete all of them)
 
-# Task 1
- # move all uneeded files to {{ download_dir }}
 - name: "Cleanup : Moving all uneeded files to {{ download_dir }}"
   command: "mv -f {{ item }} {{ download_dir }}"
   become: yes

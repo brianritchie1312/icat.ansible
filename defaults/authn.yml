@@ -17,6 +17,9 @@ authn_setup_block_s: |
 
 #---Authn DB---
 
+delete_passwd: true		# Delete PASSWD table before recreating and importing (prevent duplicate and abandoned users)
+delete_users: false		# Will delete any existing users with same name as those in PASSWD.text (redundant if delete_passwd == true) (note: abandoned users not in PASSWD.text will remain)
+
 db_version: 1.2.0		# Only tested with 1.2.0
 
 authn_src_db: "http://www.icatproject.org/mvn/repo/org/icatproject/authn.db/{{ db_version }}/{{ authn_zip_db }}"

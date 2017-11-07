@@ -1,15 +1,56 @@
-### Summary
+ICAT Installer
+=========
 
-This contains the ICAT Install in a single role. It should be operational for RedHat and Debian. It is fuctional but very lightly tested and still a little disorganised.
+Installer for ICAT, Topcat and all their dependencies.
+Intended for testing purposes.
 
-### Notes
+https://github.com/icatproject
+https://icatproject.org/
+
+Requirements
+------------
+
+RedHat or Debian OS
+Ideally fresh machine but should work regardless
+Patience
+
+Role Variables
+--------------
+
+See config.yml and defaults/
+
+Example Playbook
+----------------
+
+Including an example of how to use your role (for instance, with variables passed in as parameters) is always nice for users too:
+
+    - hosts: servers
+      roles:
+         - { role: ICATInstall, become: yes, become_user: root }
+
+License
+-------
+
+
+Author Information
+------------------
+
+Jack Haydock, Computing Apprentice, Science and Technology Facilities Council
+
+
+Notes
+-----
+
 * The setup excutable for the storage plugin returns a fatal error but still performs it's function (currently it's set to ignore this error but this needs to be improved)
 * Currently the mysql root password is automatically reset to default before running mysqld_secure_installation, it ignores errors. So having the password set to any other than the variable mysql_root_pass will return an error but will be skipped (including the default password). THIS NEEDS TO BE REPLACED!
 * ICATInstall/ must go into '/etc/ansible/roles/'. ICATInstall.yml can go anywhere
 * Currently only Simple Authentication is properly implemented
 * hosts must be added to /etc/ansible/hosts and have valid ssh keys
 
-### TODO
+
+TODO
+----
+
 * Improve commenting and documentation
 * Improve feedback (eg. run automatic tests and report back with the debug module)
 * fix Storage setup script not working
@@ -18,11 +59,23 @@ This contains the ICAT Install in a single role. It should be operational for Re
 * figure out how to automatically test plugin installs
 * use smaller file for icat ingest
 * add checks before package installs and scripts
-* Fix delete facility (delete users in facility, specifically delete LILS facilty not first one)
+* Consider replacing env_path with shell scripts for sourcing
+* Improve Debug feedback
+* Auto grab icat root from first entry in enabled authn user lists
 
-### Changelog
 
-### 03/11/17(2)
+Changelog
+---------
+
+#### 07/11/17
+* Removed old files...again (there's always one that gets away)
+* Minor tidying and comment improvements
+* Added SQL script for deleting FACILITY and USER_ entities if requsted
+* Fixed pycat_zip check to root dir not user
+* Mysql packages are now in a list not a single line string
+* Fixed DB users import to prevent duplicate users
+
+#### 03/11/17(2)
 * added cleanup
 
 #### 03/11/2017

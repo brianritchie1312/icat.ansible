@@ -29,31 +29,62 @@
 
 #---Deleting Facility if requested---
 
-#---TODO---Find less destructive deletion method
+ #--Wiping ICAT with Python script--
 
-#---TODO---Improve ID grab in case of multiple facilities
+- name: "{{ play_name }}Wiping ICAT"
+  command: "wipeicat.py --url \"{{ icat_url }}/ICATService/ICAT?wsdl\" -u {{ icat_root }} -p {{ icat_pass }} -a {{ icat_mech }}"
+  when:
+    - 'fac_name in icat_facs.stdout'
+    - wipe_icat == true
+
+ #--
+
+ #--Delete from Bash Command--
+  # Currently this only deletes the first facilty and cascading does not work so users remain
 
 - set_fact:
      icat_fac_id: "{{ icat_facs.stdout[19:21] }}"  #Improve this!
   when: 
-    - '"LILS" in icat_facs.stdout'
-    - delete_fac == true
+    - 'fac_name in icat_facs.stdout'
+    - delete_fac_bash == true
 
-- name: "{{ play_name }}Deleting LILS facility if requested"
+- name: "{{ play_name }}Deleting {{ fac_name }} facility if requested"
   command: "{{ pycat_delete }}"
   when: 
-    - '"LILS" in icat_facs.stdout'
-    - delete_fac == true
+    - 'fac_name in icat_facs.stdout'
+    - delete_fac_bash == true
 
-- name: "{{ play_name }}Wiping ICAT"
-  command: "wipeicat.py --url \"http://localhost:8080/ICATService/ICAT?wsdl\" -u {{ icat_root }} -p {{ icat_pass }} -a {{ icat_mech }}"
+ #--
+
+ #--Deleting from sql script--
+
+- name: "{{ play_name }}Creating SQL Deletion Script"
+  template:
+    src: ../templates/delfac.sql
+    dest: "{{ download_dir }}"
   when:
-    - '"LILS" in icat_facs.stdout'
-    - wipe_icat == true
+    - 'fac_name in icat_facs.stdout'
+    - delete_fac_sql == true
+
+- name: "{{ play_name }}Deleting {{ fac_name }} facility and Users"
+  mysql_db:
+    state: import
+    target: "{{ download_dir }}delfac.sql"
+    login_user: root
+    login_password: "{{ mysql_root_pass }}"
+    name: "{{ icat_name }}"
+  when:
+    - 'fac_name in icat_facs.stdout'
+    - delete_fac_sql == true
+
+ #--
 
 - name: "{{ play_name }}Checking existing facilities"
   command: "{{ pycat_check }}"
-  when: '"sessionId=" in icat_id'
+  when:
+    - '"sessionId=" in icat_id'
+    - 'fac_name in icat_facs.stdout'
+    - ( wipe_icat == true ) or ( delete_fac_bash == true ) or ( delete_fac_sql == true )
 
 #---
 
@@ -68,21 +99,19 @@
     - PyYAML
   become: yes
   become_user: root
-  when: '"LILS" not in icat_facs.stdout'
+  when: 'fac_name not in icat_facs.stdout'
 
 - name: "{{ play_name }}Installing dependencies for RedHat"
   yum:
     name: "{{ item }}"
     state: latest
-  with_items:
-    - python-argparse
-    - python-lxml
+  with_items: "{{ pycat_packages }}"
   become: yes
   become_user: root
   become_method: sudo
   when:
     - ansible_os_family == "RedHat"
-    - '"LILS" not in icat_facs.stdout'
+    - 'fac_name not in icat_facs.stdout'
   tags:
     - redhat
     - skip
@@ -91,29 +120,27 @@
   apt:
     name: "{{ item }}"
     state: latest
-  with_items:
-    - python-argparse
-    - python-lxml
+  with_items: "{{ pycat_packages }}"
   become: yes
   become_user: root
   become_method: sudo
   when:
     - ansible_os_family == "Debian"
-    - '"LILS" not in icat_facs.stdout'
+    - 'fac_name not in icat_facs.stdout'
   tags:
     - debian
 
 - name: "{{ play_name }}Checking Python version"
   command: python --version
   register: pyv
-  when: '"LILS" not in icat_facs.stdout'
+  when: 'fac_name not in icat_facs.stdout'
 
 #---
 
 #---Downloading PyCAT---
 
 - stat:
-    path: "{{ download_dir }}{{ pycat_zip }}"
+    path: "/root/{{ pycat_zip }}"
   register: pi_zip
   become: yes
   become_user: root
@@ -127,7 +154,7 @@
   become_user: root
   become_method: sudo
   when: 
-    - '"LILS" not in icat_facs.stdout'
+    - 'fac_name not in icat_facs.stdout'
     - pi_zip.stat.exists == false
 
 #---
@@ -151,7 +178,7 @@
   become_user: root
   become_method: sudo
   when: 
-    - '"LILS" not in icat_facs.stdout'
+    - 'fac_name not in icat_facs.stdout'
     - pi_dir.stat.exists == false
 
 #---
@@ -168,7 +195,7 @@
   become_user: root
   become_method: sudo
   when: 
-    - '"LILS" not in icat_facs.stdout'
+    - 'fac_name not in icat_facs.stdout'
     - '"2.6." in pyv.stderr'
 
 #---
@@ -185,7 +212,7 @@
   become: yes
   become_user: root
   become_method: sudo
-  when: '"LILS" not in icat_facs.stdout'
+  when: 'fac_name not in icat_facs.stdout'
 
 #---Populating Database---
 
@@ -196,16 +223,26 @@
 - name: "{{ play_name }}Copying Dump file"
   copy:
     src: ../files/lils.yml
-    dest: "{{ user_home }}/"
+    dest: "{{ user_home }}/lils.yml"
   when: 
-    - '"LILS" not in icat_facs.stdout'
+    - 'fac_name not in icat_facs.stdout'
     - pi_lils.stat.exists == false
+
+- name: "{{ play_name }}Modifying dump file"
+  replace:
+    path: "{{ user_home }}/lils.yml"
+    regexp: "simple"
+    replace: "{{ icat_mech }}"
+  when:
+    - 'fac_name not in icat_facs.stdout'
+
 
 #---TODO---create smaller file so forced timeout is not required
 
 - name: "{{ play_name }}Running ICAT ingest"
   command: "{{ pycat_ingest }}"
-  when: '"LILS" not in icat_facs.stdout'
+  when: 
+    - 'fac_name not in icat_facs.stdout'
   ignore_errors: yes
   async: 60
   poll: 5

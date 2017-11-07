@@ -24,16 +24,18 @@
 
 - name: "{{ play_name }}Installing MySQL Packages for RedHat"
   yum:
-    name: "{{ mysql_packages_redhat }}"
+    name: "{{ item }}"
     state: latest
+  with_items: "{{ mysql_packages_redhat }}"
   when: ansible_os_family == "RedHat"
   tags:
     - redhat
 
 - name: "{{ play_name }}Installing MySQL Packages for Debian"
   apt:
-    name: "{{ mysql_packages_debian }}"
+    name: "{{ item }}"
     state: latest
+  with_items: "{{ mysql_packages_debian }}"
   when: ansible_os_family == "Debian"
   tags:
     - debian

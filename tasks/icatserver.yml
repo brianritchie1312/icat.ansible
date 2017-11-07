@@ -88,7 +88,7 @@
     regexp: "{{ item.regexp }}"
     line: "{{ item.line }}"
   with_items:
-    - { regexp: 'rootUserNames', line: 'rootUserNames = {{ icat_root }}' }            #set manually
+    - { regexp: 'rootUserNames', line: 'rootUserNames = {{ icat_mech }}/{{ icat_root }}' }            #set manually
     - { regexp: 'lucene.directory', line: 'lucene.directory = {{ lucene_dir }}' }
 
 #--authn list--

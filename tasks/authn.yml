@@ -106,7 +106,7 @@
 
 #--Simple--
 
-- name: "{{ play_name }}Gathering User list for Authn Simple"
+- name: "{{ play_name }}Gathering User list for Authn Simple (Simple Only)"
   set_fact:
     authn_users_s: "{{ authn_users_s }} {{ item.user }}"
   with_items:
@@ -150,7 +150,7 @@
 - name: "{{ play_name }}Adding users and passwords to file for import (DB Only)"
   lineinfile:
     path: "{{ download_dir }}/PASSWD.text"
-    regexp: "{{ item.user }}"
+    regexp: "^{{ item.user }}"
     line: "{{ item.user }},{{ item.pass }}"
   with_items:
     - "{{ authn_db_users }}"
@@ -158,18 +158,41 @@
   tags:
     - db
  
-- name: "{{ play_name }}Copying files for database import (DB Only)"
+- name: "{{ play_name }}Copying file for database import (DB Only)"
   template:
-    src: "../templates/{{ item }}"
+    src: "../templates/passwd.sql"
     dest: "{{ download_dir }}"
-  with_items:
-#    - PASSWD.text
-    - passwd.sql
   when: authn_plugin == "db"
   tags:
     - db
- 
-- name: "{{ play_name }}Importing data into passwd table (DB Only)"
+
+- name: "{{ play_name }}Deleting PASSWD table if requested (DB Only)"
+  lineinfile:
+    path: "{{ download_dir }}passwd.sql"
+    regexp: "^drop table PASSWD"
+    insertbefore: "^create"
+    line: "drop table if exists PASSWD;"
+  when: 
+    - authn_plugin == "db"
+    - delete_passwd == true
+  tags:
+    - db
+  
+- name: "{{ play_name}}Deleting duplicate users in PASSWD if requested (DB Only)"
+  lineinfile:
+    path: "{{ download_dir }}passwd.sql"
+    regexp: "{{ item.user }}"
+    insertbefore: "^create"
+    line: "DELETE from PASSWD where UserName = '{{ item.user }}';"
+  with_items: 
+   - "{{ authn_db_users }}" 
+  when: 
+    - authn_plugin == "db"
+    - delete_users == true 
+  tags:
+    - db
+
+- name: "{{ play_name }}Importing data into PASSWD table (DB Only)"
   mysql_db:
     state: import
     target: "{{ download_dir }}passwd.sql"
@@ -183,7 +206,7 @@
 
 #--LDAP--
 
-- name: "{{ play_name }}Adding Ldap server to {{ authn_prop }}"
+- name: "{{ play_name }}Adding Ldap server to {{ authn_prop }} (LDAP Only)"
   lineinfile:
     path: "{{ authn_path }}/{{ authn_prop }}"
     regexp: "{{ item.regexp }}"

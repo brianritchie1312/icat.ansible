@@ -1,5 +1,7 @@
 ---
+
 #---VARIABLES---
+  vars:
   # More variables can be found in /defaults and /vars within the role
 
  #---CONFIGURATION---
@@ -8,28 +10,28 @@
     # Choose what you want installed
     # Most of these are dependent on each other so be careful when changing
 
-#   Playbook			|Description								| /tasks/
+#   Playbook			|Description								| /tasks/			|Users
 
-    update: false		# Updates package lists							(main.yml)
-    java: true			# Installs java and some dependencies					(java.yml)
-    mysql: true	        	# Installs and configures Mysql						(pexpect.yml, mysql.yml)
-    createuser: true		# Creates non-root user, almost all tasks after this don't use root	(main.yml)
-    glassfish: true		# Installs and configures glassfish					(glassfish.yml)
-    authn: true			# Installs and configures authentication plugin(s) -See Below  		(authn.yml)
-    icat: true			# Installs and configures ICAT Server					(icat.yml)
-    storage: true		# Installs and configures IDS Storage Plugin				(storage.yml)
-    ids: true			# Installs and configures ICAT Data Service				(ids.yml)
-    testdata: true		# Installs Python-ICAT and ingests data into database 			(pycat.yml)
-    topcat: true		# Installs and configures TopCat interface				(topcat.yml)
-    cleanup: false      	# Moves used files to download_dir after finish to reduce clutter	(main.yml)
+    update: false		# Updates package lists							(main.yml)			root
+    java: true			# Installs java and some dependencies					(java.yml)			root	
+    mysql: true	        	# Installs and configures Mysql						(pexpect.yml, mysql.yml)	root				
+    createuser: true		# Creates non-root user, almost all tasks after this don't use root	(main.yml)			root		
+    glassfish: true		# Installs and configures glassfish					(glassfish.yml)			non-root		
+    authn: true			# Installs and configures authentication plugin(s) -See Below  		(authn.yml)			non-root
+    icat: true			# Installs and configures ICAT Server					(icat.yml)			non-root
+    storage: true		# Installs and configures IDS Storage Plugin				(storage.yml)			non-root
+    ids: true			# Installs and configures ICAT Data Service				(ids.yml)			non-root
+    testdata: true		# Installs Python-ICAT and ingests data into database 			(pycat.yml)			root, non-root
+    topcat: true		# Installs and configures TopCat interface				(topcat.yml)			non-root
+    cleanup: false      	# Moves used files to download_dir after finish to reduce clutter	(main.yml)			root, non-root
 
 
-   #---Authentication Plugins---
+   #---Authentication Plugins---(authn.yml)
     # At least one of these must be installed but any combination of multiple should work
-    # Anon authenticator should work on it's own but it is recomended that you use one of the other plugins for the root user     
+    # Anon authenticator should work on it's own but it is recomended that you use one of the other plugins for the database root user     
 
     authn_simple: true		# Simple Authenticator 		(version 1.1.0) https://icatproject.org/mvn/site/authn/simple/1.1.0/
-    authn_db: true		# DB Authenticator 		(version 1.2.0) https://icatproject.org/mvn/site/authn/db/1.2.0/
+    authn_db: false		# DB Authenticator 		(version 1.2.0) https://icatproject.org/mvn/site/authn/db/1.2.0/
     authn_ldap: false       	# LDAP Authenticator 		(version 1.2.0) https://icatproject.org/mvn/site/authn/ldap/1.2.0/
     authn_anon: false 		# Anonymous Authenticator 	(version 1.1.1) https://icatproject.org/mvn/site/authn/anon/1.1.1/	
 
@@ -43,19 +45,23 @@
     icat_name: icat						# Name of the database
 
   
-  #---Reponse to duplicate facilities---
-   # The ingest script for TestData cannot overwrite existing facilities and users
-   # If wipe_icat is set to true it will remove all facilities
-   # If set to false it will simply skip the ingest stage if a LILS faciltiy is found and leave it as it is
+  #---Reponse to duplicate facilities for icatingest.py---(pycat.yml)
+   # The icatingest.py script for TestData cannot overwrite existing facilities and users
+   # If you wish to remove existing facilties use ONE of the methods below:
+    # 'wipe_icat: true' 	Will remove all populating data from the database (tables will remain but be empty). Some metadata and PASSWD table will be untouched
+    # 'delete_fac_bash: true' 	This will delete the first facility it in the FACILITY table (NOTE! this does not seem to cascade as it should so data will remain including entities in USER_ which causes problems for icatingest.py)
+    # 'delete_fac_sql: true'	Will delete the facilty named {{ fac_name }} (default = LILS) and all 'db/user' users in USER_. This allows icatingest.py to re-run without error, but does not delete any other data so the more times it runs the more data will be in the database.
+    # Leaving all false 	Will skip icatingest.py if it finds an already existing facilty with the {{ fac_name }} name.
 
-    delete_fac: false		# Currently not working! this deletes the first facility it finds but not users (this cause errors with ingest)
-    wipe_icat: false		# WARNING! this will remove all facilities
-
+    wipe_icat: false		# WARNING! This will remove all facilities
+    delete_fac_bash: false	# WARNING! This will delete the first facilty regardless of name. It will also not prevent errors with icat_ingest.py
+    delete_fac_sql: true	# NOTE! This will not delete data, only facilty and users
 
  #---END OF CONFIGURATION---
 
- #---Users---
+ #---USERS---
   # Passwords can be clear text or hash encrypted with '$'
+   # Clear text passwords must not start with '$'
  
    #---Non-Root System User---
     # The user that will run all non-root tasks
@@ -78,11 +84,9 @@
     # eg. 'simple/root' will be a user called root when using simple authenticator
     # This should be one of the users set below or on ldap sever
 
-#---TODO--- set this to automatically select the first entry of the list below
-
-    icat_mech: simple
-    icat_root: root
-    icat_pass: pass
+    icat_mech: simple		# Plugin used for admin account. Ideally 'simple' or 'db'.Must be enabled above!
+    icat_root: root		# Name of admin account. Must be included below!
+    icat_pass: pass		# Password of admin. Must be included below!
 
    #---Simple Authn Users---
     # These users will be added to authn_simple.properties
@@ -150,3 +154,9 @@
  # Storage setup script 	(storage.yml)		Final line of script fails but job is still accomplished
  # icatingest.py		(pycat.yml)		Takes too long, forced timeout still produces data
  # I shall attempt to find a better workaround for these in future
+
+# Using this for remote machines
+ # Redhat  '(argument)' = optional
+  # ansible-playbook <This Playbook name> --user <Sudo user of remote machine> --ask-pass (-vvvv) (--tags "<only run these tags>") (--skip-tags "<don't run these tags>")
+ # Debian
+  # Same as above but add '--ask-sudo-pass'

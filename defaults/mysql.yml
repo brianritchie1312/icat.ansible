@@ -1,8 +1,25 @@
 ---
 
-mysql_packages:
-mysql_packages_redhat: mysql-server,mysql,MySQL-python,python-suds,python-requests,mysql-connector-java
-mysql_packages_debian: mysql-server,mysql-client,python-mysqldb,python-suds,python-requests,libmysql-java
+#mysql_packages:
+#mysql_packages_redhat: mysql-server,mysql,MySQL-python,python-suds,python-requests,mysql-connector-java
+#mysql_packages_debian: mysql-server,mysql-client,python-mysqldb,python-suds,python-requests,libmysql-java
+
+mysql_packages_redhat:
+  - - mysql-server
+    - mysql
+    - MySQL-python
+    - python-suds
+    - python-requests
+    - mysql-connector-java
+
+mysql_packages_debian:
+  - - mysql-server
+    - mysql-client
+    - python-mysqldb
+    - python-suds
+    - python-requests
+    - libmysql-java
+
 
 mysql_cnf_path_redhat: /etc/my.cnf
 mysql_cnf_path_debian: /etc/mysql/my.cnf
