@@ -12,7 +12,7 @@
 
 #   Playbook			|Description								| /tasks/			|Users
 
-    update: false		# Updates package lists							(main.yml)			root
+    update: true		# Updates package lists							(main.yml)			root
     java: true			# Installs java and some dependencies					(java.yml)			root	
     mysql: true	        	# Installs and configures Mysql						(pexpect.yml, mysql.yml)	root				
     createuser: true		# Creates non-root user, almost all tasks after this don't use root	(main.yml)			root		
