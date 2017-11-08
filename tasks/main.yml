@@ -103,7 +103,7 @@
 #---Creating non-root user
 
 
-- name: "{{ play_name }} Creating '{{ user_name }}' with password '{{ user_pass }}'"
+- name: "{{ play_name }} Creating {{ user_name }} with password {{ user_pass }}"
   user:
     name: "{{ user_name }}"
     password: "{{ user_pass }}"
