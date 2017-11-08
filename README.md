@@ -1,5 +1,6 @@
 ICAT Installer
 =============
+[![Build Status](https://travis-ci.org/JHaydock-Pro/ICAT-Ansible.svg?branch=master)](https://travis-ci.org/JHaydock-Pro/ICAT-Ansible)
  
 Installer for ICAT, Topcat and all their dependencies.
 Intended for testing purposes.
@@ -37,32 +38,17 @@ Or Apt
  
 2.Download or clone this repository
 
-3.Move contents to '/etc/ansible/roles/Icat-Ansible'
+3.Modify config.yml and yml files in 'defaults/' as desired
 
-You can place the role anywhere else but make sure to specify the path in 'etc/ansible/ansible.cfg' under 'roles_path = {PATH TO DIR CONTAINING ROLE}'
-eg.
+4.Add hosts to 'tests/inventory' 
 
-	[defaults]
-	roles_path = ~/
+5.Navigate to role directory and run:
 
-Or use
+	ANSIBLE_CONFIG=ansible.cfg ansible-playbook -i tests/inventory tests/test.yml 
 
-	printf '[defaults]\nroles_path = ../' > /etc/ansible/ansible.cfg
+If you are running on localhost, you may need to add
 
-4.Modify config.yml and yml files in 'defaults/' as desired
-
-5.Add hosts to 'etc/ansible/hosts' 
-
-Or 'tests/inventory'
-
-
-6a.Navigate to role directory and run:
-
-	ansible-playbook -i tests/inventory tests/test.yml 
-
-If you put hosts in '/etc/ansible/hosts' you can just run
-
-	ansible-playbook tests/test.yml
+	--connection=local
 
 If you are running on remote hosts, add hostname to inventory and run add the following options
 
@@ -72,13 +58,23 @@ If remote hosts include debian systems add
 
         --user {SUDO USER ON REMOTE HOST} --ask-pass --ask-sudo-pass
 
+##### Or
+If you prefer to use your own playbook, follow steps 1-3 then
 
+4.Move role to '/etc/ansible/roles/{ROLE NAME}'
 
-6b.If you prefer you can create an external playbook to launch the role simply copy 'tests/test.yml' or the following block into your own yml playbook.
+5.Add hostnames to '/etc/ansible/hosts' or add
 
-    - hosts: localhost # You can add any host listed in 'etc/ansible/hosts' or 'tests/inventory'
+	[defaults]
+	roles_path={PATH TO DIRECTORY CONTAINING ROLE}
+
+to '/etc/ansible/ansible.cfg
+
+6.Copy 'tests/test.yml' or the following block into your own yml playbook.
+
+    - hosts: localhost # Any hosts added to inventory or ansible hosts file separated by spaces
       roles:
-         - { role: Icat-Ansible, become: yes, become_user: root}
+         - { role: ICAT-Ansible, become: yes, become_user: root}
 
 Then run
 
@@ -88,7 +84,6 @@ Then run
 * You may need to get valid ssh key before running.
 * You can add '-vvvv' to the end of the ansible-playbook command to see better debugging
 * You can use '--tags "tag"' or '--skip-tags "tag"' to control which tasks run
-* If you use the inventory instead of '/etc/ansible/hosts' you may need to add '--connection=local' onto the command for localhost
 
   
 Author Information
