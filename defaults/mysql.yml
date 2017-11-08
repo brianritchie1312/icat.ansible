@@ -14,7 +14,9 @@ mysql_packages_redhat:
 
 mysql_packages_debian:
   - - mysql-server
+    - mysql-server-5.5
     - mysql-client
+    - mysql-client-5.5
     - python-mysqldb
     - python-suds
     - python-requests
