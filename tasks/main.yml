@@ -8,7 +8,7 @@
 
 - name: Including Variables
   include_vars: 
-    dir: "../{{ item }}"
+    dir: "{{ role_path }}/{{ item }}"
     extensions:
         - yml  
   with_items:
