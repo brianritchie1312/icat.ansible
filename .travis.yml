@@ -20,7 +20,6 @@ sudo: required
 
 #---Services---
 
-
 #-----BEGIN BUILD-----
 
  #--Before Install--
@@ -36,7 +35,6 @@ install:
  #--Script--
 
 script:
-  - "ANSIBLE_CONFIG=ansible.cfg ansible-playbook -i tests/inventory tests/test.yml --syntax-check --connection=local -vvvv"
   - "ANSIBLE_CONFIG=ansible.cfg ansible-playbook -i tests/inventory tests/test.yml --connection=local -vvvv"
 
  #--After Script--

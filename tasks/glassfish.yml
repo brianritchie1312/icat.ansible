@@ -2,7 +2,9 @@
 
 - name: "{{ play_name }}Loading Pre-playbook Check"
   include: "preplay.yml"
-
+  become: yes
+  become_method: sudo
+ 
 #---Setting Variables for RedHat/Debian---
 
 - name: "{{ play_name }}Setting variables for RedHat"
