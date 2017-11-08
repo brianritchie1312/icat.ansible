@@ -35,7 +35,7 @@ install:
  #--Script--
 
 script:
-  - "ANSIBLE_CONFIG=ansible.cfg ansible-playbook -i tests/inventory test/test.yml --syntax-check --connection=local"
+  - "ANSIBLE_CONFIG=ansible.cfg ansible-playbook -i tests/inventory tests/test.yml --syntax-check --connection=local"
   - "ANSIBLE_CONFIG=ansible.cfg ansible-playbook -i tests/inventory tests/test.yml --connection=local --sudo"
 
  #--After Script--
