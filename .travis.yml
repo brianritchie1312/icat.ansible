@@ -6,7 +6,6 @@ notifications:
 #---Language---
 
 language: python
-#python: "2.6"
 
 #---Branches---
 
@@ -38,7 +37,7 @@ install:
 
 script:
   - "ANSIBLE_CONFIG=ansible.cfg ansible-playbook -i tests/inventory tests/test.yml --syntax-check --connection=local -vvvv"
-  - "ANSIBLE_CONFIG=ansible.cfg ansible-playbook -i tests/inventory tests/test.yml --connection=local -vvvv --user root"
+  - "ANSIBLE_CONFIG=ansible.cfg ansible-playbook -i tests/inventory tests/test.yml --connection=local -vvvv"
 
  #--After Script--
 
