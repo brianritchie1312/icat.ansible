@@ -59,6 +59,9 @@
 
 - name: "{{ play_name }}Loading Java Install"
   include: java.yml
+  become: yes
+  become_user: root
+  become_method: sudo
   when:
     - java == true
   vars:
