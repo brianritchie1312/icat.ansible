@@ -56,7 +56,7 @@
 #---Install java---
 
 - name: "{{ play_name }}Loading Java Install"
-  include: "java.yml"
+  include: java.yml
   when:
     - java == true
   vars:
