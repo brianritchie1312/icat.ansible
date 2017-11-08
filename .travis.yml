@@ -31,7 +31,7 @@ sudo: required
 install:
 
   - pip install ansible
-  - yum install mysql-server
+  - install mysql-server
 
  #--Before Script--
 
