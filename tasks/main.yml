@@ -108,6 +108,9 @@
     name: "{{ user_name }}"
     password: "{{ user_pass }}"
     state: present
+  become: yes
+  become_user: root
+  become_methods: sudo
   when:
     - createuser == true
   tags:
