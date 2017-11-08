@@ -31,13 +31,13 @@ sudo: required
 install:
 
   - pip install ansible
-  - install mysql-server
 
  #--Before Script--
 
  #--Script--
 
 script:
+  - "apt list --installed | grep mysql-"
   - "ANSIBLE_CONFIG=ansible.cfg ansible-playbook -i tests/inventory tests/test.yml --syntax-check --connection=local -vvvv"
   - "ANSIBLE_CONFIG=ansible.cfg ansible-playbook -i tests/inventory tests/test.yml --connection=local -vvvv"
 
