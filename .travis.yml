@@ -1,0 +1,47 @@
+#---Notifcations---
+
+notifications:
+  email: false
+
+#---Language---
+
+language: python
+python: "2.6"
+
+#---Branches---
+
+branches:
+  # Whitelist
+  only:
+    - master
+
+#---Environment---
+
+#---Services---
+
+
+#-----BEGIN BUILD-----
+
+ #--Before Install--
+
+ #--Install--
+
+install:
+
+  - pip install ansible
+
+ #--Before Script--
+
+ #--Script--
+
+script:
+  - ansible-playbook -i tests/inventory test/test.yml --syntax-check --connection=local
+  - "ansible-playbook -i tests/inventory tests/test.yml --connection=local --sudo"
+
+ #--After Script--
+
+ #--Before Deploy--
+
+ #--Deploy--
+
+ #--After Deploy--
