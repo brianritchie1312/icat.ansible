@@ -4,7 +4,7 @@
 - name: Reading Config
   include_vars: ../config.yml
 
-- name: Gathering Variables
+- name: Including Variables
   include_vars: 
     dir: "{{ item }}"
     extensions:
