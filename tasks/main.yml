@@ -3,15 +3,17 @@
 
 - name: Reading Config
   include_vars: ../config.yml
+  tags:
+    - always
 
 - name: Including Variables
   include_vars: 
-    dir: "{{ item }}"
+    dir: "../{{ item }}"
     extensions:
         - yml  
   with_items:
-    - '../defaults/'
-    - '../vars/'
+    - 'defaults'
+    - 'vars'
   tags:
     - always  
 
