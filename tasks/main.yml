@@ -117,10 +117,6 @@
 
 #---
 
-
-
-
-
 #---Glassfish---
 
 - name: "{{ play_name }}Loading Glassfish install" 
