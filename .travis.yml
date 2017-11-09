@@ -27,7 +27,6 @@ sudo: required
  #--Install--
 
 install:
-
   - pip install ansible
 
  #--Before Script--
@@ -35,8 +34,8 @@ install:
  #--Script--
 
 script:
-  - "echo 'allow_world_readable_tmpfiles=True' >> ansible.cfg"
-  - "ANSIBLE_CONFIG=ansible.cfg ansible-playbook -i tests/inventory tests/test.yml --connection=local -vvvv --sudo --extra-vars "authn_simple=true authn_db=true authn_ldap=true authn_anon=true"
+  - echo "allow_world_readable_tmpfiles=True" >> ansible.cfg
+  - ANSIBLE_CONFIG=ansible.cfg ansible-playbook -i tests/inventory tests/test.yml --connection=local -vvvv --sudo --extra-vars "authn_simple=true authn_db=true authn_ldap=true authn_anon=true
   
  #--After Script--
 
