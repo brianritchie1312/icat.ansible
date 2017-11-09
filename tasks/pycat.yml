@@ -23,7 +23,6 @@
 - name: "{{ play_name }}Checking existing facilities"
   command: "{{ pycat_check }}"
   register: icat_facs
-#  when: '"sessionId=" in icat_id'
 
 #---
 
@@ -170,7 +169,7 @@
 
 - name: "{{ play_name }}Unzipping {{ pycat_zip }}"
   unarchive:
-    src: "{{ pycat_zip }}"
+    src: "/root/{{ pycat_zip }}"
     dest: "/root/"
     owner: root
     group: root
