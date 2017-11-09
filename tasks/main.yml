@@ -110,7 +110,7 @@
     name: "{{ user_name }}"
     password: "{{ user_pass }}"
     state: present
-  when
+  when:
     - createuser == true
   tags:
     - createuser
