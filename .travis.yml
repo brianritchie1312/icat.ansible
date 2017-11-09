@@ -38,6 +38,7 @@ script:
   - "echo 'authn_db: true' >> vars/main.yml"
   - "echo 'authn_ldap: true' >> vars/main.yml"
   - "echo 'authn_anon: true' >> vars/main.yml"
+  - "cat vars/main.yml"
   - "ANSIBLE_CONFIG=ansible.cfg ansible-playbook -i tests/inventory tests/test.yml --connection=local -vvvv --sudo"
   
  #--After Script--
