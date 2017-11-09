@@ -10,6 +10,7 @@
   register: check_gf
   become: yes
   become_user: root
+  become_method: sudo
 
 - name: "{{ play_name }}Checking {{ glassfish_domain }}"
   environment:
