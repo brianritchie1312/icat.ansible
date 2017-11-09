@@ -1,7 +1,7 @@
 ---
-- hosts: vm304.nubes.stfc.ac.uk
+- hosts: localhost
 #        ^ space separated list of host to run on
 #         all hosts but localhost should be added to '/etc/ansible/hosts'
  
   roles:
-     - { role: ICAT-Ansible, become: yes, become_method: sudo }
+     - ICAT-Ansible #, become: yes, become_method: sudo }
