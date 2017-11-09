@@ -167,7 +167,7 @@
   become_user: root
   become_method: sudo
 
-- name: "{{ play_name }}Unzipping {{ pycat_zip }}"
+- name: "{{ play_name }}Unzipping {{ pycat_zip }} "
   unarchive:
     src: "/root/{{ pycat_zip }}"
     dest: "/root/"
