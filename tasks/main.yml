@@ -1,14 +1,14 @@
 ---
 #main.yml file for ICATInstall
 
-- name: asdf
-  file:
-    path: /tmp/ansible
-    owner: root
-    group: users
-    mode: 0777
-    recurse: no
-    state: directory
+#- name: asdf
+#  file:
+#    path: /tmp/ansible
+#    owner: root
+#    group: users
+#    mode: 0777
+#    recurse: no
+#    state: directory
 
 - name: Reading Config
   include_vars: ../config.yml
