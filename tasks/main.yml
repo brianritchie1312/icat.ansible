@@ -105,21 +105,21 @@
 
 #---Creating non-root user
 
-
 - name: "{{ play_name }} Creating {{ user_name }} with password {{ user_pass }}"
   user:
     name: "{{ user_name }}"
     password: "{{ user_pass }}"
     state: present
-  become: yes
-  become_user: root
-  become_method: sudo
-  when:
+  when
     - createuser == true
   tags:
     - createuser
 
 #---
+
+
+
+
 
 #---Glassfish---
 

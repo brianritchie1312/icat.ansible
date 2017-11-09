@@ -39,3 +39,6 @@
   file:
     path: "{{ download_dir }}"
     state: directory
+  become: yes
+  become_user: root
+  become_method: sudo
