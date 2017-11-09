@@ -38,7 +38,13 @@ install:
  #--Script--
 
 script:
-  - "ANSIBLE_CONFIG=ansible.cfg ansible-playbook -i tests/inventory tests/test.yml --connection=local -vvvv"
+  - "ls -l /root/"
+  - "ls -l /tmp/"
+  - "ls -l ~/"
+  - "sudo ls -l /root/"
+  - "sudo ls -l /tmp/"
+  - "sudo ls -l ~/"
+  - "ANSIBLE_CONFIG=ansible.cfg ansible-playbook -i tests/inventory tests/test.yml --connection=local -vvvv --sudo"
 
  #--After Script--
 
