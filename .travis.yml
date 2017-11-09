@@ -34,10 +34,10 @@ install:
 
 script:
   - "echo 'allow_world_readable_tmpfiles=True' >> ansible.cfg"
-  - "echo 'authn_simple: true' >> config.yml"
-  - "echo 'authn_db: true' >> config.yml"
-  - "echo 'authn_ldap: true' >> config.yml"
-  - "echo 'authn_anon: true' >> config.yml"
+  - "sed -i 's/authn_simple: false/authn_simple: true/g' config.yml"
+  - "sed -i 's/authn_db: false/authn_db: true/g' config.yml"
+  - "sed -i 's/authn_ldap: false/authn_ldap: true/g' config.yml"
+  - "sed -i 's/authn_anon: false/authn_anon: true/g' config.yml"
   - "cat config.yml"
   - "ANSIBLE_CONFIG=ansible.cfg ansible-playbook -i tests/inventory tests/test.yml --connection=local -vvvv --sudo"
   
