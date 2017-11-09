@@ -139,19 +139,19 @@
 #---Downloading PyCAT---
 
 - stat:
-    path: "/root/{{ pycat_zip }}"
+    path: "{{ download_dir }}{{ pycat_zip }}"
   register: pi_zip
-  become: yes
-  become_user: root
-  become_method: sudo
+#  become: yes
+#  become_user: root
+#  become_method: sudo
 
 - name: "{{ play_name }}Downloading Python ICAT"
   get_url:
     url: "{{ pycat_url }}"
-    dest: /root/
-  become: yes
-  become_user: root
-  become_method: sudo
+    dest: "{{ download_dir }}"
+#  become: yes
+#  become_user: root
+#  become_method: sudo
   when: 
     - 'fac_name not in icat_facs.stdout'
     - pi_zip.stat.exists == false
@@ -163,13 +163,13 @@
 - stat:
     path: "{{ pycat_path }}"
   register: pi_dir
-  become: yes
-  become_user: root
-  become_method: sudo
+#  become: yes
+#  become_user: root
+#  become_method: sudo
 
 - name: "{{ play_name }}Unzipping {{ pycat_zip }} "
   unarchive:
-    src: "/root/{{ pycat_zip }}"
+    src: "{{ download_dir }}{{ pycat_zip }}"
     dest: "/root/"
     owner: root
     group: root
