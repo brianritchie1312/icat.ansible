@@ -39,9 +39,9 @@
 - name: "{{ play_name }}Updating package cache for Debian"
   apt:
     update_cache: yes
-  become: yes
-  become_user: root
-  become_method: sudo
+#  become: yes
+#  become_user: root
+#  become_method: sudo
   when: 
     - ansible_os_family == "Debian"
     - update == true
@@ -59,9 +59,9 @@
 
 - name: "{{ play_name }}Loading Java Install"
   include: java.yml
-  become: yes
-  become_user: root
-  become_method: sudo
+#  become: yes
+#  become_user: root
+#  become_method: sudo
   when:
     - java == true
   vars:
@@ -76,9 +76,9 @@
 
 - name: "{{ play_name }}Loading Pexpect Install"
   include: "pexpect.yml"
-  become: yes
-  become_user: root
-  become_method: sudo
+#  become: yes
+#  become_user: root
+#  become_method: sudo
   when:
     - mysql == true
   vars:
@@ -90,9 +90,9 @@
   
 - name: "{{ play_name }}Loading MySQl Install and Config"
   include: "mysql.yml"
-  become: yes
-  become_user: root
-  become_method: sudo
+#  become: yes
+#  become_user: root
+#  become_method: sudo
   when:
     - mysql == true
   vars:
