@@ -8,6 +8,8 @@
 - stat:
     path: "{{ glassfish_path }}"
   register: check_gf
+  become: yes
+  become_user: root
 
 - name: "{{ play_name }}Checking {{ glassfish_domain }}"
   environment:
@@ -36,3 +38,5 @@
   file:
     path: "{{ download_dir }}"
     state: directory
+  become: yes
+  become_user: root
