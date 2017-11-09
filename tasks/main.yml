@@ -40,7 +40,7 @@
   apt:
     update_cache: yes
   become: yes
-#  become_user: root
+  become_user: root
   become_method: sudo
   when: 
     - ansible_os_family == "Debian"
@@ -60,7 +60,7 @@
 - name: "{{ play_name }}Loading Java Install"
   include: java.yml
   become: yes
-#  become_user: root
+  become_user: root
   become_method: sudo
   when:
     - java == true
@@ -77,7 +77,7 @@
 - name: "{{ play_name }}Loading Pexpect Install"
   include: "pexpect.yml"
   become: yes
-#  become_user: root
+  become_user: root
   become_method: sudo
   when:
     - mysql == true
@@ -91,7 +91,7 @@
 - name: "{{ play_name }}Loading MySQl Install and Config"
   include: "mysql.yml"
   become: yes
-#  become_user: root
+  become_user: root
   become_method: sudo
   when:
     - mysql == true
@@ -293,7 +293,7 @@
 - name: "Cleanup : Moving all uneeded files to {{ download_dir }}"
   command: "mv -f {{ item }} {{ download_dir }}"
   become: yes
-#  become_user: root
+  become_user: root
   become_method: sudo
   with_items:
     - "~/{{ pycat_zip }}"
