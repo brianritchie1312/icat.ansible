@@ -5,7 +5,7 @@
   file:
     path: /tmp/ansible
     owner: root
-    group root
+    group: root
     mode: 0777
     recurse: no
     state: directory
