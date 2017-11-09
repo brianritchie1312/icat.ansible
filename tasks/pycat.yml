@@ -163,9 +163,9 @@
 - stat:
     path: "{{ pycat_path }}"
   register: pi_dir
-#  become: yes
-#  become_user: root
-#  become_method: sudo
+  become: yes
+  become_user: root
+  become_method: sudo
 
 - name: "{{ play_name }}Unzipping {{ pycat_zip }} "
   unarchive:
