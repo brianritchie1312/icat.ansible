@@ -20,9 +20,6 @@ sudo: required
 
 #---Services---
 
-#services:
-#  - docker
-
 #-----BEGIN BUILD-----
 
  #--Before Install--
@@ -38,9 +35,9 @@ install:
  #--Script--
 
 script:
-  - "ANSIBLE_CONFIG=ansible.cfg ansible-playbook -i tests/inventory tests/test.yml --connection=local -vvvv --sudo"
-  - "sudo ls -l /root/"
-
+  - "echo 'allow_world_readable_tmpfiles=True' > ansible.cfg"
+  - "ANSIBLE_CONFIG=ansible.cfg ansible-playbook -i tests/inventory tests/test.yml --connection=local -vvvv --sudo --extra-vars "authn_simple=true authn_db=true authn_ldap=true authn_anon=true"
+  
  #--After Script--
 
  #--Before Deploy--
