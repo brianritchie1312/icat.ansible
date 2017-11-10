@@ -173,6 +173,7 @@
     dest: "/root/"
     owner: root
     group: root
+    remote_src: yes
   become: yes
   become_user: root
   become_method: sudo

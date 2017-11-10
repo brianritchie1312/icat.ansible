@@ -38,9 +38,10 @@ script:
   - "sed -i 's/authn_db: false/authn_db: true/g' config.yml"		# Set Authn DB to true
   - "sed -i 's/authn_ldap: false/authn_ldap: true/g' config.yml"	# Set Authn LDAP to true
   - "sed -i 's/authn_anon: false/authn_anon: true/g' config.yml"	# Set Authn Anon to true
-  - "ANSIBLE_CONFIG=ansible.cfg ansible-playbook -i tests/inventory tests/test.yml --connection=local --sudo"
-  - "ANSIBLE_CONFIG=ansible.cfg ansible-playbook -i tests/inventory tests/test.yml --connection=local --sudo | grep -q 'changed=0.*failed=0' && (echo 'Idempotence test: pass' && exit 0) || (echo 'Idempotence test: fail' && exit 1)"
-  - "curl http://localhost:8080/"  
+  - "ANSIBLE_CONFIG=ansible.cfg ansible-playbook -i tests/inventory tests/test.yml --connection=local"
+  - "curl http://localhost:8080/"
+  - "curl http://localhost:8080/#/login"
+  - "ANSIBLE_CONFIG=ansible.cfg ansible-playbook -i tests/inventory tests/test.yml --connection=local | grep -q 'changed=0.*failed=0' && (echo 'Idempotence test: pass' && exit 0) || (echo 'Idempotence test: fail' && exit 1)"  
 
  #--After Script--
 
