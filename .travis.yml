@@ -33,14 +33,15 @@ install:
  #--Script--
 
 script:
-  - "echo 'allow_world_readable_tmpfiles=True' >> ansible.cfg"
-  - "sed -i 's/authn_simple: false/authn_simple: true/g' config.yml"
-  - "sed -i 's/authn_db: false/authn_db: true/g' config.yml"
-  - "sed -i 's/authn_ldap: false/authn_ldap: true/g' config.yml"
-  - "sed -i 's/authn_anon: false/authn_anon: true/g' config.yml"
-  - "cat config.yml"
+  - "echo 'allow_world_readable_tmpfiles=True' >> ansible.cfg"		# Allows world readable temp files, not secure should only be used within Travis
+  - "sed -i 's/authn_simple: false/authn_simple: true/g' config.yml"	# Set Authn Simple to true
+  - "sed -i 's/authn_db: false/authn_db: true/g' config.yml"		# Set Authn DB to true
+  - "sed -i 's/authn_ldap: false/authn_ldap: true/g' config.yml"	# Set Authn LDAP to true
+  - "sed -i 's/authn_anon: false/authn_anon: true/g' config.yml"	# Set Authn Anon to true
   - "ANSIBLE_CONFIG=ansible.cfg ansible-playbook -i tests/inventory tests/test.yml --connection=local -vvvv --sudo"
-  
+  - "ANSIBLE_CONFIG=ansible.cfg ansible-playbook -i tests/inventory tests/test.yml --connection=local -vvvv --sudo | grep -q 'changed=0.*failed=0' && (echo 'Idempotence test: pass' && exit 0) || (echo 'Idempotence test: fail' && exit 1)"
+  - "curl http://localhost:8080/"  
+
  #--After Script--
 
  #--Before Deploy--
