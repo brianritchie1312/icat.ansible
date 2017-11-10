@@ -1,5 +1,7 @@
 use icat;
 
+delete from DATAFILEFORMAT where DESCRIPTION RLIKE "topcat";
+
 delete from FACILITY where NAME = "{{ fac_name }}";
 
 delete from USER_ where NAME RLIKE "^db/user";
