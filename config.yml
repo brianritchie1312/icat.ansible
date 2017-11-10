@@ -40,7 +40,7 @@
     # inventory_hostname = name used in hosts above
     # It's similar to using 'localhost' except topcat interface can used by browsers on remote machines
  
-    icat_url: http://{{ inventory_hostname }}:{{ icat_port }}/ 	# URL of the database
+    icat_url: http://{{ inventory_hostname }}:{{ icat_port }} 	# URL of the database
     icat_port: 8080             				# Port for the database access
     icat_name: icat						# Name of the database
 

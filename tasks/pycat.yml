@@ -84,6 +84,14 @@
     - '"sessionId=" in icat_id'
     - 'fac_name in icat_facs.stdout'
     - ( wipe_icat == true ) or ( delete_fac_bash == true ) or ( delete_fac_sql == true )
+  register: icat_facs2    
+
+- set_fact:
+    icat_facs: "{{ icat_facs2 }}"
+  when:
+    - '"sessionId=" in icat_id'
+    - 'fac_name in icat_facs.stdout'
+    - ( wipe_icat == true ) or ( delete_fac_bash == true ) or ( delete_fac_sql == true )
 
 #---
 
@@ -113,7 +121,6 @@
     - 'fac_name not in icat_facs.stdout'
   tags:
     - redhat
-    - skip
 
 - name: "{{ play_name }}Installing dependencies for Debian"
   apt:
@@ -141,17 +148,11 @@
 - stat:
     path: "{{ download_dir }}{{ pycat_zip }}"
   register: pi_zip
-#  become: yes
-#  become_user: root
-#  become_method: sudo
 
 - name: "{{ play_name }}Downloading Python ICAT"
   get_url:
     url: "{{ pycat_url }}"
     dest: "{{ download_dir }}"
-#  become: yes
-#  become_user: root
-#  become_method: sudo
   when: 
     - 'fac_name not in icat_facs.stdout'
     - pi_zip.stat.exists == false
@@ -217,20 +218,20 @@
 #---Populating Database---
 
 - stat:
-    path: "{{ user_home }}/lils.yml"
+    path: "{{ download_dir }}lils.yml"
   register: pi_lils
 
 - name: "{{ play_name }}Copying Dump file"
   copy:
     src: ../files/lils.yml
-    dest: "{{ user_home }}/lils.yml"
+    dest: "{{ download_dir }}lils.yml"
   when: 
     - 'fac_name not in icat_facs.stdout'
     - pi_lils.stat.exists == false
 
 - name: "{{ play_name }}Modifying dump file"
   replace:
-    path: "{{ user_home }}/lils.yml"
+    path: "{{ download_dir }}lils.yml"
     regexp: "simple"
     replace: "{{ icat_mech }}"
   when:
