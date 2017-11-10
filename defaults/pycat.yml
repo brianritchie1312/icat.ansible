@@ -16,7 +16,9 @@ pycat_login: "curl -k -X POST -d 'json={\"plugin\" : \"{{ icat_mech }}\", \"cred
 
 pycat_check: "curl -k -G --data-urlencode \"{{ icat_id }}\" --data-urlencode \"query=SELECT f from Facility f\" {{ icat_url }}/icat/entityManager"
 
-pycat_delete: "curl -k --get -X DELETE --data-urlencode \"{{ icat_id }}\" --data-urlencode 'entities={\"Facility\": {\"id\":{{ icat_fac_id }}}}' {{ icat_url }}/{{ icat_name }}/entityManager"
+pycat_delete: "curl -k --get -X DELETE --data-urlencode \"{{ icat_id  }}\" --data-urlencode 'entities={\"Facility\": {\"id\":{{ icat_fac_id }}}}' {{ icat_url }}/{{ icat_name }}/entityManager"
+
+pycat_del_sql: "curl -k --get -X DELETE --data-urlencode \"{{ icat_id  }}\" --data-urlencode 'entities={\"Facility\": {\"id\":{{ sql_msg.msg | replace('ID','') | replace('\\n','') }} } }' {{ icat_url }}/{{ icat_name }}/entityManager"
 
 pycat_ingest: "icatingest.py --url {{ icat_url }}/ICATService/ICAT?wsdl -u root -p {{ icat_pass }} -i {{ download_dir }}lils.yml -a {{ icat_mech }}"
 

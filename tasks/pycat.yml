@@ -77,6 +77,16 @@
   when:
     - 'fac_name in icat_facs.stdout'
     - delete_fac_sql == true
+  register: sql_msg
+
+- name: "{{ play_name }}Deletion Test"
+  command: "{{ pycat_del_sql }}"  
+  when:
+    - 'fac_name in icat_facs.stdout'
+    - delete_fac_sql == true
+
+
+
 
  #--
 
