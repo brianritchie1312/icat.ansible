@@ -24,6 +24,8 @@
   command: "{{ pycat_check }}"
   register: icat_facs
 
+- debug: var=icat_facs.stdout
+
 #---
 
 #---Deleting Facility if requested---
