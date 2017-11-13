@@ -59,18 +59,21 @@
 
  #--Deleting from sql script--
 
-- name: "{{ play_name }}Creating SQL Deletion Script"
+- name: "{{ play_name }}Creating SQL Deletion Scripts"
   template:
-    src: ../templates/delfac.sql
+    src: "../templates/{{ item }}"
     dest: "{{ download_dir }}"
+  with_items:
+    - idgrab.sql
+    - deluser.sql
   when:
     - 'fac_name in icat_facs.stdout'
     - delete_fac_sql == true
 
-- name: "{{ play_name }}Deleting {{ fac_name }} facility and Users"
+- name: "{{ play_name }}Getting {{ fac_name }} ID"
   mysql_db:
     state: import
-    target: "{{ download_dir }}delfac.sql"
+    target: "{{ download_dir }}idgrab.sql"
     login_user: root
     login_password: "{{ mysql_root_pass }}"
     name: "{{ icat_name }}"
@@ -79,8 +82,19 @@
     - delete_fac_sql == true
   register: sql_msg
 
-- name: "{{ play_name }}Deletion Test"
+- name: "{{ play_name }}Deleting facility"
   command: "{{ pycat_del_sql }}"  
+  when:
+    - 'fac_name in icat_facs.stdout'
+    - delete_fac_sql == true
+
+- name: "{{ play_name }}Deleting Users"
+  mysql_db:
+    state: import
+    target: "{{ download_dir }}delusers.sql"
+    login_user: root
+    login_password: "{{ mysql_root_pass }}"
+    name: "{{ icat_name }}"
   when:
     - 'fac_name in icat_facs.stdout'
     - delete_fac_sql == true
