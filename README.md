@@ -98,9 +98,7 @@ Notes
 
 * The setup excutable for the storage plugin returns a fatal error but still performs it's function (currently it's set to ignore this error but this needs to be improved)
 * Currently the mysql root password is automatically reset to default before running mysqld_secure_installation, it ignores errors. So having the password set to any other than the variable mysql_root_pass will return an error but will be skipped (including the default password). THIS NEEDS TO BE REPLACED!
-* ICATInstall/ must go into '/etc/ansible/roles/'. ICATInstall.yml can go anywhere
-* Currently only Simple Authentication is properly implemented
-* hosts must be added to /etc/ansible/hosts and have valid ssh keys
+* hosts must be added to /etc/ansible/hosts or tests/inventory and have valid ssh keys
 
 
 TODO
@@ -117,10 +115,19 @@ TODO
 * Consider replacing env_path with shell scripts for sourcing
 * Improve Debug feedback
 * Auto grab icat root from first entry in enabled authn user lists
-
+* Improve Idempotence
 
 Changelog
 ---------
+
+#### 12/11/17
+* Added Travis
+* Moved Inventory and Master YAML (test.yml) inside role
+* Added ansible.cfg to allow role to execute from anywhere
+* Added world readable tmp files for travis only
+* Merged Bash and Sql deletion scripts
+* Changed mysql version to 5.6 for debian for Travis
+* Tested Authn Plugins with Travis
 
 #### 07/11/17
 * Removed old files...again (there's always one that gets away)

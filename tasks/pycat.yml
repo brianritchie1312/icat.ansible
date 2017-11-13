@@ -40,23 +40,6 @@
 
  #--
 
- #--Delete from Bash Command--
-  # Currently this only deletes the first facilty and cascading does not work so users remain
-
-- set_fact:
-     icat_fac_id: "{{ icat_facs.stdout[19:21] }}"  #Improve this!
-  when: 
-    - 'fac_name in icat_facs.stdout'
-    - delete_fac_bash == true
-
-- name: "{{ play_name }}Deleting {{ fac_name }} facility if requested"
-  command: "{{ pycat_delete }}"
-  when: 
-    - 'fac_name in icat_facs.stdout'
-    - delete_fac_bash == true
-
- #--
-
  #--Deleting from sql script--
 
 - name: "{{ play_name }}Creating SQL Deletion Scripts"
@@ -68,7 +51,7 @@
     - delusers.sql
   when:
     - 'fac_name in icat_facs.stdout'
-    - delete_fac_sql == true
+    - delete_fac == true
 
 - name: "{{ play_name }}Getting {{ fac_name }} ID"
   mysql_db:
@@ -79,14 +62,14 @@
     name: "{{ icat_name }}"
   when:
     - 'fac_name in icat_facs.stdout'
-    - delete_fac_sql == true
+    - delete_fac == true
   register: sql_msg
 
 - name: "{{ play_name }}Deleting facility"
   command: "{{ pycat_del_sql }}"  
   when:
     - 'fac_name in icat_facs.stdout'
-    - delete_fac_sql == true
+    - delete_fac == true
 
 - name: "{{ play_name }}Deleting Users"
   mysql_db:
@@ -97,10 +80,7 @@
     name: "{{ icat_name }}"
   when:
     - 'fac_name in icat_facs.stdout'
-    - delete_fac_sql == true
-
-
-
+    - delete_fac == true
 
  #--
 
