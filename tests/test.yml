@@ -1,5 +1,5 @@
 ---
-- hosts: vm311.nubes.stfc.ac.uk #localhost
+- hosts: localhost
 #        ^ space separated list of hosts to run on
 #         all hosts but localhost should be added to '/etc/ansible/hosts'
  
