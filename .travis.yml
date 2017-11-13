@@ -27,6 +27,7 @@ sudo: required
 
 install:
   - pip install ansible
+  - pip install selenium
 
  #--Before Script--
 
@@ -43,7 +44,7 @@ script:
   - "sed -i 's/delete_fac: false/delete_fac: true/g' config.yml"	# Test Deletion Script
   - "ANSIBLE_CONFIG=ansible.cfg ansible-playbook -i tests/inventory tests/test.yml --connection=local --tags 'pycat'"
   - "sed -i 's/delete_fac: true/delete_fac: false/g' config.yml"	# Test Idempotence
-  - "ANSIBLE_CONFIG=ansible.cfg ansible-playbook -i tests/inventory tests/test.yml --connection=local" # | grep -q 'changed=0.*failed=0' && (echo 'Idempotence test: pass' && exit 0) || (echo 'Idempotence test: fail' && exit 1)"  
+  - "ANSIBLE_CONFIG=ansible.cfg ansible-playbook -i tests/inventory tests/test.yml --connection=local | grep -q 'changed'"  
 
  #--After Script--
 
