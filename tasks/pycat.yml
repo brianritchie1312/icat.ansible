@@ -89,7 +89,7 @@
   when:
     - '"sessionId=" in icat_id'
     - 'fac_name in icat_facs.stdout'
-    - ( wipe_icat == true ) or ( delete_fac_bash == true ) or ( delete_fac_sql == true )
+    - ( wipe_icat == true ) or ( delete_fac == true )
   register: icat_facs2    
 
 - set_fact:
@@ -97,7 +97,7 @@
   when:
     - '"sessionId=" in icat_id'
     - 'fac_name in icat_facs.stdout'
-    - ( wipe_icat == true ) or ( delete_fac_bash == true ) or ( delete_fac_sql == true )
+    - ( wipe_icat == true ) or ( delete_fac == true )
 
 #---
 
