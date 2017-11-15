@@ -14,6 +14,7 @@ Requirements
 
 * RedHat or Debian flavoured OS and root access
 * At least python 2.6
+* Ansible and it's dependencies (Only needed on host machine)
 * Ideally fresh machine but should work regardless
 * Probably a bunch of other stuff I forgot
 * Patience
@@ -25,8 +26,6 @@ See config.yml and .yml files in 'defaults/'
 
 How to use
 ----------
-
-##### TODO! Improve this tutorial
 
 1.Install ansible with Yum
 
@@ -58,21 +57,22 @@ If remote hosts include debian systems add
 
         --user {SUDO USER ON REMOTE HOST} --ask-pass --ask-sudo-pass
 
-##### Or
-If you prefer to use your own playbook, follow steps 1-3 then
+#### Or
+
+If you prefer to use your own playbook, follow steps 1-3 above then
 
 4.Move role to `/etc/ansible/roles/{ROLE NAME}` or add this to your `/etc/ansible/ansible.cfg` file
 
 	[defaults]
 	roles_path={PATH TO DIRECTORY CONTAINING ROLE}
 
-5.Add hostnames to `/etc/ansible/hosts' or add them `tests/inventory` and add this the the command line
+5.Add hostnames to `/etc/ansible/hosts' or add them to your own inventory and add this the the command line
 
-	-i tests/inventory
+	-i {PATH TO INVENTORY}
 
 6.Copy `tests/test.yml` or the following block into your own yml playbook.
 
-    - hosts: localhost # Any hosts added to inventory or ansible hosts file separated by spaces
+    - hosts: localhost # Any hosts or host groups added to inventory or ansible hosts file separated by spaces
       roles:
          - { role: ICAT-Ansible, become: yes, become_user: root}
 
