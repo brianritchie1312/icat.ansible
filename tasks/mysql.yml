@@ -6,7 +6,8 @@
   set_fact:
      mysql_cnf_path: "{{ mysql_cnf_path_redhat }}"
      mysqld: mysqld 
-  when: ansible_os_family == "RedHat"
+  when: 
+    - ansible_os_family == "RedHat"
   tags:
     - redhat
 
@@ -14,7 +15,8 @@
   set_fact:
      mysqld:  mysql
      mysql_cnf_path: "{{ mysql_cnf_path_debian }}"
-  when: ansible_os_family == "Debian"
+  when: 
+    - ansible_os_family == "Debian"
   tags:
     - debian
 
@@ -25,18 +27,20 @@
 - name: "{{ play_name }}Installing MySQL Packages for RedHat"
   yum:
     name: "{{ item }}"
-    state: latest
+    state: present
   with_items: "{{ mysql_packages_redhat }}"
-  when: ansible_os_family == "RedHat"
+  when: 
+    - ansible_os_family == "RedHat"
   tags:
     - redhat
 
 - name: "{{ play_name }}Installing MySQL Packages for Debian"
   apt:
     name: "{{ item }}"
-    state: latest
+    state: present
   with_items: "{{ mysql_packages_debian }}"
-  when: ansible_os_family == "Debian"
+  when: 
+    - ansible_os_family == "Debian"
   tags:
     - debian
 

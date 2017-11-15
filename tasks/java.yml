@@ -5,8 +5,9 @@
 - name: "{{ play_name }}Installing {{ java_package_redhat }} on RedHat"
   yum:
     name: "{{ java_package_redhat }}"
-    state: latest
-  when: ansible_os_family == "RedHat"
+    state: present
+  when: 
+    - ansible_os_family == "RedHat"
   tags:
     - redhat
 
@@ -18,15 +19,17 @@
   apt_repository:
     repo: "{{ java_repo_debian }}"
     state: present
-  when: ansible_os_family == "Debian"
+  when: 
+    - ansible_os_family == "Debian"
   tags:
     - debian
     
 - name: "{{ play_name }}Installing {{ java_package_debian }} on Debian"
   apt:
     name: "{{ java_package_debian }}"
-    state: latest
-  when: ansible_os_family == "Debian"
+    state: present
+  when: 
+    - ansible_os_family == "Debian"
   tags:
     - debian
 

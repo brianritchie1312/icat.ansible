@@ -106,7 +106,7 @@
 - name: "{{ play_name }}Installing dependencies"
   pip:
     name: "{{ item }}"
-    state: latest
+    state: present
   with_items:
     - suds-jurko
     - PyYAML
@@ -117,7 +117,7 @@
 - name: "{{ play_name }}Installing dependencies for RedHat"
   yum:
     name: "{{ item }}"
-    state: latest
+    state: present
   with_items: "{{ pycat_packages }}"
   become: yes
   become_user: root
@@ -131,7 +131,7 @@
 - name: "{{ play_name }}Installing dependencies for Debian"
   apt:
     name: "{{ item }}"
-    state: latest
+    state: present
   with_items: "{{ pycat_packages }}"
   become: yes
   become_user: root

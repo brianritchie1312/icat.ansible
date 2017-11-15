@@ -31,7 +31,7 @@
     # Anon authenticator should work on it's own but it is recomended that you use one of the other plugins for the database root user     
 
     authn_simple: true		# Simple Authenticator 		(version 1.1.0) https://icatproject.org/mvn/site/authn/simple/1.1.0/
-    authn_db: false		# DB Authenticator 		(version 1.2.0) https://icatproject.org/mvn/site/authn/db/1.2.0/
+    authn_db: true		# DB Authenticator 		(version 1.2.0) https://icatproject.org/mvn/site/authn/db/1.2.0/
     authn_ldap: false           # LDAP Authenticator            (version 1.2.0) https://icatproject.org/mvn/site/authn/ldap/1.2.0/
     authn_anon: false 		# Anonymous Authenticator 	(version 1.1.1) https://icatproject.org/mvn/site/authn/anon/1.1.1/	
 

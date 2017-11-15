@@ -12,7 +12,7 @@ https://icatproject.org/
 Requirements
 ------------
 
-* RedHat or Debian flavoured OS
+* RedHat or Debian flavoured OS and root access
 * At least python 2.6
 * Ideally fresh machine but should work regardless
 * Probably a bunch of other stuff I forgot
@@ -21,7 +21,7 @@ Requirements
 Role Variables
 -------------
 
--See config.yml and .yml files in 'defaults/'
+See config.yml and .yml files in 'defaults/'
 
 How to use
 ----------
@@ -38,9 +38,9 @@ Or Apt
  
 2.Download or clone this repository
 
-3.Modify config.yml and yml files in 'defaults/' as desired
+3.Modify `config.yml` and yml files in `defaults/` as desired
 
-4.Add hosts to 'tests/inventory' 
+4.Add hosts to `tests/inventory` 
 
 5.Navigate to role directory and run:
 
@@ -61,16 +61,16 @@ If remote hosts include debian systems add
 ##### Or
 If you prefer to use your own playbook, follow steps 1-3 then
 
-4.Move role to '/etc/ansible/roles/{ROLE NAME}'
-
-5.Add hostnames to '/etc/ansible/hosts' or add
+4.Move role to `/etc/ansible/roles/{ROLE NAME}` or add this to your `/etc/ansible/ansible.cfg` file
 
 	[defaults]
 	roles_path={PATH TO DIRECTORY CONTAINING ROLE}
 
-to '/etc/ansible/ansible.cfg
+5.Add hostnames to `/etc/ansible/hosts' or add them `tests/inventory` and add this the the command line
 
-6.Copy 'tests/test.yml' or the following block into your own yml playbook.
+	-i tests/inventory
+
+6.Copy `tests/test.yml` or the following block into your own yml playbook.
 
     - hosts: localhost # Any hosts added to inventory or ansible hosts file separated by spaces
       roles:
@@ -82,13 +82,12 @@ Then run
 
 ##### Notes
 * You may need to get valid ssh key before running.
-* You can add '-vvvv' to the end of the ansible-playbook command to see better debugging
-* You can use '--tags "tag"' or '--skip-tags "tag"' to control which tasks run
+* You can add `-vvvv` to the end of the ansible-playbook command to see more feedback for improved debugging
+* You can use `--tags "tag"` or `--skip-tags "tag"` to control which tasks run
 
   
 Author Information
 ------------------
-
 
 Jack Haydock, Computing Apprentice, Science and Technology Facilities Council
 
@@ -98,8 +97,9 @@ Notes
 
 * The setup excutable for the storage plugin returns a fatal error but still performs it's function (currently it's set to ignore this error but this needs to be improved)
 * Currently the mysql root password is automatically reset to default before running mysqld_secure_installation, it ignores errors. So having the password set to any other than the variable mysql_root_pass will return an error but will be skipped (including the default password). THIS NEEDS TO BE REPLACED!
-* hosts must be added to /etc/ansible/hosts or tests/inventory and have valid ssh keys
-
+* The Icat Ingest Script is forced to timeout after 60secs and the resulting error is ignored
+* Hosts must be added to `/etc/ansible/hosts` or `tests/inventory` and have valid ssh keys
+* All package installs (except pexpect) are set to present instead of latest, this greatly improves speed but may cause some problems if you have an old version of a package but with the same name, I have yet to encounter this (except for Pexpect)
 
 TODO
 ----
@@ -116,9 +116,14 @@ TODO
 * Improve Debug feedback
 * Auto grab icat root from first entry in enabled authn user lists
 * Improve Idempotence
+* Add Selenium setup for travis runs
 
 Changelog
 ---------
+
+#### 15/11/17
+* Changed package installs from state:latest to state:present
+* Modified README 
 
 #### 12/11/17
 * Added Travis
