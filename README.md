@@ -121,6 +121,9 @@ TODO
 Changelog
 ---------
 
+#### 16/11/17
+* Added File Creation (By name or all)
+
 #### 15/11/17
 * Changed package installs from state:latest to state:present
 * Modified README 

@@ -45,7 +45,7 @@ script:
   - "ANSIBLE_CONFIG=ansible.cfg ansible-playbook -i tests/inventory tests/test.yml --connection=local --tags 'pycat'"
   - "sed -i 's/delete_fac: true/delete_fac: false/g' config.yml"	# Test Idempotence
   - "echo 'stdout_callback = actionable' >> ansible.cfg"		# Only Output Changed or Failed Tasks
-  - "ANSIBLE_CONFIG=ansible.cfg ansible-playbook -i tests/inventory tests/test.yml --connection=local | grep 'changed'"  
+  - "ANSIBLE_CONFIG=ansible.cfg ansible-playbook -i tests/inventory tests/test.yml --connection=local"  
 
  #--After Script--
 

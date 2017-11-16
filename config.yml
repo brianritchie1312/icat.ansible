@@ -53,8 +53,20 @@
     # Leaving all false 	Will skip icatingest.py if it finds an already existing facilty with the {{ fac_name }} name.
 
     wipe_icat: false		# WARNING! This will remove all facilities
-    delete_fac: false
+    delete_fac: true
 
+   
+  #---Creating files for TestData---(pycat.yml)
+   # icatingest.py does actually create any files, it just generates the meta data used by the database
+   # for proper testing some files must be created
+   # Selecting individual files is complicated in this setup so instead the following methods will create every file matching certain conditions
+   # Note these will create every file they find, even if their facility has been deleted with 'delete_fac' (use wipe_icat to remove all entries)
+
+    create_file: true			# Creates everyfile with specific name in DATAFILE table
+    datafiles: 				# Names of Files to be Added
+      - Datafile 1			# You should be able to add multiple
+
+    create_all: false 			# WARNING! This will create everyfile mentioned in DATAFILE, including those from other facilities and those without facilities
 
  #---END OF CONFIGURATION---
 
