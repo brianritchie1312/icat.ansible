@@ -33,6 +33,8 @@ install:
 
  #--Script--
 
+# Many warnings are ignored on the Idempotence run, this is to reduce clutter, making it easier to see which tasks are not idempotent, all default warnings are enabled for the first run
+
 script:
   - "echo 'allow_world_readable_tmpfiles=True' >> ansible.cfg"		# Allows world readable temp files, not secure should only be used within Travis
   - "sed -i 's/authn_simple: false/authn_simple: true/g' config.yml"	# Set Authn Simple to true
@@ -45,6 +47,9 @@ script:
   - "ANSIBLE_CONFIG=ansible.cfg ansible-playbook -i tests/inventory tests/test.yml --connection=local --tags 'pycat'"
   - "sed -i 's/delete_fac: true/delete_fac: false/g' config.yml"	# Test Idempotence
   - "echo 'stdout_callback = actionable' >> ansible.cfg"		# Only Output Changed or Failed Tasks
+  - "echo 'deprecation_warnings = False' >> ansible.cfg"		# Ignore Depriciation Warnings
+  - "echo 'command_warnings = False' >> ansible.cfg"			# Ignore Command Module Warnings
+  - "echo 'system_warnings = True' >> ansible.cfg"			# Ignore System Warnings
   - "ANSIBLE_CONFIG=ansible.cfg ansible-playbook -i tests/inventory tests/test.yml --connection=local"  
 
  #--After Script--
