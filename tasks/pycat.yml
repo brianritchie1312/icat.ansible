@@ -250,8 +250,8 @@
   command: "{{ pycat_ingest }}"
   when: 
     - 'fac_name not in icat_facs.stdout'
-  ignore_errors: yes
-  async: 60
-  poll: 5
+#  ignore_errors: yes
+#  async: 60
+#  poll: 5
 
 #---

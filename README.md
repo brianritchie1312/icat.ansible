@@ -22,7 +22,7 @@ Requirements
 Role Variables
 -------------
 
-See config.yml and .yml files in 'defaults/'
+See `config.yml` and .yml files in `defaults/`
 
 How to use
 ----------
@@ -57,7 +57,7 @@ If remote hosts include debian systems add
 
         --user {SUDO USER ON REMOTE HOST} --ask-pass --ask-sudo-pass
 
-#### Or
+## Or
 
 If you prefer to use your own playbook, follow steps 1-3 above then
 
