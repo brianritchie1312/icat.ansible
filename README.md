@@ -80,12 +80,21 @@ Then run
 
 	ansible-playbook {YOUR PLAYBOOK NAME}
 
-##### Notes
-* You may need to get valid ssh key before running.
-* You can add `-vvvv` to the end of the ansible-playbook command to see more feedback for improved debugging
-* You can use `--tags "tag"` or `--skip-tags "tag"` to control which tasks run
+##### Some Useful Options to add onto command line
 
-  
+| Option                 | Function |
+|:----------------------:|:--------:|
+| -vvv                   | Add extra verbosity, increase output text (useful for debugging) |
+| --list-tags            | List tags used in role. |
+| --tags "<tagname>"     | Only play tasks tagged with whatever you put in the quotes (use comma separation for multiple tags). |
+| --skip-tags "<tagname>"| Play all tasks except those in the quotes |
+| --diff                 | Detailed look at what changes have been made to files. |
+
+You can find more here: https://www.mankier.com/1/ansible-playbook
+
+##### Notes
+* If you wish to reduce clutter you can stop skipped tasks from playing by adding `display_skipped_hosts = False` to `ansible.cfg`  
+
 Author Information
 ------------------
 

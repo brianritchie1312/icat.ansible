@@ -316,7 +316,7 @@
 - name: "{{ play_name }}Making Directories"
   file:
     state: directory
-    name: "{{ user_home }}/{{ icat_name }}/main/{{ item | dirname}}"
+    name: "{{ user_home }}/{{ icat_name }}/main/{{ item | dirname }}"
     recurse: yes
   with_items:
     - "{{ datafile_list }}"

@@ -49,8 +49,8 @@ script:
   - "echo 'stdout_callback = actionable' >> ansible.cfg"		# Only Output Changed or Failed Tasks
   - "echo 'deprecation_warnings = False' >> ansible.cfg"		# Ignore Depriciation Warnings
   - "echo 'command_warnings = False' >> ansible.cfg"			# Ignore Command Module Warnings
-  - "echo 'system_warnings = True' >> ansible.cfg"			# Ignore System Warnings
-  - "ANSIBLE_CONFIG=ansible.cfg ansible-playbook -i tests/inventory tests/test.yml --connection=local"  
+  - "echo 'system_warnings = False' >> ansible.cfg"			# Ignore System Warnings
+  - "ANSIBLE_CONFIG=ansible.cfg ansible-playbook -i tests/inventory tests/test.yml --connection=local --diff"  
 
  #--After Script--
 
