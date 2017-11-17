@@ -36,10 +36,16 @@
 
 #---Setup Properties file---
 
+- stat:
+    path: "{{ ids_path }}/{{ ids_setup }}"
+  register: ip_setup
+
 - name: "{{ play_name }}Creating {{ ids_setup }} - Creating empty file"
   file:
     path: "{{ ids_path }}/{{ ids_setup }}"
     state: touch 
+  when:
+    - ip_setup.stat.exists == false
 
 - name: "{{ play_name }}Configuring {{ ids_setup }} - Adding glassfish container block"
   blockinfile:
@@ -72,6 +78,7 @@
     src: "{{ ids_path }}/{{ ids_prop }}.example"
     dest: "{{ ids_path }}/{{ ids_prop }}"
     remote_src: yes
+    force: no
     
 - name: "{{ play_name }}Configuring {{ ids_prop }}"
   lineinfile:

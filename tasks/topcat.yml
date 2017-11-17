@@ -36,10 +36,16 @@
 
 #---Setup Properties File
 
+- stat:
+    path: "{{ topcat_path }}/{{ topcat_setup }}"
+  register: tp_setup
+
 - name: "{{ play_name }}Creating {{ topcat_setup }}"
   file:
     path: "{{ topcat_path }}/{{ topcat_setup }}"
     state: touch
+  when:
+    - tp_setup.stat.exists == false
 
 - name: "{{ play_name }}Configuring {{ topcat_setup }}"
   blockinfile:
@@ -52,12 +58,18 @@
 #---
 
 #---Properties File---
-      
+
+- stat:
+    path: "{{ topcat_path }}/{{ topcat_prop }}"
+  register: tp_prop      
+
 - name: "{{ play_name }}Creating {{ topcat_prop }}"
   copy:
     src: "{{ topcat_path }}/{{ topcat_prop }}.example"
     dest: "{{ topcat_path }}/{{ topcat_prop }}"
     remote_src: yes
+  when:
+    - tp_prop.stat.exists == false
   
 - name: "{{ play_name }}Configuring {{ topcat_prop }}"
   lineinfile:
@@ -73,13 +85,14 @@
 
 #---
 
-#---Json File---
+#---Json Files---
 
 - name: "{{ play_name }}Creating {{ topcat_json }}, {{ topcat_lang }} and {{ topcat_css }}"
   copy:
     src: "{{ topcat_path }}/{{ item }}.example"
     dest: "{{ topcat_path }}/{{ item }}"
     remote_src: yes
+    force: no
   with_items:
     - "{{ topcat_json }}"
     - "{{ topcat_lang }}"

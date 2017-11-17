@@ -53,7 +53,7 @@
     # Leaving all false 	Will skip icatingest.py if it finds an already existing facilty with the {{ fac_name }} name.
 
     wipe_icat: false		# WARNING! This will remove all facilities
-    delete_fac: false
+    delete_fac: true
 
    
   #---Creating files for TestData---(pycat.yml)

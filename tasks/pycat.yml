@@ -237,6 +237,7 @@
   copy:
     src: ../files/lils.yml
     dest: "{{ download_dir }}lils.yml"
+    force: no
   when: 
     - 'fac_name not in icat_facs.stdout'
     - pi_lils.stat.exists == false

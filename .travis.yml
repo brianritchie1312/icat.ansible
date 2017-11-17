@@ -42,15 +42,19 @@ script:
   - "sed -i 's/authn_ldap: false/authn_ldap: true/g' config.yml"	# Set Authn LDAP to true
   - "sed -i 's/authn_anon: false/authn_anon: true/g' config.yml"	# Set Authn Anon to true
   - "ANSIBLE_CONFIG=ansible.cfg ansible-playbook -i tests/inventory tests/test.yml --connection=local"
-  - "curl http://localhost:8080/#/login"				# Check Web Interface
+#
   - "sed -i 's/delete_fac: false/delete_fac: true/g' config.yml"	# Test Deletion Script
   - "ANSIBLE_CONFIG=ansible.cfg ansible-playbook -i tests/inventory tests/test.yml --connection=local --tags 'pycat'"
+#
   - "sed -i 's/delete_fac: true/delete_fac: false/g' config.yml"	# Test Idempotence
   - "echo 'stdout_callback = actionable' >> ansible.cfg"		# Only Output Changed or Failed Tasks
   - "echo 'deprecation_warnings = False' >> ansible.cfg"		# Ignore Depriciation Warnings
   - "echo 'command_warnings = False' >> ansible.cfg"			# Ignore Command Module Warnings
   - "echo 'system_warnings = False' >> ansible.cfg"			# Ignore System Warnings
   - "ANSIBLE_CONFIG=ansible.cfg ansible-playbook -i tests/inventory tests/test.yml --connection=local --diff"  
+# Run selenium (if 'Failed' exists in output, fail the build)
+# Check files downloaded by selenium (fail if non-existent)
+
 
  #--After Script--
 

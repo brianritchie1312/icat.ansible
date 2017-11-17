@@ -36,10 +36,16 @@
 
 #---Setup file---
 
+- stat:
+    path: "{{ icat_path }}/{{ icat_setup }}"
+  register: is_setup
+
 - name: "{{ play_name }}Creating {{ icat_setup }}"
   file:
     path: "{{ icat_path }}/{{ icat_setup }}"
     state: touch
+  when:
+    - is_setup.stat.exists == false
 
 - name: "{{ play_name }}Configuring {{ icat_setup }}"
   blockinfile:
@@ -81,6 +87,7 @@
     src: "{{ icat_path }}/{{ icat_prop }}.example"
     dest: "{{ icat_path }}/{{ icat_prop }}"
     remote_src: yes
+    force: no
 
 - name: "{{ play_name }}Configuring {{ icat_prop }}"
   lineinfile:

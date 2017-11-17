@@ -79,10 +79,16 @@
 
 #---Setup-Properties---
 
+- stat:
+    path: "{{ authn_path }}/{{ authn_setup }}"
+  register: a_setup
+
 - name: "{{ play_name }}Creating {{ authn_setup }}"
   file:
     path: "{{ authn_path }}/{{ authn_setup }}"
     state: touch
+  when:
+    - a_setup.stat.exists == false
 
 - name: "{{ play_name }}Configuring {{ authn_setup }}"
   blockinfile:
@@ -99,6 +105,7 @@
     src: "{{ authn_path }}/{{ authn_prop }}.example"
     dest: "{{ authn_path }}/{{ authn_prop }}"
     remote_src: yes
+    force: no
 
 #---
 
@@ -139,11 +146,17 @@
 
 #--DB--
 
+- stat:
+    path: "{{ download_dir }}/PASSWD.text"
+  register: ps_txt
+
 - name: "{{ play_name }}Creating list of Users and Passwords for import (DB Only)"
   file:
     path: "{{ download_dir }}/PASSWD.text"
     state: touch
-  when: authn_plugin == "db"
+  when: 
+    - authn_plugin == "db"
+    - ps_txt.stat.exists == false
   tags:
     - db
 
