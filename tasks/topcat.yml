@@ -78,7 +78,7 @@
     line: "{{ item.line }}"
   with_items:
     - { regexp: "mail.enable",    line: "mail.enable = {{ mail_enable }}"}
-    - { regexp: "ids.getstatus",  line: "ids.getStatus.max = 100" }
+    - { regexp: "ids.getStatus",  line: "ids.getStatus.max = 100" }
     - { regexp: "poll.delay",     line: "poll.delay = 600" }
     - { regexp: "poll.interval",  line: "poll.interval.wait = 600" }
     - { regexp: "adminUserNames", line: "adminUserNames = {{ icat_mech }}/{{ icat_root }}" }

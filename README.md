@@ -15,7 +15,7 @@ Requirements
 * RedHat or Debian flavoured OS and root access
 * At least python 2.6
 * Ansible and it's dependencies (Only needed on host machine)
-* Ideally fresh machine but should work regardless
+* Ideally a fresh machine but should work regardless
 * Probably a bunch of other stuff I forgot
 * Patience
   
@@ -80,20 +80,20 @@ Then run
 
 	ansible-playbook {YOUR PLAYBOOK NAME}
 
-##### Some Useful Options to add onto command line
+##### Here are some useful options to add onto command line
 
-| Option                 | Function |
-|:----------------------:|:--------:|
-| -vvv                   | Add extra verbosity, increase output text (useful for debugging) |
-| --list-tags            | List tags used in role. |
-| --tags "<tagname>"     | Only play tasks tagged with whatever you put in the quotes (use comma separation for multiple tags). |
-| --skip-tags "<tagname>"| Play all tasks except those in the quotes |
-| --diff                 | Detailed look at what changes have been made to files. |
+| Option                        | Function |
+|:-----------------------------:|:--------:|
+| -vvvv                         | Add extra verbosity, increase output text (useful for debugging) |
+| --list-tags                   | List tags used in role. |
+| --tags "tag1, tag2,..."       | Only play tasks tagged with whatever you put in the quotes (use comma separation for multiple tags). |
+| --skip-tags "tag1, tag2,..."  | Play all tasks except those in the quotes. Some tasks have the 'always' tag, maening they will always be run unless `--skip-tags "always"` is used, even if the any other tags on the task are skipped. |
+| --diff                        | Detailed look at what changes have been made to files. |
 
 You can find more here: https://www.mankier.com/1/ansible-playbook
 
-##### Notes
-* If you wish to reduce clutter you can stop skipped tasks from playing by adding `display_skipped_hosts = False` to `ansible.cfg`  
+If you wish to reduce clutter you can stop skipped tasks from playing by adding `display_skipped_hosts = False` to `ansible.cfg`  
+or you can add `stdout_callback = actionable` to ansible.cfg to only display tasks that return changed or failed.
 
 Author Information
 ------------------
@@ -109,22 +109,22 @@ Notes
 * The Icat Ingest Script is forced to timeout after 60secs and the resulting error is ignored
 * Hosts must be added to `/etc/ansible/hosts` or `tests/inventory` and have valid ssh keys
 * All package installs (except pexpect) are set to present instead of latest, this greatly improves speed but may cause some problems if you have an old version of a package but with the same name, I have yet to encounter this (except for Pexpect)
+* If you already have mysql installed be sure to change the `mysql_root_pass` variable in `config.yml`
 
 TODO
 ----
 
 * Improve commenting and documentation
 * Improve feedback (eg. run automatic tests and report back with the debug module)
-* fix Storage setup script not working
-* better workaround for mysql root pass
+* Fix Storage setup script not working
+* Better workaround for mysql root pass
 * Learn how ldap works
-* figure out how to automatically test plugin installs
-* use smaller file for icat ingest
-* add checks before package installs and scripts
+* Figure out how to automatically test plugin installs
+* Use smaller file for icat ingest
 * Consider replacing env_path with shell scripts for sourcing
 * Improve Debug feedback
 * Auto grab icat root from first entry in enabled authn user lists
-* Improve Idempotence
+* Improve Idempotence and speed
 * Add Selenium setup for travis runs
 
 Changelog

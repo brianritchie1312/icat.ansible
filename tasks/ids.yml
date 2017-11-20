@@ -92,7 +92,7 @@
     - { regexp: "reader",        line: "reader = {{ icat_mech }} username {{ icat_root }} password {{ icat_pass }}" }
     - { regexp: "storageUnit",   line: "storageUnit = datafile" }
     - { regexp: ".lastIdFile",   line: "filesCheck.lastIdFile = {{ user_home }}/{{ icat_name }}/main/ids/lasIdFile" }
-    - { regexp: ".errorlog",     line: "filesCheck.errorLog = {{ user_home }}/{{ icat_name }}/main/ids/errorLog" }
+    - { regexp: ".errorLog",     line: "filesCheck.errorLog = {{ user_home }}/{{ icat_name }}/main/ids/errorLog" }
 
 #---
 
