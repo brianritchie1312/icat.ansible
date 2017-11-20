@@ -61,10 +61,10 @@ script:
   - "ANSIBLE_CONFIG=ansible.cfg ansible-playbook -i tests/inventory tests/test.yml --connection=local --diff"  
 # Reduce changed tasks to lowest possible number (0 if possible) then check that changed value does not exceed that, fail if it does 
 #
-# - download chrome/firefox webdrivers
-# - add path of executables to bash
-# - run topcat_test.py, tee output
-# - grep ^ output fail if the string 'Failed' appears
+# download chrome/firefox webdrivers
+# add path of executables to bash
+# run topcat_test.py, tee output
+# grep ^ output fail if the string 'Failed' appears
 
 
  #--After Script--
