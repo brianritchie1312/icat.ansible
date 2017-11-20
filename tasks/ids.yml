@@ -50,7 +50,7 @@
 - name: "{{ play_name }}Configuring {{ ids_setup }} - Adding glassfish container block"
   blockinfile:
     path: "{{ ids_path }}/{{ ids_setup }}"
-    block: "{{ glassfish_cnf }}"
+    block: "{{ container_block }}"
     state: present
 
 - name: "{{ play_name }}Configuring {{ ids_setup }} - Configuring Libraries"
@@ -100,7 +100,7 @@
 
 - name: "{{ play_name }}Installing IDS"
   environment:
-    PATH: "{{ ansible_env.PATH }}:{{ glassfish_path }}/bin"
+    PATH: "{{ ansible_env.PATH }}:{{ container_path }}/bin"
   shell:
     cmd: ./setup install
     chdir: "{{ ids_path }}"

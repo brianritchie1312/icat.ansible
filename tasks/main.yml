@@ -116,21 +116,38 @@
  # This starts glassfish domain if it exists and is not running
  # And creates download_dir if non-existent
 
-#---Glassfish---
+#---Container---
+
+  #--Glassfish--
 
 - name: "{{ play_name }}Loading Glassfish install" 
   include: "glassfish.yml" 
   become: yes
   become_user: "{{ user_name }}"
   when:
-    - glassfish == true
+    - container == true
+    - container_name == "glassfish"
   vars:
     play_name: "Glassfish : "
   tags:
     - user
     - glassfish
 
-#---
+- set_fact:
+    container_block: "{{ glassfish_cnf }}"
+    container_path: "{{ glassfish_path }}"
+  when:
+    - container == true
+    - container_name == "glassfish"
+  tags:
+    - user
+    - glassfish
+
+  #--
+
+  #--Payara--
+
+  #--
 
 #---Authentication---
  # The same playbook will be run for each plugin so you may see DB tasks being skipped even if set to true, don't worry, the playbook will be run again and the relevent plugin will be run

@@ -10,23 +10,31 @@
     # Choose what you want installed
     # Most of these are dependent on each other so be careful when changing
 
-#   Playbook			|Description								| Tasks (in /tasks/)		|Variables (In config.yml and /defaults/)		|Users
+#   Playbook			|Description								|Default Version		| Tasks (in /tasks/)		|Variables (In config.yml and /defaults/)		|Users
 
-    update: true		# Updates package lists							main.yml			config.yml						root
-    java: true			# Installs java and some dependencies					java.yml			config.yml, java.yml					root	
-    mysql: true	        	# Installs and configures Mysql						pexpect.yml, mysql.yml		config.yml, pexpect.yml, mysql.yml			root, mysql-root				
-    createuser: true		# Creates non-root user, almost all tasks after this don't use root	main.yml			config.yml						root		
-    glassfish: true		# Installs and configures glassfish					glassfish.yml			config.yml, glassfish.yml				non-root		
-    authn: true			# Installs and configures authentication plugin(s) -See Below  		authn.yml			config.yml, authn.yml, glassfish.yml			non-root, icat-root
-    icat: true			# Installs and configures ICAT Server					icat.yml			config.yml, icat.yml, glassfish.yml			non-root
-    storage: true		# Installs and configures IDS Storage Plugin				storage.yml			config.yml, storage.yml, glassfish.yml			non-root
-    ids: true			# Installs and configures ICAT Data Service				ids.yml				config.yml, ids.yml, glassfish.yml			non-root
-    testdata: true		# Installs Python-ICAT and ingests data into database 			pycat.yml			config.yml, pycat.yml					root, non-root, mysql-root, icat-root
-    topcat: true		# Installs and configures TopCat interface				topcat.yml			config.myl, topcat.yml					non-root, icat-root
-    cleanup: false      	# Moves used files to download_dir after finish to reduce clutter	main.yml			config.yml						root, non-root
+    update: true		# Updates package lists							N/A				main.yml			config.yml						root
+    java: true			# Installs java and some dependencies					1.8.0(java-devel)		java.yml			config.yml, java.yml					root	
+    mysql: true	        	# Installs and configures Mysql						5.6				pexpect.yml, mysql.yml		config.yml, pexpect.yml, mysql.yml			root, mysql-root				
+    createuser: true		# Creates non-root user, almost all tasks after this don't use root	N/A				main.yml			config.yml						root		
+    container: true		# Install chosen container, see below					See Below			glassfish.yml, payara.yml	config.yml, glassfish.yml, payara.yml			non-root
+#    glassfish: true		# Installs and configures glassfish					4.?				glassfish.yml			config.yml, glassfish.yml				non-root		
+    authn: true			# Installs and configures authentication plugin(s) -See Below  		See below			authn.yml			config.yml, authn.yml, glassfish.yml			non-root, icat-root
+    icat: true			# Installs and configures ICAT Server					4.?				icat.yml			config.yml, icat.yml, glassfish.yml			non-root
+    storage: true		# Installs and configures IDS Storage Plugin				?				storage.yml			config.yml, storage.yml, glassfish.yml			non-root
+    ids: true			# Installs and configures ICAT Data Service				?				ids.yml				config.yml, ids.yml, glassfish.yml			non-root
+    testdata: true		# Installs Python-ICAT and ingests data into database 			?				pycat.yml			config.yml, pycat.yml					root, non-root, mysql-root, icat-root
+    topcat: true		# Installs and configures TopCat interface				?				topcat.yml			config.myl, topcat.yml					non-root, icat-root
+    cleanup: false      	# Moves used files to download_dir after finish to reduce clutter	N/A				main.yml			config.yml						root, non-root
 
 # I may have missed some variables files, but the prefix of the variable should indicate where it's declared
 # i.e. pycat_zip is declared in pycat.yml
+
+
+   #---Container---
+    # One and only one of these must be enabled
+
+    container_name: glassfish	# Glassfish Container		(version 4.0)
+#    container_name: payara	# Payara Container		(version ?)
 
    #---Authentication Plugins---(authn.yml)
     # At least one of these must be installed but any combination of multiple should work

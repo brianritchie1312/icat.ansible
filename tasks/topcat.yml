@@ -51,7 +51,7 @@
   blockinfile:
     path: "{{ topcat_path }}/{{ topcat_setup }}"
     block: |
-      {{ glassfish_cnf }}    
+      {{ container_block }}    
       {{ mysql_cnf }}
       {{ email_cnf }}
 
@@ -115,7 +115,7 @@
 
 - name: "{{ play_name }}Installing TopCat"
   environment:
-    PATH: "{{ ansible_env.PATH }}:{{ glassfish_path }}/bin"
+    PATH: "{{ ansible_env.PATH }}:{{ container_path }}/bin"
   shell:
     cmd: ./setup install
     chdir: "{{ topcat_path }}"

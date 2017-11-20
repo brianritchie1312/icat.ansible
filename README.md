@@ -126,6 +126,9 @@ TODO
 * Auto grab icat root from first entry in enabled authn user lists
 * Improve Idempotence and speed
 * Add Selenium setup for travis runs
+* Add Payara Conditional
+* Reconfigure to allow removal of glassfish 
+
 
 Changelog
 ---------

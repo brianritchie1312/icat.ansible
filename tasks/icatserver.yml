@@ -51,7 +51,7 @@
   blockinfile:
     path: "{{ icat_path }}/{{ icat_setup }}"
     block: |
-      {{ glassfish_cnf }}
+      {{ container_block }}
 
       {{ mysql_cnf }}
 
