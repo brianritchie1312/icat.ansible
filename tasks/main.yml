@@ -1,6 +1,9 @@
 ---
 #main.yml file for ICATInstall
 
+#---Getting Variables---
+ # By default, all variables are in config.yml or in 'defaults/'
+
 - name: Reading Config
   include_vars: ../config.yml
   tags:
@@ -17,9 +20,10 @@
   tags:
     - always  
 
-#---Plays---
+#-------Plays-------
 
 #---Update Package Lists---
+ # This is not explicitly neccesary but some machines may require it
 
 - name: "{{ play_name }}Updating package list for RedHat"
   yum:
@@ -53,6 +57,7 @@
 #---
 
 #---Install java---
+ # Only needed if java version < 1.8.0
 
 - name: "{{ play_name }}Loading Java Install"
   include: java.yml
@@ -92,6 +97,8 @@
 #---
 
 #---Creating non-root user
+ # This can be run on existing user if it has no password, but for sake of organisation a fresh user may be best
+ # Username and password are set in config.yml but user_home and download_dir are declared in 'defaults/main.yml'
 
 - name: "{{ play_name }} Creating {{ user_name }} with password {{ user_pass }}"
   user:
@@ -104,6 +111,10 @@
     - createuser
 
 #---
+
+# All plays from this point on will run preplay.yml before it's own tasks
+ # This starts glassfish domain if it exists and is not running
+ # And creates download_dir if non-existent
 
 #---Glassfish---
 
@@ -122,6 +133,7 @@
 #---
 
 #---Authentication---
+ # The same playbook will be run for each plugin so you may see DB tasks being skipped even if set to true, don't worry, the playbook will be run again and the relevent plugin will be run
 
 - name: "{{ play_name }}Loading Simple Authenticaton install"
   include: "{{ item }}"
@@ -209,7 +221,8 @@
 
 #---
 
-#---Storage Plugin---Problem with setup script (currently ignored)
+#---Storage Plugin---
+ # Setup Script sometimes returns fatal errors (currently ignored as purpose is still achieved)
 
 - name: "{{ play_name }}Loading Storage Plugin Install"
   include: "storage.yml"
@@ -241,7 +254,8 @@
 
 #---
 
-#---Test Data---ingest script currently forced to timeout (replace with smaller file)
+#---Test Data---
+ # Ingest script currently forced to timeout after 60 secs otherwise it would run for ~17mins (replace with smaller file)
 
 - name: "{{ play_name }}Loading Python Icat Install"
   include: "pycat.yml"
@@ -275,7 +289,8 @@
   
 #---
 
-#---Cleanup---add variables to specify level of cleanup (eg. move all files to single directory or delete all of them)
+#---Cleanup---
+ # This is meant to reduce some clutter, most files are downloaded to the download_dir but some scripts need to be in specific directories when run. This moves them back to download_dir after running.
 
 - name: "Cleanup : Moving all uneeded files to {{ download_dir }}"
   command: "mv -f {{ item }} {{ download_dir }}"
@@ -283,9 +298,7 @@
   become_user: root
   become_method: sudo
   with_items:
-    - "~/{{ pycat_zip }}"
     - "{{ user_home }}/setup-glassfish.py"
-    - "{{ user_home }}/lils.yml"
   when: 
     - cleanup == true
 

@@ -10,21 +10,23 @@
     # Choose what you want installed
     # Most of these are dependent on each other so be careful when changing
 
-#   Playbook			|Description								| /tasks/			|Users
+#   Playbook			|Description								| Tasks (in /tasks/)		|Variables (In config.yml and /defaults/)		|Users
 
-    update: true		# Updates package lists							(main.yml)			root
-    java: true			# Installs java and some dependencies					(java.yml)			root	
-    mysql: true	        	# Installs and configures Mysql						(pexpect.yml, mysql.yml)	root				
-    createuser: true		# Creates non-root user, almost all tasks after this don't use root	(main.yml)			root		
-    glassfish: true		# Installs and configures glassfish					(glassfish.yml)			non-root		
-    authn: true			# Installs and configures authentication plugin(s) -See Below  		(authn.yml)			non-root
-    icat: true			# Installs and configures ICAT Server					(icat.yml)			non-root
-    storage: true		# Installs and configures IDS Storage Plugin				(storage.yml)			non-root
-    ids: true			# Installs and configures ICAT Data Service				(ids.yml)			non-root
-    testdata: true		# Installs Python-ICAT and ingests data into database 			(pycat.yml)			root, non-root
-    topcat: true		# Installs and configures TopCat interface				(topcat.yml)			non-root
-    cleanup: false      	# Moves used files to download_dir after finish to reduce clutter	(main.yml)			root, non-root
+    update: true		# Updates package lists							main.yml			config.yml						root
+    java: true			# Installs java and some dependencies					java.yml			config.yml, java.yml					root	
+    mysql: true	        	# Installs and configures Mysql						pexpect.yml, mysql.yml		config.yml, pexpect.yml, mysql.yml			root, mysql-root				
+    createuser: true		# Creates non-root user, almost all tasks after this don't use root	main.yml			config.yml						root		
+    glassfish: true		# Installs and configures glassfish					glassfish.yml			config.yml, glassfish.yml				non-root		
+    authn: true			# Installs and configures authentication plugin(s) -See Below  		authn.yml			config.yml, authn.yml, glassfish.yml			non-root, icat-root
+    icat: true			# Installs and configures ICAT Server					icat.yml			config.yml, icat.yml, glassfish.yml			non-root
+    storage: true		# Installs and configures IDS Storage Plugin				storage.yml			config.yml, storage.yml, glassfish.yml			non-root
+    ids: true			# Installs and configures ICAT Data Service				ids.yml				config.yml, ids.yml, glassfish.yml			non-root
+    testdata: true		# Installs Python-ICAT and ingests data into database 			pycat.yml			config.yml, pycat.yml					root, non-root, mysql-root, icat-root
+    topcat: true		# Installs and configures TopCat interface				topcat.yml			config.myl, topcat.yml					non-root, icat-root
+    cleanup: false      	# Moves used files to download_dir after finish to reduce clutter	main.yml			config.yml						root, non-root
 
+# I may have missed some variables files, but the prefix of the variable should indicate where it's declared
+# i.e. pycat_zip is declared in pycat.yml
 
    #---Authentication Plugins---(authn.yml)
     # At least one of these must be installed but any combination of multiple should work
@@ -62,11 +64,12 @@
    # Selecting individual files is complicated in this setup so instead the following methods will create every file matching certain conditions
    # Note these will create every file they find, even if their facility has been deleted with 'delete_fac' (use wipe_icat to remove all entries)
 
-    create_file: true			# Creates everyfile with specific name in DATAFILE table
-    datafiles: 				# Names of Files to be Added
-      - Datafile 1			# You should be able to add multiple
+    create_file: true		# Creates everyfile with specific name in DATAFILE table
+    datafiles: 			# Names of Files to be created
+      - Datafile 1		# You should be able to add multiple
+#      - Datafile 2		 # example of how to add multiple filenames
 
-    create_all: false 			# WARNING! This will create everyfile mentioned in DATAFILE, including those from other facilities and those without facilities
+    create_all: false		# WARNING! This will create everyfile mentioned in DATAFILE, including those from other facilities and those without facilities. A single icat ingest creates nearly 2000 files
 
  #---END OF CONFIGURATION---
 
@@ -80,11 +83,14 @@
     user_name: user1
     user_pass: pass
 
+    user_home: "/home/{{ user_name }}"		 	# The directory where most of the things will be installed, this has not been tested outside of default home directory.
+    download_dir: "{{ user_home }}/icatdownloads/"	# Where download files will go before being unzipped or moved to relevent locations, this has not been tested outside of default.
+
 
    #---MySQL User---
     # All MySQL commands will be run as root user if needed
 
-    mysql_root_pass: pw
+    mysql_root_pass: pw		# If Mysql is already installed and configured, set this to current root pass
 
     mysql_user: icat
     mysql_pass: icat
@@ -94,6 +100,7 @@
     # This will be the user that acts as root for the interface, must have mechanism from enabled plugin
     # eg. 'simple/root' will be a user called root when using simple authenticator
     # This should be one of the users set below or on ldap sever
+    # This will also be the user that has permissions to view the testdata generated by pycat.yml
 
     icat_mech: simple		# Plugin used for admin account. Ideally 'simple' or 'db'.Must be enabled above!
     icat_root: root		# Name of admin account. Must be included below!
@@ -146,19 +153,13 @@
 
 #---END OF VARIABLES---
 
-# There are a number of conditional tasks that will run but skip when set to false
- # if you would like to not show the conditional checks in output to clutter
- # add '--skip-tags "tags"' to command line when executing playbook
- # eg. '--skip-tags "debian, db, testdata"' will skipp all tasks tagged with debian, db or testdata
- # and won't show any output for those tasks.
-
 # The authn.yml playbook will be run multiple times for each plugin set to true.
  # Inside this playbook are several tasks that will fail conditionals if a plugin is false for each run
  # This means that even if you have simple and db set to true, it will report skipping db tasks on the first run
  # then automatically run again reporting skips on simple tasks.
  # The task name will tell you which plugin is currently being handled.
 
-# Some tasks have ignore_errors: yes on them
+# Some tasks have 'ignore_errors: yes' on them
  # This means they will move on to the next task even if a fatal error is returned
  # current tasks with ignore errors:
  # MySQL root pass reset 	(mysql.yml)		Will return errors on first run since password won't be mysql_root_pass
@@ -166,8 +167,4 @@
  # icatingest.py		(pycat.yml)		Takes too long, forced timeout still produces data
  # I shall attempt to find a better workaround for these in future
 
-# Using this for remote machines
- # Redhat  '(argument)' = optional
-  # ansible-playbook <This Playbook name> --user <Sudo user of remote machine> --ask-pass (-vvvv) (--tags "<only run these tags>") (--skip-tags "<don't run these tags>")
- # Debian
-  # Same as above but add '--ask-sudo-pass'
+# See README.md for more information

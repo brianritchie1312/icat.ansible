@@ -1,10 +1,4 @@
 ---
 # defaults file for /etc/ansible/roles/ICATInstall/
 
-#---Create user---
-
-#user_name: {{ user_name }} 	#Set in Master Playbook
-#user_pass: {{ user_pass }}	#Set in Master Playbook
-user_home: "/home/{{ user_name }}"
-download_dir: "{{ user_home }}/icatdownloads/"
 

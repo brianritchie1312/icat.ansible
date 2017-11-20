@@ -87,7 +87,7 @@ Then run
 | -vvvv                         | Add extra verbosity, increase output text (useful for debugging) |
 | --list-tags                   | List tags used in role. |
 | --tags "tag1, tag2,..."       | Only play tasks tagged with whatever you put in the quotes (use comma separation for multiple tags). |
-| --skip-tags "tag1, tag2,..."  | Play all tasks except those in the quotes. Some tasks have the 'always' tag, maening they will always be run unless `--skip-tags "always"` is used, even if the any other tags on the task are skipped. |
+| --skip-tags "tag1, tag2,..."  | Play all tasks except those in the quotes. Some tasks have the 'always' tag, meaning they will always be run unless `--skip-tags "always"` is used, regardless of how other tags are setup and skipped. |
 | --diff                        | Detailed look at what changes have been made to files. |
 
 You can find more here: https://www.mankier.com/1/ansible-playbook
@@ -129,6 +129,12 @@ TODO
 
 Changelog
 ---------
+
+#### 20/11/17
+* Improved Documentation
+* Moved main.yml variables (user_home and download_dir) to config.yml
+* Minor Idempotence Improvements (Currently 37 changes on second run)
+* Added Firefox and Chrome Installs to travis, selenium script not yet added 
 
 #### 16/11/17
 * Added File Creation (By name or all)

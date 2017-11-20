@@ -23,6 +23,10 @@ sudo: required
 
  #--Before Install--
 
+addons:
+  firefox: latest
+  chrome: stable
+
  #--Install--
 
 install:
@@ -43,9 +47,11 @@ script:
   - "sed -i 's/authn_anon: false/authn_anon: true/g' config.yml"	# Set Authn Anon to true
   - "ANSIBLE_CONFIG=ansible.cfg ansible-playbook -i tests/inventory tests/test.yml --connection=local"
 #
+  - "echo 'Deletion Script Test'"
   - "sed -i 's/delete_fac: false/delete_fac: true/g' config.yml"	# Test Deletion Script
   - "ANSIBLE_CONFIG=ansible.cfg ansible-playbook -i tests/inventory tests/test.yml --connection=local --tags 'pycat'"
 #
+  - "echo 'Idempotence Test"
   - "sed -i 's/delete_fac: true/delete_fac: false/g' config.yml"	# Test Idempotence
   - "echo 'stdout_callback = actionable' >> ansible.cfg"		# Only Output Changed or Failed Tasks
   - "echo 'deprecation_warnings = False' >> ansible.cfg"		# Ignore Depriciation Warnings
@@ -54,9 +60,11 @@ script:
   - "cat ansible.cfg"
   - "ANSIBLE_CONFIG=ansible.cfg ansible-playbook -i tests/inventory tests/test.yml --connection=local --diff"  
 # Reduce changed tasks to lowest possible number (0 if possible) then check that changed value does not exceed that, fail if it does 
-
-# Run selenium (if 'Failed' exists in output, fail the build)
-# Check files downloaded by selenium (fail if non-existent)
+#
+# - download chrome/firefox webdrivers
+# - add path of executables to bash
+# - run topcat_test.py, tee output
+# - grep ^ output fail if the string 'Failed' appears
 
 
  #--After Script--
