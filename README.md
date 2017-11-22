@@ -6,6 +6,7 @@ Installer for ICAT, Topcat and all their dependencies.
 Intended for testing purposes.
 
 https://github.com/icatproject
+
 https://icatproject.org/
  
 
@@ -130,8 +131,22 @@ TODO
 * Reconfigure to allow removal of glassfish 
 
 
+Tested Configurations
+---------------------
+
+| Config     | OS         | Ansible | Java | Python | MySQL | Glassfish | Payara | Simple Authn | DB Authn | LDAP Authn | Anon Authn | ICAT | IDS | IDS Storage | Ruby | Python-ICAT | Topcat |
+|:----------:|:----------:|:-------:|:----:|:------:|:-----:|:---------:|:------:|:------------:|:--------:|:----------:|:----------:|:----:|:---:|:-----------:|:----:|:-----------:|:------:|
+|Default     |SL6         |2.4.1.0  |1.8.0 |2.6.6   |5.5    |4.0        |--      |1.1.0         |1.2.0     |1.2.0       |1.1.1       |4.8.0 |1.7.0|1.3.3        |--    |0.13.01      |2.2.1   |
+|Debian      |Ubuntu 14.04|2.4.1.0  |1.8.0 |2.6.6   |5.5    |4.0        |--      |1.1.0         |1.2.0     |1.2.0       |1.1.1       |4.8.0 |1.7.0|1.3.3        |--    |0.13.01      |2.2.1   |
+|Travis      |Ubuntu 14.04|2.4.1.0  |1.8.0 |2.7.13  |5.6    |4.0        |--      |1.1.0         |1.2.0     |1.2.0       |1.1.1       |4.8.0 |1.7.0|1.3.3        |--    |0.13.01      |2.2.1   |
+
+
 Changelog
 ---------
+
+#### 22/11/17
+* Added tested configurations to README
+* Added Pycat version variable
 
 #### 20/11/17
 * Improved Documentation
