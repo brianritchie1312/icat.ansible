@@ -1,0 +1,32 @@
+---
+
+- name: "{{ play_name }}Loading Pre-playbook Check"
+  include: "preplay.yml"
+
+#---Download Payara---
+
+- stat:
+    path: "{{ download_dir }}{{ payara_zip }}"
+  register: pr_zip
+
+- name: "{{ play_name }}Downloading Payara"
+  get_url:
+    url: "{{ payara_src }}"
+    dest: "{{ download_dir }}"
+  when: pr_zip.stat.exists == false
+
+#---
+
+#---Unzip Payara---
+
+- stat:
+    path: "{{ payara_path }}"
+  register: pr_dir
+
+- name: "{{ play_name }}Unzipping {{ payara_zip }}"
+  unarchive:
+    src: "{{ download_dir }}{{ payara_zip }}"
+    dest: "{{ user_home }}"
+    remote_src: yes
+  when:
+    - pr_dir.stat.exists == false

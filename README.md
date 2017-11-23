@@ -146,6 +146,10 @@ These configurations have only been tested to a basic level (ie. they run withou
 Changelog
 ---------
 
+#### 23/11/17
+* Corrected transport url in topcat.json
+* Commented out archive settings in ids.properties
+
 #### 22/11/17
 * Added tested configurations to README
 * Added Pycat version variable

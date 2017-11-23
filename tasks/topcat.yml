@@ -104,9 +104,10 @@
     regexp: "{{ item.regexp }}"
     replace: "{{ item.rep }}"
   with_items:
-    - { regexp: "https", rep: "http" }
-    - { regexp: "8181",  rep: "{{ icat_port }}" }
-    - { regexp: "localhost", rep: "{{ inventory_hostname }}" }
+    - { regexp: "https",                   rep: "http" }
+    - { regexp: "8181",                    rep: "{{ icat_port }}" }
+    - { regexp: "18080",                   rep: "{{ icat_port }}" }
+    - { regexp: "localhost",               rep: "{{ inventory_hostname }}" }
     - { regexp: 'your facility name[^"]*', rep: "LILS" }
 
 #---

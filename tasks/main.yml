@@ -131,6 +131,7 @@
     play_name: "Glassfish : "
   tags:
     - user
+    - container
     - glassfish
 
 - set_fact:
@@ -141,11 +142,37 @@
     - container_name == "glassfish"
   tags:
     - user
+    - container
     - glassfish
 
   #--
 
   #--Payara--
+
+- name: "{{ play_name }}Loading Payara install"
+  include: "payara.yml"
+  become: yes
+  become_user: "{{ user_name }}"
+  when:
+    - container == true
+    - container_name == "payara"
+  vars:
+    play_name: "Payara : "
+  tags:
+    - user
+    - container
+    - payara
+
+- set_fact:
+    container_block: "{{ payara_cnf }}"
+    container_path: "{{ payara_path }}"
+  when:
+    - container == true
+    - container_name == "payara"
+  tags:
+    - user
+    - container
+    - payara
 
   #--
 

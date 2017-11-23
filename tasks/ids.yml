@@ -86,13 +86,27 @@
     regexp: "{{ item.regexp }}"
     line: "{{ item.line }}"
   with_items:
-    - { regexp: "icat.url",      line: "icat.url = {{ icat_url }}" }
-    - { regexp: "cache.dir",     line: "cache.dir = {{ user_home }}/{{ icat_name }}/main/ids/cache/" }
-    - { regexp: "rootUserNames", line: "rootUserNames = {{ icat_mech }}/{{ icat_root }}" }
-    - { regexp: "reader",        line: "reader = {{ icat_mech }} username {{ icat_root }} password {{ icat_pass }}" }
-    - { regexp: "storageUnit",   line: "storageUnit = datafile" }
-    - { regexp: ".lastIdFile",   line: "filesCheck.lastIdFile = {{ user_home }}/{{ icat_name }}/main/ids/lasIdFile" }
-    - { regexp: ".errorLog",     line: "filesCheck.errorLog = {{ user_home }}/{{ icat_name }}/main/ids/errorLog" }
+    - { regexp: "icat.url",               line: "icat.url = {{ icat_url }}" }
+    - { regexp: "cache.dir",              line: "cache.dir = {{ user_home }}/{{ icat_name }}/main/ids/cache/" }
+    - { regexp: "rootUserNames",          line: "rootUserNames = {{ icat_mech }}/{{ icat_root }}" }
+    - { regexp: "reader",                 line: "reader = {{ icat_mech }} username {{ icat_root }} password {{ icat_pass }}" }
+    - { regexp: "storageUnit",            line: "storageUnit = datafile" }
+    - { regexp: ".lastIdFile",            line: "filesCheck.lastIdFile = {{ user_home }}/{{ icat_name }}/main/ids/lasIdFile" }
+    - { regexp: ".errorLog",              line: "filesCheck.errorLog = {{ user_home }}/{{ icat_name }}/main/ids/errorLog" }
+
+- name: "{{ play_name }}Disabling archive"
+  replace:
+    path: "{{ ids_path }}/{{ ids_prop }}"
+    regexp: "{{ item.regexp }}"
+    replace: "{{ item.rep }}"
+  with_items:
+    - { regexp: "^plugin.archive",        rep: "!plugin.archive" }
+    - { regexp: "^writeDelaySeconds",     rep: "!writeDelaySeconds" }
+    - { regexp: "^startArchivingLevel",   rep: "!startArchivingLevel" }
+    - { regexp: "^stopArchivingLevel",    rep: "!stopArchivingLevel" }
+    - { regexp: "^storageUnit",           rep: "!storageUnit" }
+    - { regexp: "^tidyBlockSize",         rep: "!tidyBlockSize" }
+
 
 #---
 

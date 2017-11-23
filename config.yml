@@ -10,24 +10,27 @@
     # Choose what you want installed
     # Most of these are dependent on each other so be careful when changing
 
-#   Playbook			|Description								|Default Version		| Tasks (in /tasks/)		|Variables (In config.yml and /defaults/)		|Users
+#   Playbook			|Description								| Tasks (in /tasks/)		|Variables (In config.yml and /defaults/)		|Users
 
-    update: true		# Updates package lists							N/A				main.yml			config.yml						root
-    java: true			# Installs java and some dependencies					1.8.0(java-devel)		java.yml			config.yml, java.yml					root	
-    mysql: true	        	# Installs and configures Mysql						5.6				pexpect.yml, mysql.yml		config.yml, pexpect.yml, mysql.yml			root, mysql-root				
-    createuser: true		# Creates non-root user, almost all tasks after this don't use root	N/A				main.yml			config.yml						root		
-    container: true		# Install chosen container, see below					See Below			glassfish.yml, payara.yml	config.yml, glassfish.yml, payara.yml			non-root
-#    glassfish: true		# Installs and configures glassfish					4.?				glassfish.yml			config.yml, glassfish.yml				non-root		
-    authn: true			# Installs and configures authentication plugin(s) -See Below  		See below			authn.yml			config.yml, authn.yml, glassfish.yml			non-root, icat-root
-    icat: true			# Installs and configures ICAT Server					4.?				icat.yml			config.yml, icat.yml, glassfish.yml			non-root
-    storage: true		# Installs and configures IDS Storage Plugin				?				storage.yml			config.yml, storage.yml, glassfish.yml			non-root
-    ids: true			# Installs and configures ICAT Data Service				?				ids.yml				config.yml, ids.yml, glassfish.yml			non-root
-    testdata: true		# Installs Python-ICAT and ingests data into database 			?				pycat.yml			config.yml, pycat.yml					root, non-root, mysql-root, icat-root
-    topcat: true		# Installs and configures TopCat interface				?				topcat.yml			config.myl, topcat.yml					non-root, icat-root
-    cleanup: false      	# Moves used files to download_dir after finish to reduce clutter	N/A				main.yml			config.yml						root, non-root
+    update: true		# Updates package lists							main.yml			config.yml						root
+    java: true			# Installs java and some dependencies					java.yml			config.yml, java.yml					root	
+    mysql: true	        	# Installs and configures Mysql						pexpect.yml, mysql.yml		config.yml, pexpect.yml, mysql.yml			root, mysql-root				
+    createuser: true		# Creates non-root user, almost all tasks after this don't use root	main.yml			config.yml						root		
+    container: true		# Install chosen container, see below					glassfish.yml, payara.yml	config.yml, glassfish.yml, payara.yml			non-root
+    authn: true			# Installs and configures authentication plugin(s) -See Below  		authn.yml			config.yml, authn.yml, glassfish.yml			non-root, icat-root
+    icat: true			# Installs and configures ICAT Server					icat.yml			config.yml, icat.yml, glassfish.yml			non-root
+    storage: true		# Installs and configures IDS Storage Plugin				storage.yml			config.yml, storage.yml, glassfish.yml			non-root
+    ids: true			# Installs and configures ICAT Data Service				ids.yml				config.yml, ids.yml, glassfish.yml			non-root
+    testdata: true		# Installs Python-ICAT and ingests data into database 			pycat.yml			config.yml, pycat.yml					root, non-root, mysql-root, icat-root
+    topcat: true		# Installs and configures TopCat interface				topcat.yml			config.myl, topcat.yml					non-root, icat-root
+    cleanup: false      	# Moves used files to download_dir after finish to reduce clutter	main.yml			config.yml						root, non-root
 
 # I may have missed some variables files, but the prefix of the variable should indicate where it's declared
 # i.e. pycat_zip is declared in pycat.yml
+
+   #---Version Numbers---
+    # These must not be left blank otherwise a syntax error will be returned. Even if the software isn't used.
+
 
 
    #---Container---
@@ -40,11 +43,10 @@
     # At least one of these must be installed but any combination of multiple should work
     # Anon authenticator should work on it's own but it is recomended that you use one of the other plugins for the database root user     
 
-    authn_simple: true		# Simple Authenticator 		(version 1.1.0) https://icatproject.org/mvn/site/authn/simple/1.1.0/
-    authn_db: true		# DB Authenticator 		(version 1.2.0) https://icatproject.org/mvn/site/authn/db/1.2.0/
-    authn_ldap: false           # LDAP Authenticator            (version 1.2.0) https://icatproject.org/mvn/site/authn/ldap/1.2.0/
-    authn_anon: false 		# Anonymous Authenticator 	(version 1.1.1) https://icatproject.org/mvn/site/authn/anon/1.1.1/	
-
+    authn_simple: true		# Simple Authenticator 	
+    authn_db: true		# DB Authenticator	
+    authn_ldap: false           # LDAP Authenticator            
+    authn_anon: false 		# Anonymous Authenticator 
    
    #---ICAT Configure---
     # inventory_hostname = name used in hosts above
