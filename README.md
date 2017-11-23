@@ -28,14 +28,8 @@ See `config.yml` and .yml files in `defaults/`
 How to use
 ----------
 
-1.Install ansible with Yum
+1.Install [Ansible](http://docs.ansible.com/ansible/latest/intro_installation.html)
 
-	sudo yum install ansible
- 
-Or Apt
-
-	sudo apt install ansible 
- 
 2.Download or clone this repository
 
 3.Modify `config.yml` and yml files in `defaults/` as desired
@@ -111,6 +105,7 @@ Notes
 * Hosts must be added to `/etc/ansible/hosts` or `tests/inventory` and have valid ssh keys
 * All package installs (except pexpect) are set to present instead of latest, this greatly improves speed but may cause some problems if you have an old version of a package but with the same name, I have yet to encounter this (except for Pexpect)
 * If you already have mysql installed be sure to change the `mysql_root_pass` variable in `config.yml`
+* If you are using a VM with pip 1.0 installed, run `pip install --index-url=https://pypi.python.org/simple/ -U pip` to upgrade.
 
 TODO
 ----
