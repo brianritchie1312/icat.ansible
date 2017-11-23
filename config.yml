@@ -10,20 +10,43 @@
     # Choose what you want installed
     # Most of these are dependent on each other so be careful when changing
 
-#   Playbook			|Description								| Tasks (in /tasks/)		|Variables (In config.yml and /defaults/)		|Users
+#   Playbook										Tasks (in /tasks/)		Variables (In config.yml and /defaults/)		Users
 
-    update: true		# Updates package lists							main.yml			config.yml						root
-    java: true			# Installs java and some dependencies					java.yml			config.yml, java.yml					root	
-    mysql: true	        	# Installs and configures Mysql						pexpect.yml, mysql.yml		config.yml, pexpect.yml, mysql.yml			root, mysql-root				
-    createuser: true		# Creates non-root user, almost all tasks after this don't use root	main.yml			config.yml						root		
-    container: true		# Install chosen container, see below					glassfish.yml, payara.yml	config.yml, glassfish.yml, payara.yml			non-root
-    authn: true			# Installs and configures authentication plugin(s) -See Below  		authn.yml			config.yml, authn.yml, glassfish.yml			non-root, icat-root
-    icat: true			# Installs and configures ICAT Server					icat.yml			config.yml, icat.yml, glassfish.yml			non-root
-    storage: true		# Installs and configures IDS Storage Plugin				storage.yml			config.yml, storage.yml, glassfish.yml			non-root
-    ids: true			# Installs and configures ICAT Data Service				ids.yml				config.yml, ids.yml, glassfish.yml			non-root
-    testdata: true		# Installs Python-ICAT and ingests data into database 			pycat.yml			config.yml, pycat.yml					root, non-root, mysql-root, icat-root
-    topcat: true		# Installs and configures TopCat interface				topcat.yml			config.myl, topcat.yml					non-root, icat-root
-    cleanup: false      	# Moves used files to download_dir after finish to reduce clutter	main.yml			config.yml						root, non-root
+    update: true
+    # Updates package lists								main.yml			config.yml						root
+  
+    java: true
+    # Installs java and some dependencies						java.yml			config.yml, java.yml					root	
+    
+    mysql: true
+    # Installs and configures Mysql							pexpect.yml, mysql.yml		config.yml, pexpect.yml, mysql.yml			root, mysql-root				
+    
+    createuser: true
+    # Creates non-root user, almost all tasks after this don't use root			main.yml			config.yml						root		
+    
+    container: true
+    # Install chosen container, see below						glassfish.yml, payara.yml	config.yml, glassfish.yml, payara.yml			non-root
+    
+    authn: true
+    # Installs and configures authentication plugin(s) -See Below  			authn.yml			config.yml, authn.yml, glassfish.yml			non-root, icat-root
+    
+    icat: true
+    # Installs and configures ICAT Server						icat.yml			config.yml, icat.yml, glassfish.yml			non-root
+    
+    storage: true
+    # Installs and configures IDS Storage Plugin					storage.yml			config.yml, storage.yml, glassfish.yml			non-root
+    
+    ids: true
+    # Installs and configures ICAT Data Service						ids.yml				config.yml, ids.yml, glassfish.yml			non-root
+    
+    testdata: true
+    # Installs Python-ICAT and ingests data into database 				pycat.yml			config.yml, pycat.yml					root, non-root, mysql-root, icat-root
+    
+    topcat: true
+    # Installs and configures TopCat interface						topcat.yml			config.myl, topcat.yml					non-root, icat-root
+    
+    cleanup: false
+    # Moves used files to download_dir after finish to reduce clutter			main.yml			config.yml						root, non-root
 
 # I may have missed some variables files, but the prefix of the variable should indicate where it's declared
 # i.e. pycat_zip is declared in pycat.yml
@@ -31,32 +54,35 @@
    #---Version Numbers---
     # These must not be left blank otherwise a syntax error will be returned. Even if the software isn't used.
 
-
+#TODO! Move versions numbers here from individual ymls
 
    #---Container---
     # One and only one of these must be enabled
 
-    container_name: glassfish	# Glassfish Container		(version 4.0)
-#    container_name: payara	# Payara Container		(version ?)
+    container_name: glassfish
+#    container_name: payara
+    # PAYARA NOT YET COMPLETE
 
-   #---Authentication Plugins---(authn.yml)
+   #---Authentication Plugins---
     # At least one of these must be installed but any combination of multiple should work
     # Anon authenticator should work on it's own but it is recomended that you use one of the other plugins for the database root user     
 
-    authn_simple: true		# Simple Authenticator 	
-    authn_db: true		# DB Authenticator	
-    authn_ldap: false           # LDAP Authenticator            
-    authn_anon: false 		# Anonymous Authenticator 
+    authn_simple: true 	
+    authn_db: true	
+    authn_ldap: false            
+    authn_anon: false 
    
    #---ICAT Configure---
     # inventory_hostname = name used in hosts above
     # It's similar to using 'localhost' except topcat interface can used by browsers on remote machines
  
-    icat_url: http://{{ inventory_hostname }}:{{ icat_port }} 	# URL of the database
-    icat_port: 8080             				# Port for the database access
-    icat_name: icat						# Name of the database
+    icat_url: http://{{ inventory_hostname }}:{{ icat_port }}
+    icat_port: 8080
+    # URL used to access database
 
-  
+    icat_name: icat
+    # Name of the database
+
   #---Reponse to duplicate facilities for icatingest.py---(pycat.yml)
    # The icatingest.py script for TestData cannot overwrite existing facilities and users
    # If you wish to remove existing facilties use ONE of the methods below:
@@ -64,7 +90,7 @@
     # 'delete_fac: true'	Will grab the ID of the facility and delete all data with that id, it will also remove all users generated by the lils.yml ingest
     # Leaving all false 	Will skip icatingest.py if it finds an already existing facilty with the {{ fac_name }} name.
 
-    wipe_icat: false		# WARNING! This will remove all facilities
+    wipe_icat: false
     delete_fac: true
 
    
@@ -74,12 +100,14 @@
    # Selecting individual files is complicated in this setup so instead the following methods will create every file matching certain conditions
    # Note these will create every file they find, even if their facility has been deleted with 'delete_fac' (use wipe_icat to remove all entries)
 
-    create_file: true		# Creates everyfile with specific name in DATAFILE table
-    datafiles: 			# Names of Files to be created
-      - Datafile 1		# You should be able to add multiple
-#      - Datafile 2		 # example of how to add multiple filenames
+    # Create every file of a specific name(s)
+    create_file: true
+    datafiles:
+      - Datafile 1
+#      - Datafile 2
 
-    create_all: false		# WARNING! This will create everyfile mentioned in DATAFILE, including those from other facilities and those without facilities. A single icat ingest creates nearly 2000 files
+    # This will create everyfile listed in DATAFILE, including those from other facilities
+    create_all: false
 
  #---END OF CONFIGURATION---
 
@@ -93,14 +121,16 @@
     user_name: user1
     user_pass: pass
 
-    user_home: "/home/{{ user_name }}"		 	# The directory where most of the things will be installed, this has not been tested outside of default home directory.
-    download_dir: "{{ user_home }}/icatdownloads/"	# Where download files will go before being unzipped or moved to relevent locations, this has not been tested outside of default.
+    user_home: "/home/{{ user_name }}"
+    download_dir: "{{ user_home }}/icatdownloads/"
+    # Directories used for downloads and installs, not tested outdside default
 
 
    #---MySQL User---
     # All MySQL commands will be run as root user if needed
 
-    mysql_root_pass: pw		# If Mysql is already installed and configured, set this to current root pass
+    mysql_root_pass: pw
+    # If Mysql is already installed and configured, set this to current root pass
 
     mysql_user: icat
     mysql_pass: icat
@@ -112,9 +142,12 @@
     # This should be one of the users set below or on ldap sever
     # This will also be the user that has permissions to view the testdata generated by pycat.yml
 
-    icat_mech: simple		# Plugin used for admin account. Ideally 'simple' or 'db'.Must be enabled above!
-    icat_root: root		# Name of admin account. Must be included below!
-    icat_pass: pass		# Password of admin. Must be included below!
+    icat_mech: simple
+    # Plugin used for admin account. Ideally 'simple' or 'db'.Must be enabled above!
+    
+    icat_root: root
+    icat_pass: pass
+    # Name and Password of admin account. Must be included below!
 
    #---Simple Authn Users---
     # These users will be added to authn_simple.properties
@@ -154,8 +187,11 @@
    #---Ldap Users---
     # I don't actually know how ldap works yet but I think these are important
     
-    ldap_provider: ldap://logon05.fed.cclrc.ac.uk  	# provider_url =
-    ldap_principal: \%\@fed.cclrc.ac.uk			# security_principal =
+    ldap_provider: ldap://logon05.fed.cclrc.ac.uk
+    # provider_url =
+    
+    ldap_principal: \%\@fed.cclrc.ac.uk
+    # security_principal =
 
     #-end of ldap users---
 

@@ -2,7 +2,8 @@
 
 #---Authn Simple---
 
-simple_version: 1.1.0		# Only tested with 1.1.0
+simple_version: 1.1.0
+# Only tested with 1.1.0
 
 authn_src_s: "http://www.icatproject.org/mvn/repo/org/icatproject/authn.simple/{{ simple_version }}/{{ authn_zip_s }}"
 authn_zip_s: authn.simple-{{ simple_version  }}-distro.zip
@@ -17,10 +18,14 @@ authn_setup_block_s: |
 
 #---Authn DB---
 
-delete_passwd: true		# Delete PASSWD table before recreating and importing (prevent duplicate and abandoned users)
-delete_users: false		# Will delete any existing users with same name as those in PASSWD.text (redundant if delete_passwd == true) (note: abandoned users not in PASSWD.text will remain)
+delete_passwd: true
+# Delete PASSWD table before recreating and importing (prevent duplicate and abandoned users)
 
-db_version: 1.2.0		# Only tested with 1.2.0
+delete_users: false
+# Will delete any existing users with same name as those in PASSWD.text (redundant if delete_passwd == true) (note: abandoned users not in PASSWD.text will remain)
+
+db_version: 1.2.0
+# Only tested with 1.2.0
 
 authn_src_db: "http://www.icatproject.org/mvn/repo/org/icatproject/authn.db/{{ db_version }}/{{ authn_zip_db }}"
 authn_zip_db: authn.db-{{ db_version }}-distro.zip
@@ -35,7 +40,8 @@ authn_setup_block_db: |
 
 #--Authn LDAP--
 
-ldap_version: 1.2.0		# Only tested with 1.2.0
+ldap_version: 1.2.0
+# Only tested with 1.2.0
 
 authn_src_ldap: "http://www.icatproject.org/mvn/repo/org/icatproject/authn.ldap/{{ ldap_version }}/{{ authn_zip_ldap }}"
 authn_zip_ldap: "authn.ldap-{{ ldap_version }}-distro.zip"
@@ -53,7 +59,8 @@ authn_setup_block_ldap: |
 
 #---Authn Anon---
 
-anon_version: 1.1.1		# Only tested with 1.1.1
+anon_version: 1.1.1
+# Only tested with 1.1.1
 
 authn_src_anon: "http://www.icatproject.org/mvn/repo/org/icatproject/authn.anon/{{ anon_version }}/{{ authn_zip_anon }}"
 authn_zip_anon: "authn.anon-{{ anon_version }}-distro.zip"

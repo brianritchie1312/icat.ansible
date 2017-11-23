@@ -28,52 +28,74 @@ See `config.yml` and .yml files in `defaults/`
 How to use
 ----------
 
-1.Install [Ansible](http://docs.ansible.com/ansible/latest/intro_installation.html)
+1. Install [Ansible](http://docs.ansible.com/ansible/latest/intro_installation.html). The simplest method is.
 
-2.Download or clone this repository
+    ```Shell
+    sudo apt-get install python-pip
+    pip install ansible
+    ```
 
-3.Modify `config.yml` and yml files in `defaults/` as desired
+2. Download or clone this repository
 
-4.Add hosts to `tests/inventory` 
+3. Modify `config.yml` and yml files in `defaults/` as desired
 
-5.Navigate to role directory and run:
+4. Add hosts to `tests/inventory` 
 
-	ANSIBLE_CONFIG=ansible.cfg ansible-playbook -i tests/inventory tests/test.yml 
+5. Navigate to role directory and run:
+
+    ```Shell
+    ANSIBLE_CONFIG=ansible.cfg ansible-playbook -i tests/inventory tests/test.yml 
+    ```
 
 If you are running on localhost, you may need to add
 
-	--connection=local
+```Shell
+--connection=local
+```
 
 If you are running on remote hosts, add hostname to inventory and run add the following options
 
-        --user {SUDO USER ON REMOTE HOST} --ask-pass
+```Shell
+--user {SUDO USER ON REMOTE HOST} --ask-pass
+```
 
 If remote hosts include debian systems add
 
-        --user {SUDO USER ON REMOTE HOST} --ask-pass --ask-sudo-pass
+```Shell
+--user {SUDO USER ON REMOTE HOST} --ask-pass --ask-sudo-pass
+```
 
 ## Or
 
 If you prefer to use your own playbook, follow steps 1-3 above then
 
-4.Move role to `/etc/ansible/roles/{ROLE NAME}` or add this to your `/etc/ansible/ansible.cfg` file
+4. Move role to `/etc/ansible/roles/{ROLE NAME}` or add this to your `/etc/ansible/ansible.cfg` file
 
-	[defaults]
-	roles_path={PATH TO DIRECTORY CONTAINING ROLE}
+    ```Shell
+    [defaults]
+    roles_path={PATH TO DIRECTORY CONTAINING ROLE}
+    ```
 
-5.Add hostnames to `/etc/ansible/hosts' or add them to your own inventory and add this the the command line
+5. Add hostnames to `/etc/ansible/hosts' or add them to your own inventory and add this the the command line
 
-	-i {PATH TO INVENTORY}
+    ```Shell
+    -i {PATH TO INVENTORY}
+    ```
 
-6.Copy `tests/test.yml` or the following block into your own yml playbook.
 
+6. Copy `tests/test.yml` or the following block into your own yml playbook.
+
+    ```Shell
     - hosts: localhost # Any hosts or host groups added to inventory or ansible hosts file separated by spaces
       roles:
          - { role: ICAT-Ansible, become: yes, become_user: root}
+    ```
 
-Then run
+7. Then run
 
-	ansible-playbook {YOUR PLAYBOOK NAME}
+    ```Shell
+    ansible-playbook {YOUR PLAYBOOK NAME}
+    ```
 
 ##### Here are some useful options to add onto command line
 

@@ -1,6 +1,7 @@
 ---
 
-topcat_version: 2.2.1			# Only tested with 2.2.1
+topcat_version: 2.2.1
+# Only tested with 2.2.1
 
 topcat_src: "https://repo.icatproject.org/repo/org/icatproject/topcat/{{ topcat_version }}/{{ topcat_zip }}"
 topcat_zip: topcat-{{ topcat_version }}-distro.zip

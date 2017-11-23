@@ -25,13 +25,6 @@ mysql_cnf_eng: InnoDB
 
 mysql_secure: mysql_secure_installation
 
-#mysql_root_user: {{ mysql_root_user }} #Set in Master Playbook
-#mysql_root_pass: {{ mysql_root_pass }} #Set in Master Playbook
-
-#mysql_db_name: {{ icat_name }} 	#Set in Master Playbook
-#mysql_user: {{ mysql_user }}		#Set in Master Playbook
-#mysql_pass: {{ mysql_pass }}		#Set in Master Playbook
-
 mysql_cnf: |
   # MySQL
   db.target      = mysql

@@ -1,7 +1,9 @@
 ---
 
-glassfish_src: "http://download.java.net/glassfish/4.0/release/{{ glassfish_zip }}"
-glassfish_zip: glassfish-4.0.zip
+glassfish_version: 4.0
+
+glassfish_src: "http://download.java.net/glassfish/{{ glassfish_version }}/release/{{ glassfish_zip }}"
+glassfish_zip: "glassfish-{{ glassfish_version }}.zip"
 glassfish_path: "{{ user_home }}/glassfish4"
 
 glassfish_setup: https://icatproject.org/misc/scripts/setup-glassfish.py
