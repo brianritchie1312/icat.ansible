@@ -128,6 +128,8 @@ Notes
 * All package installs (except pexpect) are set to present instead of latest, this greatly improves speed but may cause some problems if you have an old version of a package but with the same name, I have yet to encounter this (except for Pexpect)
 * If you already have mysql installed be sure to change the `mysql_root_pass` variable in `config.yml`
 * If you are using a VM with pip 1.0 installed, run `pip install --index-url=https://pypi.python.org/simple/ -U pip` to upgrade.
+* Some tasks involve finding a file with partial name and no absolute path. In these cases it will select the first matching file. For example If you have multiple 'mysql-connector-java-*.jar' files in /usr/share/java it will only use the first one. 
+
 
 TODO
 ----
@@ -145,7 +147,8 @@ TODO
 * Improve Idempotence and speed
 * Add Selenium setup for travis runs
 * Add Payara Conditional
-* Reconfigure to allow removal of glassfish 
+* Reconfigure to allow removal of glassfish
+* Update with ICAT 4.9.1
 
 
 Tested Configurations
@@ -155,13 +158,18 @@ These configurations have only been tested to a basic level (ie. they run withou
 
 | Config     | OS         | Ansible | Java | Python | Ruby | MySQL | Glassfish | Payara | Simple Authn | DB Authn | LDAP Authn | Anon Authn | ICAT | IDS | IDS Storage | Python-ICAT | Topcat |
 |:----------:|:----------:|:-------:|:----:|:------:|:----:|:-----:|:---------:|:------:|:------------:|:--------:|:----------:|:----------:|:----:|:---:|:-----------:|:-----------:|:------:|
-|Initial     |SL6         |2.3.1.0  |1.8.0 |2.6.6   |--    |5.1.73 |4.0        |--      |1.1.0         |1.2.0     |1.2.0       |1.1.1       |4.8.0 |1.7.0|1.3.3        |0.13.01      |2.2.1   |
-|Debian      |Ubuntu 14.04|2.3.1.0  |1.8.0 |2.6.6   |--    |5.1.73 |4.0        |--      |1.1.0         |1.2.0     |1.2.0       |1.1.1       |4.8.0 |1.7.0|1.3.3        |0.13.01      |2.2.1   |
+|RedHat #1   |SL6         |2.3.1.0  |1.8.0 |2.6.6   |--    |5.1.73 |4.0        |--      |1.1.0         |1.2.0     |1.2.0       |1.1.1       |4.8.0 |1.7.0|1.3.3        |0.13.01      |2.2.1   |
+|Debian #1   |Ubuntu 14.04|2.3.1.0  |1.8.0 |2.6.6   |--    |5.1.73 |4.0        |--      |1.1.0         |1.2.0     |1.2.0       |1.1.1       |4.8.0 |1.7.0|1.3.3        |0.13.01      |2.2.1   |
 |Travis CI   |Ubuntu 14.04|2.4.1.0  |1.8.0 |2.7.13  |--    |5.6    |4.0        |--      |1.1.0         |1.2.0     |1.2.0       |1.1.1       |4.8.0 |1.7.0|1.3.3        |0.13.01      |2.2.1   |
 
 
 Changelog
 ---------
+
+#### 24/11/17
+* Conditionals are now decided by pkg_mgr (ie. yum or apt) rather than OS family, this should hopfully allow other OSs to work.
+* OS specific files and filepaths are now decided by what ansible can find rather than specific file (eg. It will find and copy the first 'mysql-connector-java-*.jar' file in /usr/share/java rather than a specific version specified for each OS.
+* Glassfish script path set to user_home instead of OS specific paths.
 
 #### 23/11/17
 * Corrected transport url in topcat.json

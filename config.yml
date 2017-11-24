@@ -67,10 +67,10 @@
     # At least one of these must be installed but any combination of multiple should work
     # Anon authenticator should work on it's own but it is recomended that you use one of the other plugins for the database root user     
 
-    authn_simple: true 	
-    authn_db: true	
-    authn_ldap: false            
-    authn_anon: false 
+    authn_simple: true
+    authn_db: true
+    authn_ldap: false
+    authn_anon: false
    
    #---ICAT Configure---
     # inventory_hostname = name used in hosts above

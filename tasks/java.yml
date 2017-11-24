@@ -1,37 +1,36 @@
 ---
 
-#---Downloading Packages for RedHat---
+#---Downloading Packages for Yum---
 
-- name: "{{ play_name }}Installing {{ java_package_redhat }} on RedHat"
+- name: "{{ play_name }}Installing Java For Yum"
   yum:
-    name: "{{ java_package_redhat }}"
-    state: present
-  when: 
-    - ansible_os_family == "RedHat"
+    name: "{{ java_pkg_yum }}"
+  when:
+    - ansible_pkg_mgr == "yum"
   tags:
-    - redhat
+    - yum
 
 #---
 
-#---Downloading packages for Debian---
+#---Downloading packages for apt---
 
-- name: "{{ play_name }}Adding Java repository to Debian"
+- name: "{{ play_name }}Adding Java repository to Apt"
   apt_repository:
-    repo: "{{ java_repo_debian }}"
+    repo: "{{ java_repo_apt }}"
     state: present
   when: 
-    - ansible_os_family == "Debian"
+    - ansible_pkg_mgr == "apt"
   tags:
-    - debian
+    - apt
     
 - name: "{{ play_name }}Installing {{ java_package_debian }} on Debian"
   apt:
-    name: "{{ java_package_debian }}"
+    name: "{{ java_pkg_apt }}"
     state: present
-  when: 
-    - ansible_os_family == "Debian"
+  when:
+    - ansible_pkg_mgr == "apt"
   tags:
-    - debian
+    - apt
 
 #---
 

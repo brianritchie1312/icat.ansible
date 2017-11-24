@@ -2,7 +2,7 @@
 
 pycat_version: 0.13.1
 
-pycat_packages:
+pycat_pkg:
   - - python-argparse
     - python-lxml
 

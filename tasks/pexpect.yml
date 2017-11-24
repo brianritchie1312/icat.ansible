@@ -1,29 +1,14 @@
 ---
 
 - name: "{{ play_name }}Installing python pip"
-  yum:
+  package:
     name: python-pip
     state: present
-  when: 
-    - ansible_os_family == "RedHat"
-  tags:
-    - redhat
-
-- name: "{{ play_name }}Installing python pip"
-  apt:
-    name: python-pip
-    state: present
-  when: 
-    - ansible_os_family == "Debian"
-  tags:
-    - debian
 
 - name: "{{ play_name }}Installing pexpect"
   pip:
     name: pexpect
     state: latest
-  tags:
-    - debian
 
 - name: "{{ play_name }}Checking Python version"
   command: "{{ item }} -V"

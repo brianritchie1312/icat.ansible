@@ -4,6 +4,10 @@
 #---Getting Variables---
  # By default, all variables are in config.yml or in 'defaults/'
 
+- debug: msg="You are running {{ ansible_os_family }} {{ ansible_distribution }} {{ ansible_distribution_version }}"
+  tags:
+    - always
+
 - name: Reading Config
   include_vars: ../config.yml
   tags:
@@ -25,35 +29,33 @@
 #---Update Package Lists---
  # This is not explicitly neccesary but some machines may require it
 
-- name: "{{ play_name }}Updating package list for RedHat"
+- name: Updating Package Lists for Yum
   yum:
     name: '*'
     state: latest
-  when: 
-    - ansible_os_family == 'RedHat'
-    - update == true  
+  when:
+    - update == true
+    - ansible_pkg_mgr == "yum"
   vars:
     play_name: "Update : "
   tags:
-    - setup
-    - root
     - update
-    - redhat
+    - root
+    - yum
 
-- name: "{{ play_name }}Updating package cache for Debian"
+- name: Updating Package Cache for Apt
   apt:
     update_cache: yes
-  when: 
-    - ansible_os_family == "Debian"
+  when:
     - update == true
+    - ansible_pkg_mgr == "apt"
   vars:
     play_name: "Update : "
   tags:
-   - setup
-   - root
-   - update
-   - debian
-  
+    - update
+    - root
+    - apt
+
 #---
 
 #---Install java---

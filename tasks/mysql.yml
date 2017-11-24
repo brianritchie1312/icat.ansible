@@ -1,48 +1,26 @@
 ---
 
-#---Setting Variables for RedHat/Debian---
-
-- name: "{{ play_name }}Setting variables for RedHat"
-  set_fact:
-     mysql_cnf_path: "{{ mysql_cnf_path_redhat }}"
-     mysqld: mysqld 
-  when: 
-    - ansible_os_family == "RedHat"
-  tags:
-    - redhat
-
-- name: "{{ play_name }}Setting variables for Debian"
-  set_fact:
-     mysqld:  mysql
-     mysql_cnf_path: "{{ mysql_cnf_path_debian }}"
-  when: 
-    - ansible_os_family == "Debian"
-  tags:
-    - debian
-
-#---
-
 #---Downloading Packages for RedHat/Debian---
 
-- name: "{{ play_name }}Installing MySQL Packages for RedHat"
+- name: "{{ play_name }}Installing MySQL Packages for Yum"
   yum:
     name: "{{ item }}"
     state: present
-  with_items: "{{ mysql_packages_redhat }}"
+  with_items: "{{ mysql_pkg_yum }}"
   when: 
-    - ansible_os_family == "RedHat"
+    - ansible_pkg_mgr == "yum"
   tags:
-    - redhat
+    - yum
 
-- name: "{{ play_name }}Installing MySQL Packages for Debian"
+- name: "{{ play_name }}Installing MySQL Packages for Apt"
   apt:
     name: "{{ item }}"
     state: present
-  with_items: "{{ mysql_packages_debian }}"
+  with_items: "{{ mysql_pkg_apt }}"
   when: 
-    - ansible_os_family == "Debian"
+    - ansible_pkg_mgr == "apt"
   tags:
-    - debian
+    - apt
 
 #---
 
@@ -51,9 +29,16 @@
 
 #---Modifying Config File---
 
+- name: "{{ play_name }}Finding my.cnf"
+  find:
+    paths: /etc
+    patterns: 'my.cnf'
+    recurse: yes
+  register: cnf_path
+
 - name: "{{ play_name }}Configuring my.cnf"
   lineinfile:
-    path: "{{ mysql_cnf_path }}"
+    path: "{{ cnf_path.files[0].path }}"
     insertafter: "{{ item.after }}"
     regexp: "{{ item.regexp }}"
     line: "{{ item.line }}"
@@ -63,14 +48,20 @@
 
 #---
 
-#---Running Secure Install---
+#---Starting Mysql Service---
  
+- name: "{{ play_name }}Finding MySQL service name"
+  find:
+    paths: /etc/init.d
+    patterns: 'mysql*'
+  register: sql_service
+
 - name: "{{ play_name }}Starting database"
   service:
-    name: "{{ mysqld }}"
+    name: "{{ sql_service.files[0].path | basename }}"
     state: started
 
-#---TODO!---Improve this task so it doesn't run at all if first install
+#---Running Secure Install---
 
 - name: "{{ play_name }}Temporarly reseting MySQL root password (This will return an error on first run but should ignore it)"
   command: "mysqladmin -u root -p'{{ mysql_root_pass }}' password ''"

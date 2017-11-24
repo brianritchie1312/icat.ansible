@@ -121,32 +121,15 @@
   when: 'fac_name not in icat_facs.stdout'
 
 - name: "{{ play_name }}Installing dependencies for RedHat"
-  yum:
+  package:
     name: "{{ item }}"
     state: present
-  with_items: "{{ pycat_packages }}"
+  with_items: "{{ pycat_pkg }}"
   become: yes
   become_user: root
   become_method: sudo
   when:
-    - ansible_os_family == "RedHat"
     - 'fac_name not in icat_facs.stdout'
-  tags:
-    - redhat
-
-- name: "{{ play_name }}Installing dependencies for Debian"
-  apt:
-    name: "{{ item }}"
-    state: present
-  with_items: "{{ pycat_packages }}"
-  become: yes
-  become_user: root
-  become_method: sudo
-  when:
-    - ansible_os_family == "Debian"
-    - 'fac_name not in icat_facs.stdout'
-  tags:
-    - debian
 
 - name: "{{ play_name }}Checking Python version"
   command: python --version

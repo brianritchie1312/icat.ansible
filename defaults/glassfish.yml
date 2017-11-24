@@ -7,11 +7,8 @@ glassfish_zip: "glassfish-{{ glassfish_version }}.zip"
 glassfish_path: "{{ user_home }}/glassfish4"
 
 glassfish_setup: https://icatproject.org/misc/scripts/setup-glassfish.py
-glassfish_java_redhat: /usr/share/java/mysql-connector-java-5.1.17.jar
-glassfish_java_debian: /usr/share/java/mysql-connector-java-5.1.28.jar
 
 glassfish_domain: domain1
-
 
 # This block is used by multiple playbooks
 glassfish_cnf: |
