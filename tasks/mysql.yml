@@ -1,6 +1,23 @@
 ---
 
+#---Install Pexpect---
+
+- name: "{{ play_name }}Installing pexpect"
+  pip:
+    name: pexpect
+    state: latest
+
 #---Downloading Packages for RedHat/Debian---
+
+- name: "{{ play_name }}Check if Mysql 5.6 is installed"
+  command: mysql --version
+  register: sql_version
+
+- set_fact:
+#    mysql_pkg_yum: "{{ mysql_pkg_yum_56 }}"
+    mysql_pkg_apt: "{{ mysql_pkg_apt_56 }}"
+  when:
+    - '"5.6" in sql_version.stdout'
 
 - name: "{{ play_name }}Installing MySQL Packages for Yum"
   yum:
@@ -23,9 +40,6 @@
     - apt
 
 #---
-
-- name: "{{ play_name }}Checking MySQL Version"
-  command: mysql --version
 
 #---Modifying Config File---
 
@@ -56,9 +70,19 @@
     patterns: 'mysql*'
   register: sql_service
 
+- set_fact:
+    mysql_service: "{{ sql_service.files[0].path | basename }}"
+  when:
+    - sql_service.matched > 0
+
+- set_fact:
+    mysql_service: mysql
+  when:
+    - sql_service.matched == 0
+
 - name: "{{ play_name }}Starting database"
   service:
-    name: "{{ sql_service.files[0].path | basename }}"
+    name: "{{ mysql_service }}"
     state: started
 
 #---Running Secure Install---

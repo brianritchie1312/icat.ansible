@@ -2,3 +2,7 @@
 # defaults file for /etc/ansible/roles/ICATInstall/
 
 
+# Add list of important packages not specifc to certain tasks
+dep_pkg: 
+  - - unzip
+    - python-pip

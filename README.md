@@ -166,6 +166,11 @@ These configurations have only been tested to a basic level (ie. they run withou
 Changelog
 ---------
 
+#### 24/11/17(2)
+* mysql service name defaults to 'mysql' if nothing is found in /etc/init.d/
+* Added pkg list to be installed before anything else is run, meant to install anything the default OS may miss (eg. unzip, pip )
+* If mysql 5.6 is installed package names for apt will be updated to prevent errors
+
 #### 24/11/17
 * Conditionals are now decided by pkg_mgr (ie. yum or apt) rather than OS family, this should hopfully allow other OSs to work.
 * OS specific files and filepaths are now decided by what ansible can find rather than specific file (eg. It will find and copy the first 'mysql-connector-java-*.jar' file in /usr/share/java rather than a specific version specified for each OS.

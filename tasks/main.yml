@@ -24,7 +24,18 @@
   tags:
     - always  
 
-#-------Plays-------
+#---Universal Dependencies---
+
+- name: "Installing dependecies"
+  package:
+    name: "{{ item }}"
+    state: present
+  with_items:
+    - "{{ dep_pkg }}"
+  tags:
+    - always
+
+#------Playbooks------
 
 #---Update Package Lists---
  # This is not explicitly neccesary but some machines may require it
@@ -75,17 +86,6 @@
 
 #---Install MySQL---
 
-- name: "{{ play_name }}Loading Pexpect Install"
-  include: "pexpect.yml"
-  when:
-    - mysql == true
-  vars:
-    play_name: "MySQl Pexpect : "
-  tags:
-    - root
-    - mysql
-    - python
-  
 - name: "{{ play_name }}Loading MySQl Install and Config"
   include: "mysql.yml"
   when:
