@@ -23,7 +23,7 @@
   tags:
     - apt
     
-- name: "{{ play_name }}Installing {{ java_package_debian }} on Debian"
+- name: "{{ play_name }}Installing {{ java_package_debian }} with Apt"
   apt:
     name: "{{ java_pkg_apt }}"
     state: present

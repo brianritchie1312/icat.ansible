@@ -107,9 +107,9 @@
 
 #---
 
-#---Install dependencies for RedHat/Debian---
+#---Install dependencies for Yum/Apt---
 
-- name: "{{ play_name }}Installing dependencies"
+- name: "{{ play_name }}Installing dependencies with Pip"
   pip:
     name: "{{ item }}"
     state: present
@@ -120,7 +120,7 @@
   become_user: root
   when: 'fac_name not in icat_facs.stdout'
 
-- name: "{{ play_name }}Installing dependencies for RedHat"
+- name: "{{ play_name }}Installing dependencies with Yum/Apt"
   package:
     name: "{{ item }}"
     state: present
