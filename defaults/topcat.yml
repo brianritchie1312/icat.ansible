@@ -4,7 +4,7 @@ topcat_version: 2.2.1
 # Only tested with 2.2.1
 
 topcat_src: "https://repo.icatproject.org/repo/org/icatproject/topcat/{{ topcat_version }}/{{ topcat_zip }}"
-topcat_zip: topcat-{{ topcat_version }}-distro.zip
+topcat_zip: "topcat-{{ topcat_version }}-distro.zip"
 topcat_path: "{{ user_home }}/topcat"
 
 topcat_setup: topcat-setup.properties
@@ -13,10 +13,10 @@ topcat_json: topcat.json
 topcat_lang: lang.json
 topcat_css: topcat.css
 
-#Email block
-mail_enable: false
-email_cnf: |
-  #Email setup
-  mail.enable = {{ mail_enable }}
+email_enable: false
 
+# Add other mail.properties to this list if needed
+email_cnf_list:
+  - - { regexp: '^mail.enable', line: 'mail.enable = {{ email_enable }}' }
 
+topcat_cnf_list: "{{ mysql_cnf_list }} + {{ container_cnf_list }} + {{ email_cnf_list }}"

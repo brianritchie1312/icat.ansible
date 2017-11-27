@@ -12,3 +12,4 @@ icat_prop: icat.properties
 
 lucene_dir: "{{ user_home }}/icat/data/lucene"
 
+icat_cnf_list: "{{ container_cnf_list }} + {{ mysql_cnf_list }}"

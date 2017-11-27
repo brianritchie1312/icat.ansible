@@ -122,6 +122,19 @@
 
   #--Glassfish--
 
+- set_fact:
+    container_cnf_list: "{{ glassfish_cnf_list }}"
+    container_path: "{{ glassfish_path }}"
+  when:
+    - container == true
+    - container_name == "glassfish"
+  tags:
+    - always
+    - user
+    - container
+    - glassfish
+
+
 - name: "{{ play_name }}Loading Glassfish install" 
   include: "glassfish.yml" 
   become: yes
@@ -136,20 +149,21 @@
     - container
     - glassfish
 
-- set_fact:
-    container_block: "{{ glassfish_cnf }}"
-    container_path: "{{ glassfish_path }}"
-  when:
-    - container == true
-    - container_name == "glassfish"
-  tags:
-    - user
-    - container
-    - glassfish
-
   #--
 
   #--Payara--
+
+- set_fact:
+    container_cnf_list: "{{ payara_cnf_list }}"
+    container_path: "{{ payara_path }}"
+  when:
+    - container == true
+    - container_name == "payara"
+  tags:
+    - always
+    - user
+    - container
+    - payara
 
 - name: "{{ play_name }}Loading Payara install"
   include: "payara.yml"
@@ -160,17 +174,6 @@
     - container_name == "payara"
   vars:
     play_name: "Payara : "
-  tags:
-    - user
-    - container
-    - payara
-
-- set_fact:
-    container_block: "{{ payara_cnf }}"
-    container_path: "{{ payara_path }}"
-  when:
-    - container == true
-    - container_name == "payara"
   tags:
     - user
     - container

@@ -40,18 +40,20 @@
     path: "{{ ids_path }}/{{ ids_setup }}"
   register: ip_setup
 
-- name: "{{ play_name }}Creating {{ ids_setup }} - Creating empty file"
-  file:
-    path: "{{ ids_path }}/{{ ids_setup }}"
-    state: touch 
+- name: "{{ play_name }}Copying {{ ids_setup }}.example"
+  copy:
+    src: "{{ ids_path }}/{{ ids_setup }}.example"
+    dest: "{{ ids_path }}/{{ ids_setup }}"
+    remote_src: yes
   when:
     - ip_setup.stat.exists == false
 
-- name: "{{ play_name }}Configuring {{ ids_setup }} - Adding glassfish container block"
-  blockinfile:
+- name: "{{ play_name }}Configuring {{ ids_setup }}"
+  lineinfile:
     path: "{{ ids_path }}/{{ ids_setup }}"
-    block: "{{ container_block }}"
-    state: present
+    regexp: "{{ item.regexp }}"
+    line: "{{ item.line }}"
+  with_items: "{{ container_cnf_list }}"
 
 - name: "{{ play_name }}Configuring {{ ids_setup }} - Configuring Libraries"
   lineinfile:

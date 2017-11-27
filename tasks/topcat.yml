@@ -40,20 +40,21 @@
     path: "{{ topcat_path }}/{{ topcat_setup }}"
   register: tp_setup
 
-- name: "{{ play_name }}Creating {{ topcat_setup }}"
-  file:
-    path: "{{ topcat_path }}/{{ topcat_setup }}"
-    state: touch
+- name: "{{ play_name }}Copying {{ topcat_setup }}.example"
+  copy:
+    src: "{{ topcat_path }}/{{ topcat_setup }}.example"
+    dest: "{{ topcat_path }}/{{ topcat_setup }}"
+    remote_src: yes
   when:
     - tp_setup.stat.exists == false
 
 - name: "{{ play_name }}Configuring {{ topcat_setup }}"
-  blockinfile:
+  lineinfile:
     path: "{{ topcat_path }}/{{ topcat_setup }}"
-    block: |
-      {{ container_block }}    
-      {{ mysql_cnf }}
-      {{ email_cnf }}
+    regexp: "{{ item.regexp }}"
+    line: "{{ item.line }}"
+  with_items: "{{ topcat_cnf_list }}"
+   
 
 #---
 
@@ -77,7 +78,7 @@
     regexp: "{{ item.regexp }}"
     line: "{{ item.line }}"
   with_items:
-    - { regexp: "mail.enable",    line: "mail.enable = {{ mail_enable }}"}
+    - { regexp: "mail.enable",    line: "mail.enable = {{ email_enable }}"}
     - { regexp: "ids.getStatus",  line: "ids.getStatus.max = 100" }
     - { regexp: "poll.delay",     line: "poll.delay = 600" }
     - { regexp: "poll.interval",  line: "poll.interval.wait = 600" }

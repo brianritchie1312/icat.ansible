@@ -55,7 +55,7 @@
   with_items:
     - "{{ storage_main }}"
     - "{{ storage_archive }}"
-    - "{{ storage_setup }}"
+#    - "{{ storage_setup }}"
   
 - name: "{{ play_name }}Configuring properties files - Adding storage directories"
   lineinfile:
@@ -66,10 +66,18 @@
     - { file: "{{ storage_main }}", line: "dir={{ dir_main }}" }
     - { file: "{{ storage_archive }}", line: "dir={{ dir_archive }}" }
 
-- name: "{{ play_name }}Configuring {{ storage_setup }} - Adding Glassfish block"
-  blockinfile:
+- name: "{{ play_name }}Copying {{ storage_setup }}.example"
+  copy:
+    src: "{{ storage_path }}/{{ storage_setup }}.example"
+    dest: "{{ storage_path }}/{{ storage_setup }}"
+    remote_src: yes
+
+- name: "{{ play_name }}Configuring {{ storage_setup }}"
+  lineinfile:
     path: "{{ storage_path }}/{{ storage_setup }}"
-    block: "{{ container_block }}"
+    regexp: "{{ item.regexp }}"
+    line: "{{ item.line }}"
+  with_items: "{{ container_cnf_list }}"
 
 #---
 

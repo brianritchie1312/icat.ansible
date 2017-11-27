@@ -5,45 +5,29 @@
 
 #---
 
+#-NOTE-if for whatever reason a plugin's variables don't match the standard format in defaults/suthn.yml, add them here
+ # eg. Chosen version of authn anon has different url, add 'authn_src: {NEW URL}' to the anon set_fact below
+
 - name: "{{ play_name }}Setting Variables for Authn Simple"
   set_fact:
-    authn_src: "{{ authn_src_s }}"
-    authn_zip: "{{ authn_zip_s }}"
-    authn_path: "{{ authn_path_s }}"
-    authn_setup: "{{ authn_setup_s }}"
-    authn_setup_block: "{{ authn_setup_block_s }}"
-    authn_prop: "{{ authn_prop_s }}"
+    authn_version: "{{ simple_version }}"
     authn_users_s: 
   when: authn_plugin == "simple"
 
 - name: "{{ play_name }}Setting Variables for Authn DB"
   set_fact:
-    authn_src: "{{ authn_src_db }}"
-    authn_zip: "{{ authn_zip_db }}"
-    authn_path: "{{ authn_path_db }}"
-    authn_setup: "{{ authn_setup_db }}"
-    authn_setup_block: "{{ authn_setup_block_db }}"
-    authn_prop: "{{ authn_prop_db }}"
+    authn_version: "{{ db_version }}"
+    authn_cnf_list: "{{ authn_cnf_list }} + {{ mysql_cnf_list | replace('target','vendor') }}"
   when: authn_plugin == "db"
 
 - name: "{{ play_name }}Setting Variables for Authn LDAP"
   set_fact:
-    authn_src: "{{ authn_src_ldap }}"
-    authn_zip: "{{ authn_zip_ldap }}"
-    authn_path: "{{ authn_path_ldap }}"
-    authn_setup: "{{ authn_setup_ldap }}"
-    authn_setup_block: "{{ authn_setup_block_ldap }}"
-    authn_prop: "{{ authn_prop_ldap }}"
+    authn_version: "{{ ldap_version }}"
   when: authn_plugin == "ldap"
 
 - name: "{{ play_name }}Setting Variables for Authn Anon"
   set_fact:
-    authn_src: "{{ authn_src_anon }}"
-    authn_zip: "{{ authn_zip_anon }}"
-    authn_path: "{{ authn_path_anon }}"
-    authn_setup: "{{ authn_setup_anon }}"
-    authn_setup_block: "{{ authn_setup_block_anon }}"
-    authn_prop: "{{ authn_prop_anon }}"
+    authn_version: "{{ anon_version }}"
   when: authn_plugin == "anon"
 
 #---
@@ -83,18 +67,20 @@
     path: "{{ authn_path }}/{{ authn_setup }}"
   register: a_setup
 
-- name: "{{ play_name }}Creating {{ authn_setup }}"
-  file:
-    path: "{{ authn_path }}/{{ authn_setup }}"
-    state: touch
+- name: "{{ play_name }}Copying {{ authn_setup }}.example"
+  copy:
+    src: "{{ authn_path }}/{{ authn_setup }}.example"
+    dest: "{{ authn_path }}/{{ authn_setup }}"
+    remote_src: yes
   when:
     - a_setup.stat.exists == false
 
 - name: "{{ play_name }}Configuring {{ authn_setup }}"
-  blockinfile:
+  lineinfile:
     path: "{{ authn_path }}/{{ authn_setup }}"
-    block: |
-      {{ authn_setup_block }}
+    regexp: "{{ item.regexp }}"
+    line: "{{ item.line }}"
+  with_items: "{{ authn_cnf_list }}"
 
 #---
 

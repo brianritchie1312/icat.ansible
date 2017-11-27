@@ -40,20 +40,20 @@
     path: "{{ icat_path }}/{{ icat_setup }}"
   register: is_setup
 
-- name: "{{ play_name }}Creating {{ icat_setup }}"
-  file:
-    path: "{{ icat_path }}/{{ icat_setup }}"
-    state: touch
+- name: "{{ play_name }}Copying {{ icat_setup }}.example"
+  copy:
+    src: "{{ icat_path }}/{{ icat_setup }}.example"
+    dest: "{{ icat_path }}/{{ icat_setup }}"
+    remote_src: yes
   when:
     - is_setup.stat.exists == false
 
 - name: "{{ play_name }}Configuring {{ icat_setup }}"
-  blockinfile:
+  lineinfile:
     path: "{{ icat_path }}/{{ icat_setup }}"
-    block: |
-      {{ container_block }}
-
-      {{ mysql_cnf }}
+    regexp: "{{ item.regexp }}"
+    line: "{{ item.line }}"
+  with_items: "{{ icat_cnf_list }}"
 
 #---
 
@@ -95,7 +95,7 @@
     regexp: "{{ item.regexp }}"
     line: "{{ item.line }}"
   with_items:
-    - { regexp: 'rootUserNames', line: 'rootUserNames = {{ icat_mech }}/{{ icat_root }}' }            #set manually
+    - { regexp: 'rootUserNames', line: 'rootUserNames = {{ icat_mech }}/{{ icat_root }}' }
     - { regexp: 'lucene.directory', line: 'lucene.directory = {{ lucene_dir }}' }
 
 #--authn list--
@@ -217,7 +217,5 @@
 - name: "{{ play_name }}Checking ICAT"
   command: "curl -k {{ icat_url }}/icat/version"
   register: icat_out
-
-- debug: var=icat_out.stdout_lines
 
 #---

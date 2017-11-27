@@ -10,10 +10,9 @@ glassfish_setup: https://icatproject.org/misc/scripts/setup-glassfish.py
 
 glassfish_domain: domain1
 
-# This block is used by multiple playbooks
-glassfish_cnf: |
-  #Glassfish
-  secure    = false
-  container = Glassfish
-  home      = {{ glassfish_path }}
-  port      = 4848
+# This will be used my multiple setup.properties if glassfish set to true
+glassfish_cnf_list:
+  - - { regexp: '^secure',    line: 'secure    = false' }
+    - { regexp: '^container', line: 'container = Glassfish' }
+    - { regexp: '^home',      line: 'home      = {{ glassfish_path }}' }
+    - { regexp: '^port',      line: 'port      = 4848' }

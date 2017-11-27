@@ -166,6 +166,10 @@ These configurations have only been tested to a basic level (ie. they run withou
 Changelog
 ---------
 
+#### 27/11/17
+* Replaced blockinfiles with lineinfiles and lists. This should, in theory, make version changing easier as any extra lines in new versions of properties files won't be overwritten, new lines will have to be manually configured if default is correct.
+* Condensed Authn variables into one set for all four. (ie. One url varable with it's own varaibles for each run of authn.yml rather than four near identical variables)
+
 #### 24/11/17(2)
 * mysql service name defaults to 'mysql' if nothing is found in /etc/init.d/
 * Added pkg list to be installed before anything else is run, meant to install anything the default OS may miss (eg. unzip, pip )

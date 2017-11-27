@@ -33,11 +33,10 @@ mysql_cnf_eng: InnoDB
 
 mysql_secure: mysql_secure_installation
 
-mysql_cnf: |
-  # MySQL
-  db.target      = mysql
-  db.driver      = com.mysql.jdbc.jdbc2.optional.MysqlDataSource
-  db.url         = jdbc:mysql://localhost:3306/{{ icat_name }}
-  db.username    = {{ mysql_user }}
-  db.password    = {{ mysql_pass }}
+mysql_cnf_list:
+   - - { regexp: '^db.target',   line: 'db.target      = mysql' }
+     - { regexp: '^db.driver',   line: 'db.driver      = com.mysql.jdbc.jdbc2.optional.MysqlDataSource' }
+     - { regexp: '^db.url',      line: 'db.url         = jdbc:mysql://localhost:3306/{{ icat_name }}' }
+     - { regexp: '^db.username', line: 'db.username    = {{ mysql_user }}' }
+     - { regexp: '^db.password', line: 'db.password    = {{ mysql_pass }}' }
 

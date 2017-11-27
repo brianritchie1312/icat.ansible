@@ -69,8 +69,8 @@
 
     authn_simple: true
     authn_db: true
-    authn_ldap: false
-    authn_anon: false
+    authn_ldap: true
+    authn_anon: true
    
    #---ICAT Configure---
     # inventory_hostname = name used in hosts above
