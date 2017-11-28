@@ -5,6 +5,13 @@
 
 #---
 
+- name: "{{ play_name }}Changing filenames for versions older than 4.9.0"
+  set_fact:
+    icat_setup: icat-setup.properties
+    icat_prop: icat.properties
+  when:
+    - icat_version | version_compare('4.9.0','<') == true
+
 #---Downloading ICAT Server---
 
 - stat:
@@ -91,14 +98,20 @@
 
 - name: "{{ play_name }}Configuring {{ icat_prop }}"
   lineinfile:
-    dest: "{{ icat_path }}/{{ icat_prop }}"
+    path: "{{ icat_path }}/{{ icat_prop }}"
     regexp: "{{ item.regexp }}"
     line: "{{ item.line }}"
   with_items:
     - { regexp: 'rootUserNames', line: 'rootUserNames = {{ icat_mech }}/{{ icat_root }}' }
     - { regexp: 'lucene.directory', line: 'lucene.directory = {{ lucene_dir }}' }
 
-#--authn list--
+- name: "{{ play_name }}Correcting url in {{ icat_prop }}"
+  replace:
+    path: "{{ icat_path }}/{{ icat_prop }}"
+    regexp: "https://localhost:8181"
+    replace: "{{ icat_url }}"
+
+#--Authn--
 
 - set_fact:
     authn_list:
@@ -125,16 +138,17 @@
     regexp: authn.list
     line: "authn.list = {{ authn_list }}"
 
+- name: "{{ play_name }}Adding Authenticator Lines to {{ icat_prop }}"
+  lineinfile:
+    dest: "{{ icat_path }}/{{ icat_prop }}"
+    regexp: "^authn.simple.friendly"
+    line: "authn.simple.friendly = Simple"
+    insertafter: "authn.simple"
+
 #--
 
 #--Authn Simple--
 
-- name: "{{ play_name }}Configuring {{ icat_prop }} - adding authn.simple.friendly line"
-  lineinfile:
-    dest: "{{ icat_path }}/{{ icat_prop }}"
-    insertafter: 'authn.simple.jndi'
-    line: 'authn.simple.friendly = Simple'
- 
 - name: "{{ play_name }}Configuring {{ icat_prop }} - Uncommenting Authn Simple Lines"
   replace:
     path: "{{ icat_path }}/{{ icat_prop }}"
@@ -149,6 +163,14 @@
     replace: "!authn.simple"
   when: authn_simple == false
 
+- name: "{{ play_name }}Replacing authn.simple.url with authn.simple.jndi for versions before 2.0.0"
+  lineinfile:
+    path: "{{ icat_path }}/{{ icat_prop }}"
+    regexp: "^authn.simple.url"
+    line: "authn.simple.jndi  = java:global/authn.simple-{{ simple_version }}/SIMPLE_Authenticator"
+  when:
+    - authn_simple == true
+    - simple_version | version_compare('2.0.0','<') == true
 #--
 
 #--Authn DB--
@@ -166,6 +188,16 @@
     regexp: "^authn.db"
     replace: "!authn.db"
   when: authn_db == false
+
+- name: "{{ play_name }}Replacing authn.db.url with authn.db.jndi"
+  lineinfile:
+    path: "{{ icat_path }}/{{ icat_prop }}"
+    regexp: "^authn.db.url"
+    line: "authn.db.jndi  = java:global/authn.db-{{ db_version }}/DB_Authenticator"
+  when:
+    - authn_db == true
+    - db_version | version_compare('2.0.0','<') == true
+# Uncomment when earliest restful version is known
 
 #--
 
@@ -185,6 +217,15 @@
     replace: "!authn.ldap"
   when: authn_ldap == false
 
+- name: "{{ play_name }}Replacing authn.ldap.url with authn.ldap.jndi for versions before 2.0.0"
+  lineinfile:
+    path: "{{ icat_path }}/{{ icat_prop }}"
+    regexp: "^authn.ldap.url"
+    line: "authn.ldap.jndi  = java:global/authn.ldap-{{ ldap_version }}/LDAP_Authenticator"
+  when:
+    - authn_ldap == true
+    - ldap_version | version_compare('2.0.0','<') == true
+
 #--
 
 #--Authn Anon--
@@ -203,6 +244,16 @@
     replace: "!authn.anon"
   when: authn_anon == false
 
+- name: "{{ play_name }}Replacing authn.anon.url withn authn.anon.jndi for versions before 2.0.0"
+  lineinfile:
+    path: "{{ icat_path }}/{{ icat_prop }}"
+    regexp: "^authn.anon.url"
+    line: "authn.anon.jndi  = java:global/authn.anon-{{ anon_version }}/ANON_Authenticator"
+  when:
+    - authn_anon == true
+    - anon_version | version_compare('2.0.0','<') == true
+# Uncomment when earliest restful version known
+
 #--
 
 #---
@@ -216,6 +267,5 @@
 
 - name: "{{ play_name }}Checking ICAT"
   command: "curl -k {{ icat_url }}/icat/version"
-  register: icat_out
 
 #---

@@ -3,32 +3,32 @@
 #This meant to be run at the begining of each non-root playbook
 # I may move this to handlers if they are more convinient
 
-#---Glassfish Domain---
+#---Container Domain---
 
 - stat:
-    path: "{{ glassfish_path }}"
-  register: check_gf
+    path: "{{ container_path }}"
+  register: check_ctr
 
-- name: "{{ play_name }}Checking {{ glassfish_domain }}"
+- name: "{{ play_name }}Checking {{ container_domain }}"
   environment:
-    PATH: "{{ ansible_env.PATH }}:{{ glassfish_path }}/bin"
+    PATH: "{{ ansible_env.PATH }}:{{ container_path }}/bin"
   command: "nohup asadmin list-domains"
-  when: check_gf.stat.exists == true
-  register: check_gf_doms
+  when: check_ctr.stat.exists == true
+  register: check_ctr_doms
 
 - set_fact:
-    gf_dom: "{{ glassfish_domain }} not running"
+    ctr_dom: "{{ container_domain }} not running"
 
-- name: "{{ play_name }}Starting {{ glassfish_domain }}"
+- name: "{{ play_name }}Starting {{ container_domain }}"
   environment:
-    PATH: "{{ ansible_env.PATH }}:{{ glassfish_path }}/bin"
+    PATH: "{{ ansible_env.PATH }}:{{ container_path }}/bin"
   command: "nohup {{ item }}"
   with_items:
-    - "asadmin start-domain {{ glassfish_domain }}"
+    - "asadmin start-domain {{ container_domain }}"
     - "asadmin list-domains"
   when: 
-    - check_gf.stat.exists == true
-    - "gf_dom in check_gf_doms.stdout"
+    - check_ctr.stat.exists == true
+    - "ctr_dom in check_ctr_doms.stdout"
 
 #---Download Directory---
 

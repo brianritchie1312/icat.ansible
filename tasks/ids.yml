@@ -5,6 +5,28 @@
 
 #---
 
+- name: "{{ play_name }}Changing URL for versions newer than 1.6.0"
+  set_fact:
+    sub_domain: repo
+    url_mvn: 
+  when:
+    - ids_version | version_compare('1.6.0', '>') == true
+
+- name: "{{ play_name }}Changing URL for versions older than 1.7.0"
+  set_fact:
+    sub_domain: www
+    url_mvn: mvn/
+  when:
+    - ids_version | version_compare('1.7.0', '<') == true
+
+- name: "{{ play_name }}Changing Filenames for versions older than 1.8.0"
+  set_fact:
+    ids_setup: ids-setup.properties file
+    ids_prop: ids.properties
+  when:
+    - ids_version | version_compare('1.8.0', '<') == true
+
+
 #---Downloading IDS---
 
 - stat:

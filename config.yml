@@ -39,6 +39,12 @@
     ids: true
     # Installs and configures ICAT Data Service						ids.yml				config.yml, ids.yml, glassfish.yml			non-root
     
+    lucene: true
+    # Installs icat.lucene	WIP							lucene.yml			config.yml,
+
+    utils: false
+    # Installs icat.utils       WIP
+
     testdata: true
     # Installs Python-ICAT and ingests data into database 				pycat.yml			config.yml, pycat.yml					root, non-root, mysql-root, icat-root
     
@@ -53,14 +59,31 @@
 
    #---Version Numbers---
     # These must not be left blank otherwise a syntax error will be returned. Even if the software isn't used.
+    
+    # Containers
+    glassfish_version: 4.0
+    payara_version: 4.1.2.174
+   
+    # Authenticators
+    simple_version: 2.0.0
+    db_version: 2.0.0
+    ldap_version: 2.0.0
+    anon_version: 2.0.0
 
-#TODO! Move versions numbers here from individual ymls
+    # ICAT and Plugins
+    icat_version: 4.9.1
+    storage_version: 1.4.0
+    ids_version: 1.7.0
+    lucene_version: 1.1.0
+    utils_version: 0
+    topcat_version: 2.3.6
+    
 
    #---Container---
     # One and only one of these must be enabled
 
-    container_name: glassfish
-#    container_name: payara
+#    container_name: glassfish
+    container_name: payara
     # PAYARA NOT YET COMPLETE
 
    #---Authentication Plugins---
@@ -68,9 +91,9 @@
     # Anon authenticator should work on it's own but it is recomended that you use one of the other plugins for the database root user     
 
     authn_simple: true
-    authn_db: true
-    authn_ldap: true
-    authn_anon: true
+    authn_db: false
+    authn_ldap: false
+    authn_anon: false
    
    #---ICAT Configure---
     # inventory_hostname = name used in hosts above

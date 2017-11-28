@@ -5,30 +5,106 @@
 
 #---
 
-#-NOTE-if for whatever reason a plugin's variables don't match the standard format in defaults/suthn.yml, add them here
+#-NOTE-if for whatever reason a plugin's variables don't match the standard format in defaults/authn.yml, add them here
  # eg. Chosen version of authn anon has different url, add 'authn_src: {NEW URL}' to the anon set_fact below
 
 - name: "{{ play_name }}Setting Variables for Authn Simple"
   set_fact:
     authn_version: "{{ simple_version }}"
     authn_users_s: 
+    authn_cnf_list: "{{ container_cnf_list }}"
   when: authn_plugin == "simple"
 
 - name: "{{ play_name }}Setting Variables for Authn DB"
   set_fact:
     authn_version: "{{ db_version }}"
-    authn_cnf_list: "{{ authn_cnf_list }} + {{ mysql_cnf_list | replace('target','vendor') }}"
+    authn_cnf_list: "{{ container_cnf_list }} + {{ mysql_cnf_list }}"
   when: authn_plugin == "db"
 
 - name: "{{ play_name }}Setting Variables for Authn LDAP"
   set_fact:
     authn_version: "{{ ldap_version }}"
+    authn_cnf_list: "{{ container_cnf_list }}"
   when: authn_plugin == "ldap"
 
 - name: "{{ play_name }}Setting Variables for Authn Anon"
   set_fact:
     authn_version: "{{ anon_version }}"
+    authn_cnf_list: "{{ container_cnf_list }}"
   when: authn_plugin == "anon"
+
+#---
+
+- name: "{{ play_name }}Replacing target with vendor for Db versions older than 2.0.0"
+  set_fact:
+    authn_cnf_list: "{{ authn_cnf_list }} + {{ mysql_cnf_list | replace('target','vendor') }}"
+  when:
+    - authn_plugin == "db"
+    - db_version | version_compare('2.0.0', '<')
+
+#---Changing Sub Domains for older versions---
+
+- name: "{{ play_name }}Reseting URL variable"
+  set_fact:
+    sub_domain: repo
+    url_mvn:
+
+- name: "{{ play_name }}Changing URL for simple versions older than 1.2.0"
+  set_fact:
+    sub_domain: www
+    url_mvn: mvn/
+  when:
+    - authn_plugin == "simple"
+    - authn_version | version_compare('1.2.0', '<' ) == true
+
+- name: "{{ play_name }}Changing URL for DB version older than 1.2.1"
+  set_fact:
+    sub_domain: www
+    url_mvn: mvn/
+  when:
+    - authn_plugin == "db"
+    - authn_version | version_compare('1.2.1', '<' ) == true
+
+- name: "{{ play_name }}Changing URL for LDAP versions older than 1.2.1"
+  set_fact:
+    sub_domain: www
+    url_mvn: mvn/
+  when:
+    - authn_plugin == "ldap"
+    - authn_version | version_compare('1.2.1', '<' ) == true
+
+- name: "{{ play_name }}Changing URL for Anon versions older than 1.1.2"
+  set_fact:
+    sub_domain: www
+    url_mvn: mvn/
+  when:
+    - authn_plugin == "anon"
+    - authn_version | version_compare('1.1.2', '<') == true
+
+#---
+
+#---Changing Properties filenames for older versions
+
+- name: "{{ play_name }}Reseting filenames"
+  set_fact:
+    authn_setup: "setup.properties"
+    authn_prop: "run.properties"
+
+- name: "{{ play_name }}Changing filenames for Simple, DB and LDAP versions older than 2.0.0"
+  set_fact:
+    authn_setup: "authn_{{ authn_plugin }}-setup.properties"
+    authn_prop: "authn_{{ authn_plugin }}.properties"
+  when:
+    - ( authn_plugin == "simple" ) or ( authn_plugin == "db" ) or ( authn_plugin == "ldap" )
+    - authn_version | version_compare('2.0.0', '<' )
+
+- name: "{{ play_name }}Changing filenames for Anon versions older than 1.1.2"
+  set_fact:
+    authn_setup: "authn_anon-setup.properties"
+    authn_prop: "authn_anon.properties"
+  when:
+    - authn_plugin == "anon"
+    - authn_version | version_compare('1.1.2', '<') == true
 
 #---
 

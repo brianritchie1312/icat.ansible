@@ -1,0 +1,93 @@
+---
+
+- name: "{{ play_name }}Loading Pre-playbook Check"
+  include: "preplay.yml"
+
+#---
+
+#---Downloading ICAT Lucene---
+
+- stat:
+    path: "{{ download_dir }}{{ lucene_zip }}"
+  register: il_zip
+
+- name: "{{ play_name }}Downloading {{ lucene_zip }}"
+  get_url:
+    url: "{{ lucene_src }}"
+    dest: "{{ download_dir }}"
+  when: il_zip.stat.exists == false
+
+#---
+
+#---Unzipping Lucene---
+
+- stat:
+    path: "{{ lucene_path }}"
+  register: il_dir
+
+- name: "{{ play_name }}Unzipping {{ lucene_zip }}"
+  unarchive:
+    src: "{{ download_dir }}{{ lucene_zip }}"
+    dest: "{{ user_home }}/"
+    remote_src: yes
+  when: il_dir.stat.exists == false
+
+#---
+
+#---Setup file---
+
+- stat:
+    path: "{{ lucene_path }}/{{ lucene_setup }}"
+  register: il_setup
+
+- name: "{{ play_name }}Copying {{ lucene_setup }}.example"
+  copy:
+    src: "{{ lucene_path }}/{{ lucene_setup }}.example"
+    dest: "{{ lucene_path }}/{{ lucene_setup }}"
+    remote_src: yes
+  when:
+    - il_setup.stat.exists == false
+
+- name: "{{ play_name }}Configuring {{ lucene_setup }}"
+  lineinfile:
+    path: "{{ lucene_path }}/{{ lucene_setup }}"
+    regexp: "{{ item.regexp }}"
+    line: "{{ item.line }}"
+  with_items: "{{ container_cnf_list }}"
+
+#---
+
+#---Lucene Directory---
+
+- name: "{{ play_name }}Creating Lucene directory"
+  file: 
+    path: "{{ lucene_dir }}"
+    state: directory
+
+#---Lucene Properties---
+
+- name: "{{ play_name }}Copying {{ lucene_prop }}.example"
+  copy:
+    src: "{{ lucene_path }}/{{ lucene_prop }}.example"
+    dest: "{{ lucene_path }}/{{ lucene_prop }}"
+    remote_src: yes
+    force: no
+
+- name: "{{ play_name }}Configuring {{ lucene_prop }}"
+  lineinfile:
+    dest: "{{ lucene_path }}/{{ lucene_prop }}"
+    regexp: "{{ item.regexp }}"
+    line: "{{ item.line }}"
+  with_items:
+    - { regexp: 'directory', line: 'directory = {{ lucene_dir }}' }
+
+#---
+
+#---Running Setup---
+
+- name: "{{ play_name }}Installing Lucene"
+  shell:
+    cmd: ./setup install
+    chdir: "{{ lucene_path }}"
+
+#---

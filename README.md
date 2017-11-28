@@ -1,3 +1,5 @@
+# THIS BRANCH IS INCOMPLETE AND WILL NOT WORK!
+
 ICAT Installer
 =============
 [![Build Status](https://travis-ci.org/JHaydock-Pro/ICAT-Ansible.svg?branch=master)](https://travis-ci.org/JHaydock-Pro/ICAT-Ansible)
@@ -156,15 +158,22 @@ Tested Configurations
 
 These configurations have only been tested to a basic level (ie. they run without fatal errors and the end product seems to be operational).
 
-| Config     | OS         | Ansible | Java | Python | Ruby | MySQL | Glassfish | Payara | Simple Authn | DB Authn | LDAP Authn | Anon Authn | ICAT | IDS | IDS Storage | Python-ICAT | Topcat |
-|:----------:|:----------:|:-------:|:----:|:------:|:----:|:-----:|:---------:|:------:|:------------:|:--------:|:----------:|:----------:|:----:|:---:|:-----------:|:-----------:|:------:|
-|RedHat #1   |SL6         |2.3.1.0  |1.8.0 |2.6.6   |--    |5.1.73 |4.0        |--      |1.1.0         |1.2.0     |1.2.0       |1.1.1       |4.8.0 |1.7.0|1.3.3        |0.13.01      |2.2.1   |
-|Debian #1   |Ubuntu 14.04|2.3.1.0  |1.8.0 |2.6.6   |--    |5.1.73 |4.0        |--      |1.1.0         |1.2.0     |1.2.0       |1.1.1       |4.8.0 |1.7.0|1.3.3        |0.13.01      |2.2.1   |
-|Travis CI   |Ubuntu 14.04|2.4.1.0  |1.8.0 |2.7.13  |--    |5.6    |4.0        |--      |1.1.0         |1.2.0     |1.2.0       |1.1.1       |4.8.0 |1.7.0|1.3.3        |0.13.01      |2.2.1   |
+| Config     | OS         | Ansible | Java | Python | MySQL | Glassfish | Payara | Simple Authn | DB Authn | LDAP Authn | Anon Authn | ICAT | IDS | IDS Storage | Python-ICAT | Topcat |
+|:----------:|:----------:|:-------:|:----:|:------:|:-----:|:---------:|:------:|:------------:|:--------:|:----------:|:----------:|:----:|:---:|:-----------:|:-----------:|:------:|
+|RedHat #1   |SL6         |2.3.1.0  |1.8.0 |2.6.6   |5.1.73 |4.0        |--      |1.1.0         |1.2.0     |1.2.0       |1.1.1       |4.8.0 |1.7.0|1.3.3        |0.13.01      |2.2.1   |
+|Debian #1   |Ubuntu 14.04|2.3.1.0  |1.8.0 |2.6.6   |5.1.73 |4.0        |--      |1.1.0         |1.2.0     |1.2.0       |1.1.1       |4.8.0 |1.7.0|1.3.3        |0.13.01      |2.2.1   |
+|Travis CI   |Ubuntu 14.04|2.4.1.0  |1.8.0 |2.7.13  |5.6    |4.0        |--      |1.1.0         |1.2.0     |1.2.0       |1.1.1       |4.8.0 |1.7.0|1.3.3        |0.13.01      |2.2.1   |
 
 
 Changelog
 ---------
+
+#### 28/11/17 INCOMPLETE
+* Replaced glassfish with container to include payara
+* removed separate glassfish and payara files
+* Replaced urls and properties filenames with conditionals depending on version
+* Moved version numbers to config.yml
+* attempted 4.9.1
 
 #### 27/11/17
 * Replaced blockinfiles with lineinfiles and lists. This should, in theory, make version changing easier as any extra lines in new versions of properties files won't be overwritten, new lines will have to be manually configured if default is correct.

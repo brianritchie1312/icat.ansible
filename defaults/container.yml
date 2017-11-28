@@ -1,0 +1,28 @@
+---
+
+#---Universal---
+
+container_cnf_list:
+  - - { regexp: '^secure',    line: 'secure    = false' }
+    - { regexp: '^container', line: 'container = Glassfish' }
+    - { regexp: '^home',      line: 'home      = {{ container_path }}' }
+    - { regexp: '^port',      line: 'port      = 4848' }
+
+container_domain: domain1
+
+container_setup: https://icatproject.org/misc/scripts/setup-glassfish.py
+
+
+#---Glassfish---
+
+glassfish_src: "http://download.java.net/glassfish/{{ glassfish_version }}/release/{{ glassfish_zip }}"
+glassfish_zip: "glassfish-{{ glassfish_version }}.zip"
+glassfish_path: "{{ user_home }}/glassfish4"
+
+
+#---Payara--
+
+payara_src: "https://search.maven.org/remotecontent?filepath=fish/payara/blue/distributions/payara/{{ payara_version }}/{{ payara_zip }}"
+payara_zip: "payara-{{ payara_version }}.zip"
+payara_path: "{{ user_home }}/payara41"
+

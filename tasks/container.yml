@@ -1,0 +1,109 @@
+---
+
+- name: "{{ play_name }}Setting Variables for Glassfish"
+  set_fact:
+    container_src: "{{ glassfish_src }}"
+    container_zip: "{{ glassfish_zip }}"
+    container_path: "{{ glassfish_path }}"
+
+- name: "{{ play_name }}Setting Variables for Payara"
+  set_fact:
+    container_src: "{{ payara_src }}"
+    container_zip: "{{ payara_zip }}"
+    container_path: "{{ payara_path }}"
+  when:
+    - container_name == "payara"
+
+#---
+
+- name: "{{ play_name }}Loading Pre-playbook Check"
+  include: "preplay.yml"
+
+#---
+
+#---Download Container---
+
+- stat:
+    path: "{{ download_dir }}{{ container_zip }}"
+  register: ctr_zip
+
+- name: "{{ play_name }}Downloading {{ container_zip }}"
+  get_url:
+    url: "{{ container_src }}"
+    dest: "{{ download_dir }}{{ container_zip }}"
+  when: ctr_zip.stat.exists == false
+
+#---
+
+#---Unzip Container---
+
+- stat:
+    path: "{{ container_path }}"
+  register: ctr_dir
+
+- name: "{{ play_name }}Unzipping {{ container_zip }}"
+  unarchive:
+    src: "{{ download_dir }}{{ container_zip }}"
+    dest: "{{ user_home }}"
+    remote_src: yes
+  when:
+    - ctr_dir.stat.exists == false
+
+#---
+
+#---Download Glassfish setup script---
+
+- stat:
+    path: "{{ user_home }}/setup-glassfish.py"
+  register: ctr_script
+
+- name: "{{ play_name }}Downloading {{ container_name | title }} setup script"
+  get_url:
+    url: "{{ container_setup }}"
+    dest: "{{ user_home }}"
+  when: ctr_script.stat.exists == false
+
+#---
+
+#---Run Glassfish setup script---
+
+- stat:
+    path: "{{ container_path }}/glassfish/domains/{{ container_domain }}"
+  register: ctr_dom
+
+- name: "{{ play_name }}Stopping {{ container_domain }}"
+  environment:
+    PATH: "{{ ansible_env.PATH }}:{{ container_path }}/bin"
+  command: "nohup asadmin stop-domain {{ container_domain }}"
+  when: ctr_dom.stat.exists == true
+
+- name: "{{ play_name }}Running setup script"
+  environment:
+    PATH: "{{ ansible_env.PATH }}:/{{ container_path }}/bin"
+  command: "python {{ user_home }}/setup-glassfish.py {{ container_domain }} 75% {{ mysql_root_pass }}"
+
+#---
+
+#---Configuring Domain---
+
+- name: "{{ play_name }}Finding mysql java connector"
+  find:
+    paths: /usr/share/java
+    patterns: 'mysql-connector-java-*.jar'
+  register: sql_java
+
+- name: "{{ play_name }}Moving Java Connector File for {{ container_domain }} and MySQL"
+  copy:
+    src: "{{ sql_java.files[0].path }}"
+    dest: "{{ container_path }}/glassfish/domains/{{ container_domain }}/lib/ext/"
+    remote_src: yes
+
+- name: "{{ play_name }}Restarting {{ container_domain }}"
+  environment:
+    PATH: "{{ ansible_env.PATH }}:{{ container_path }}/bin"
+  command: "nohup {{ item }}"
+  with_items:
+  - "asadmin restart-domain {{ container_domain }}"
+  - "asadmin list-domains"
+  
+#---

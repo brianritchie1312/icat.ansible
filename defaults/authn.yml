@@ -2,9 +2,8 @@
 
 #---Authn Simple---
 
-simple_version: 1.1.0
-# Only tested with 1.1.0
 
+# Only tested with 1.1.0
 
 #---Authn DB---
 
@@ -14,13 +13,13 @@ delete_passwd: true
 delete_users: false
 # Will delete any existing users with same name as those in PASSWD.text (redundant if delete_passwd == true) (note: abandoned users not in PASSWD.text will remain)
 
-db_version: 1.2.0
+#db_version: 1.2.0
 # Only tested with 1.2.0
 
 
 #--Authn LDAP--
 
-ldap_version: 1.2.0
+#ldap_version: 1.2.0
 # Only tested with 1.2.0
 
 ldap_provider: ldap://logon05.fed.cclrc.ac.uk
@@ -29,17 +28,18 @@ ldap_principal: \%\@fed.cclrc.ac.uk
 
 #---Authn Anon---
 
-anon_version: 1.1.1
+#anon_version: 1.1.1
 # Only tested with 1.1.1
 
 
 #---Universal---
 
-authn_src: "http://www.icatproject.org/mvn/repo/org/icatproject/authn.{{ authn_plugin }}/{{ authn_version }}/{{ authn_zip }}"
+authn_src: "https://repo.icatproject.org/{{ url_mvn }}repo/org/icatproject/authn.{{ authn_plugin }}/{{ authn_version }}/{{ authn_zip }}"
 authn_zip: "authn.{{ authn_plugin }}-{{ authn_version }}-distro.zip"
 authn_path: "{{ user_home }}/authn.{{ authn_plugin }}"
 
-authn_setup: "authn_{{ authn_plugin }}-setup.properties"
-authn_prop: "authn_{{ authn_plugin }}.properties"
+authn_setup: "setup.properties"
+authn_prop: "run.properties"
 
 authn_cnf_list: "{{ container_cnf_list }}"
+

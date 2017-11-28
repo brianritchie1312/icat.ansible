@@ -9,13 +9,13 @@
     - always
 
 - name: Reading Config
-  include_vars: ../config.yml
+  include_vars: "{{ role_path }}/config.yml"
   tags:
     - always
 
 - name: Including Variables
   include_vars: 
-    dir: "{{ role_path }}/{{ item }}"
+    dir: "{{ role_path }}/{{ item }}/"
     extensions:
         - yml  
   with_items:
@@ -120,66 +120,19 @@
 
 #---Container---
 
-  #--Glassfish--
-
-- set_fact:
-    container_cnf_list: "{{ glassfish_cnf_list }}"
-    container_path: "{{ glassfish_path }}"
-  when:
-    - container == true
-    - container_name == "glassfish"
-  tags:
-    - always
-    - user
-    - container
-    - glassfish
-
-
-- name: "{{ play_name }}Loading Glassfish install" 
-  include: "glassfish.yml" 
+- name: "{{ play_name }}Loading {{ container_name | title }} install" 
+  include: "container.yml" 
   become: yes
   become_user: "{{ user_name }}"
   when:
     - container == true
-    - container_name == "glassfish"
   vars:
-    play_name: "Glassfish : "
+    play_name: "{{ container_name | title }} : "
   tags:
     - user
     - container
-    - glassfish
 
-  #--
-
-  #--Payara--
-
-- set_fact:
-    container_cnf_list: "{{ payara_cnf_list }}"
-    container_path: "{{ payara_path }}"
-  when:
-    - container == true
-    - container_name == "payara"
-  tags:
-    - always
-    - user
-    - container
-    - payara
-
-- name: "{{ play_name }}Loading Payara install"
-  include: "payara.yml"
-  become: yes
-  become_user: "{{ user_name }}"
-  when:
-    - container == true
-    - container_name == "payara"
-  vars:
-    play_name: "Payara : "
-  tags:
-    - user
-    - container
-    - payara
-
-  #--
+#---
 
 #---Authentication---
  # The same playbook will be run for each plugin so you may see DB tasks being skipped even if set to true, don't worry, the playbook will be run again and the relevent plugin will be run
@@ -253,6 +206,21 @@
     - anon
 
 #---
+
+#---Lucene---
+
+- name: "{{ play_name }}Loading Lucene Install"
+  include: "lucene.yml"
+  become: yes
+  become_user: "{{ user_name }}"
+  vars:
+    play_name: "Lucene :"
+  when:
+    - lucene == true
+  tags:
+    - user
+    - lucene
+
 
 #---ICATServer---
 

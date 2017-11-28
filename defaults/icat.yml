@@ -1,15 +1,17 @@
 ---
 
-icat_version: 4.8.0
+#icat_version: 4.8.0
 # Only tested with 4.8.0
 
 icat_src: "https://repo.icatproject.org/repo/org/icatproject/icat.server/{{ icat_version }}/{{ icat_zip }}"
 icat_zip: icat.server-{{ icat_version }}-distro.zip
 icat_path: "{{ user_home }}/icat.server"
 
-icat_setup: icat-setup.properties
-icat_prop: icat.properties
+# These are automatically changed for versions older than 4.9.0
+icat_setup: setup.properties
+icat_prop: run.properties
 
+#-TODO-move this to lucene defaults
 lucene_dir: "{{ user_home }}/icat/data/lucene"
 
 icat_cnf_list: "{{ container_cnf_list }} + {{ mysql_cnf_list }}"
