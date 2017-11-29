@@ -14,8 +14,4 @@ topcat_css: topcat.css
 
 email_enable: false
 
-# Add other mail.properties to this list if needed
-email_cnf_list:
-  - - { regexp: '^mail.enable', line: 'mail.enable = {{ email_enable }}' }
-
-topcat_cnf_list: "{{ mysql_cnf_list }} + {{ container_cnf_list }} + {{ email_cnf_list }}"
+topcat_cnf_list: "{{ mysql_cnf_list }} + {{ container_cnf_list }}"

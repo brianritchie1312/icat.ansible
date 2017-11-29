@@ -46,7 +46,7 @@
     dest: "{{ topcat_path }}/{{ topcat_setup }}"
     remote_src: yes
   when:
-    - tp_setup.stat.exists == false
+    - tp_setup.stat.exists == false 
 
 - name: "{{ play_name }}Configuring {{ topcat_setup }}"
   lineinfile:
@@ -55,6 +55,13 @@
     line: "{{ item.line }}"
   with_items: "{{ topcat_cnf_list }}"
    
+- name: "{{ play_name }}Adding 'mail.enable = {{ email_enable }}' to versions before 2.3.0"
+  lineinfile:
+    path: "{{ topcat_path }}/{{ topcat_setup }}"
+    regexp: "^mail.enable"
+    line: "mail.enable = {{ email_enable }}"
+  when:
+    - topcat_version | version_compare('2.3.0','<=')
 
 #---
 
@@ -109,9 +116,40 @@
     - { regexp: "8181",                    rep: "{{ icat_port }}" }
     - { regexp: "18080",                   rep: "{{ icat_port }}" }
     - { regexp: "localhost",               rep: "{{ inventory_hostname }}" }
-    - { regexp: 'your facility name[^"]*', rep: "LILS" }
+#    - { regexp: 'your facility name[^"]*', rep: "LILS" }
+    - { regexp: '"idsUrl": "http://isisicatds.stfc.ac.uk",', rep: '' }
+
+- name: "{{ play_name }}Replacing ISIS URLs to avoid errors"
+  lineinfile:
+    path: "{{ topcat_path }}/{{ topcat_json }}"
+#    regexp: "{{ item.regexp }}"
+    line: "{{ item.line }}"
+    state: "{{ item.state }}"
+    insertafter: '"title": "ISIS",'    
+  with_items:
+    - { line: '"idsUrl": "http://isisicatds.stfc.ac.uk",',          state: absent }
+    - { line: '"icatUrl": "http://icat-dev.isis.stfc.ac.uk",',     state: absent }
+    - { line: '"idsUrl": "http://idsdev2.isis.cclrc.ac.uk:8080",', state: absent }
+    - { line: '"icatUrl": "https://icat-dev.isis.stfc.ac.uk",',     state: absent }
+    - { line: '"idsUrl": "https://idsdev2.isis.cclrc.ac.uk:8080",', state: absent }
+    - { line: '"icatUrl": "https://icat-dev.isis.stfc.ac.uk",',     state: present }
+    - { line: '"idsUrl": "https://idsdev2.isis.cclrc.ac.uk:8080",', state: present }
+
+#- name: "{{ play_name }}Adding Authentication types to {{ topcat_json }}"
+#  replace:
+#    path: "{{ topcat_path }}/{{ topcat_json }}"
+#    regexp: "\"authenticationTypes\"\: \[\n{\n"
+    
 
 #---
+
+- name: "{{ play_name }}Copying content.example for version newer than 2.3.0"
+  command: cp {{ content_path }}.example {{ content_path }} -r
+  vars:
+    content_path: "{{ topcat_path }}/content"
+  when:
+    - topcat_version | version_compare('2.3.0', '>=')
+
 
 #---Running Setup---
 

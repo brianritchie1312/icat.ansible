@@ -10,4 +10,4 @@ dir_archive: "{{ user_home }}/{{ icat_name }}/archive"
 storage_main: ids.storage_file.main.properties
 storage_archive: ids.storage_file.archive.properties
 storage_setup: ids.storage_file-setup.properties
-
+storage_prop: ids.storage_file.properties

@@ -5,19 +5,24 @@
 
 #---
 
-- name: "{{ play_name }}Changing url for versions newer than 1.3.3"
+- name: "{{ play_name }}Changing URL and filenames for versions newer than 1.3.3"
   set_fact:
     sub_domain: repo
     url_mvn: 
+    storage_setup: setup.properties
   when:
-    - storage_version Z version_compare('1.3.3', '>')
+    - storage_version | version_compare('1.3.3', '>')
 
 - name: "{{ play_name }}Changing url for versions older than 1.4.0"
   set_fact:
     sub_domain: www
     url_mvn: mvn/
+    storage_setup: ids.storage_file-setup.properties
   when:
     - storage_version | version_compare('1.4.0', '<') == true
+
+#---
+
 
 
 #---Downloading Storage plugin---
@@ -63,16 +68,17 @@
 
 #---Properties files---
 
-- name: "{{ play_name }}Creating properties files in '/home/{{ user_name }}/ids.storage_file/'"
+- name: "{{ play_name }}Creating directory properties files for versions older than 1.4.0"
   file:
     path: "{{ storage_path }}/{{ item }}"
     state: touch
   with_items:
     - "{{ storage_main }}"
     - "{{ storage_archive }}"
-    - "{{ storage_prop }}"
+  when:
+    - storage_version | version_compare('1.4.0', '<') == true
   
-- name: "{{ play_name }}Configuring properties files - Adding storage directories"
+- name: "{{ play_name }}Configuring directory properties files for versions older than 1.4.0"
   lineinfile:
     path: "{{ storage_path }}/{{ item.file }}"
     regexp: "dir="
@@ -80,8 +86,8 @@
   with_items:
     - { file: "{{ storage_main }}",    line: "dir = {{ dir_main }}" }
     - { file: "{{ storage_archive }}", line: "dir = {{ dir_archive }}" }
-    - { file: "{{ storage_prop }}",    line: "plugin.main.dir = {{ dir_main }}" }
-    - { file: "{{ storage_prop }}",    line: "plugin.archive.dir = {{ dir_archive }}" }
+  when:
+    - storage_version | version_compare('1.4.0', '<') == true
 
 #---Setup Properties---
 

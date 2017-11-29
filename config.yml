@@ -73,7 +73,7 @@
     # ICAT and Plugins
     icat_version: 4.9.1
     storage_version: 1.4.0
-    ids_version: 1.7.0
+    ids_version: 1.8.0
     lucene_version: 1.1.0
     utils_version: 0
     topcat_version: 2.3.6
@@ -82,8 +82,8 @@
    #---Container---
     # One and only one of these must be enabled
 
-#    container_name: glassfish
-    container_name: payara
+    container_name: glassfish
+#    container_name: payara
     # PAYARA NOT YET COMPLETE
 
    #---Authentication Plugins---
@@ -91,7 +91,7 @@
     # Anon authenticator should work on it's own but it is recomended that you use one of the other plugins for the database root user     
 
     authn_simple: true
-    authn_db: false
+    authn_db: true
     authn_ldap: false
     authn_anon: false
    

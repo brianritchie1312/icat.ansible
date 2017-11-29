@@ -1,21 +1,5 @@
 ---
 
-- name: "{{ play_name }}Setting Variables for Glassfish"
-  set_fact:
-    container_src: "{{ glassfish_src }}"
-    container_zip: "{{ glassfish_zip }}"
-    container_path: "{{ glassfish_path }}"
-
-- name: "{{ play_name }}Setting Variables for Payara"
-  set_fact:
-    container_src: "{{ payara_src }}"
-    container_zip: "{{ payara_zip }}"
-    container_path: "{{ payara_path }}"
-  when:
-    - container_name == "payara"
-
-#---
-
 - name: "{{ play_name }}Loading Pre-playbook Check"
   include: "preplay.yml"
 
@@ -48,6 +32,12 @@
     remote_src: yes
   when:
     - ctr_dir.stat.exists == false
+
+- name: "{{ play_name }}Renaming Payara directory"
+  command: "mv {{ payara_path }} {{ glassfish_path }} -f"
+  when:
+    - container_name == "payara"
+
 
 #---
 

@@ -120,6 +120,26 @@
 
 #---Container---
 
+- name: "{{ play_name }}Setting Variables for Glassfish"
+  set_fact:
+    container_src: "{{ glassfish_src }}"
+    container_zip: "{{ glassfish_zip }}"
+    container_path: "{{ glassfish_path }}"
+    container_version: "{{ glassfish_version }}"
+  tags:
+    - always
+
+- name: "{{ play_name }}Setting Variables for Payara"
+  set_fact:
+    container_src: "{{ payara_src }}"
+    container_zip: "{{ payara_zip }}"
+    container_path: "{{ payara_path }}"
+    container_version: "{{ payara_version }}"
+  when:
+    - container_name == "payara"
+  tags:
+    - always
+
 - name: "{{ play_name }}Loading {{ container_name | title }} install" 
   include: "container.yml" 
   become: yes
@@ -127,7 +147,7 @@
   when:
     - container == true
   vars:
-    play_name: "{{ container_name | title }} : "
+    play_name: "{{ container_name | title }} ({{ container_version }}) : "
   tags:
     - user
     - container
@@ -144,7 +164,7 @@
   with_items:
     - authn.yml
   vars:
-    play_name: "Authn Simple : "
+    play_name: "Authn Simple ({{ simple_version }}) : "
     authn_plugin: simple
   when:
     - authn == true 
@@ -161,7 +181,7 @@
   with_items:
     - authn.yml
   vars:
-    play_name: "Authn DB : "
+    play_name: "Authn DB ({{ db_version }}) : "
     authn_plugin: db
   when: 
     - authn== true 
@@ -178,7 +198,7 @@
   with_items:
     - authn.yml
   vars:
-    play_name: "Authn Ldap : "
+    play_name: "Authn Ldap ({{ ldap_version }}) : "
     authn_plugin: ldap 
   when: 
     - authn == true
@@ -195,7 +215,7 @@
   with_items:
     - authn.yml
   vars:
-    play_name: "Authn Anon : "
+    play_name: "Authn Anon ({{ anon_version }}): "
     authn_plugin: anon
   when: 
     - authn == true
@@ -214,7 +234,7 @@
   become: yes
   become_user: "{{ user_name }}"
   vars:
-    play_name: "Lucene :"
+    play_name: "Lucene ({{ lucene_version}}) : "
   when:
     - lucene == true
   tags:
@@ -229,7 +249,7 @@
   become: yes
   become_user: "{{ user_name }}"
   vars:
-    play_name: "ICAT Server : "
+    play_name: "ICAT Server ({{ icat_version }}) : "
   when:
     - icat == true
   tags:
@@ -246,7 +266,7 @@
   become: yes
   become_user: "{{ user_name }}"
   vars:
-    play_name: "IDS Storage : "
+    play_name: "IDS Storage ({{ storage_version }}) : "
   when:
     - storage == true
   tags:
@@ -262,7 +282,7 @@
   become: yes
   become_user: "{{ user_name }}"
   vars:
-    play_name: "IDS : "
+    play_name: "IDS ({{ ids_version }}) : "
   when:
     - ids == true
   tags:
@@ -279,7 +299,7 @@
   become: yes
   become_user: "{{ user_name }}"
   vars:
-    play_name: "TestData : "
+    play_name: "TestData (Python ICAT {{ pycat_version }}): "
   when:
     - testdata == true
   tags:
@@ -297,7 +317,7 @@
   become: yes
   become_user: "{{ user_name }}"
   vars:
-    play_name: "TopCat : "
+    play_name: "TopCat ({{ topcat_version }}): "
   when:
     - topcat == true
   tags:

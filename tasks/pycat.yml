@@ -252,7 +252,6 @@
     src: "../templates/datafile_grab.sql"
     dest: "{{ download_dir }}"
   when:
-    - 'fac_name not in icat_facs.stdout'
     - (create_file == true) or (create_all == true)
 
  #--Create 'Datafile 1' files--
@@ -266,7 +265,6 @@
   with_items:
     - "{{ datafiles }}"
   when:
-    - 'fac_name not in icat_facs.stdout'
     - create_file == true
 
  #--Create ALL files--
@@ -285,13 +283,12 @@
 - set_fact:
     datafile_list: "{{ datafile_string.msg | replace('LOCATION','') }}"
   when:
-    - 'fac_name not in icat_facs.stdout'
     - (create_file == true) or (create_all == true)
 
 - set_fact:
     datafile_list: "{{ datafile_list.split('\n') }}"
   when:
-    - 'fac_name not in icat_facs.stdout'
+#    - 'fac_name not in icat_facs.stdout'
     - (create_file == true) or (create_all == true)
         
 
@@ -305,7 +302,7 @@
   with_items:
     - "{{ datafile_list }}"
   when:
-    - 'fac_name not in icat_facs.stdout'
+#    - 'fac_name not in icat_facs.stdout'
     - (create_file == true) or (create_all == true)
 
 - name: "{{ play_name }}Creating files"
@@ -315,7 +312,7 @@
   with_items:
     - "{{ datafile_list }}"
   when:
-    - 'fac_name not in icat_facs.stdout'
+#    - 'fac_name not in icat_facs.stdout'
     - (create_file == true) or (create_all == true)
 
 #---

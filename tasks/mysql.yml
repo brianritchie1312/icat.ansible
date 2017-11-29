@@ -9,14 +9,18 @@
 
 #---Downloading Packages for Yum/Apt---
 
+# This is ignored when mysql is not installed or found
 - name: "{{ play_name }}Check if Mysql 5.6 is installed"
   command: mysql --version
   register: sql_version
+  ignore_errors: yes
 
-- set_fact:
+- name: "{{ play_name }}Updating mysql package versions to avoid errors"
+  set_fact:
 #    mysql_pkg_yum: "{{ mysql_pkg_yum_56 }}"
     mysql_pkg_apt: "{{ mysql_pkg_apt_56 }}"
   when:
+    - sql_version | failed == false
     - '"5.6" in sql_version.stdout'
 
 - name: "{{ play_name }}Installing MySQL Packages for Yum"
