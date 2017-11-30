@@ -4,7 +4,8 @@
 #---Getting Variables---
  # By default, all variables are in config.yml or in 'defaults/'
 
-- debug: msg="You are running {{ ansible_os_family }} {{ ansible_distribution }} {{ ansible_distribution_version }}"
+- name: Checking OS
+  debug: msg="You are running {{ ansible_os_family }} {{ ansible_distribution }} {{ ansible_distribution_version }}"
   tags:
     - always
 

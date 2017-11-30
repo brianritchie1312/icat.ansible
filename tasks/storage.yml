@@ -27,7 +27,8 @@
 
 #---Downloading Storage plugin---
 
-- stat:
+- name: "{{ play_name }}Checking if {{ atorage_zip }} exists"
+  stat:
     path: "{{ download_dir }}{{ storage_zip }}"
   register: sp_zip
 
@@ -41,7 +42,8 @@
 
 #---Unziping Storage Plugin---
 
-- stat:
+- name: "{{ play_name }}Checking if {{ storage_path }} exists"
+  stat:
     path: "{{ storage_path }}"
   register: sp_dir
 

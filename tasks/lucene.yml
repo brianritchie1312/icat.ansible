@@ -7,7 +7,8 @@
 
 #---Downloading ICAT Lucene---
 
-- stat:
+- name: "{{ play_name }}Checking if {{ lucene_zip }} exists"
+  stat:
     path: "{{ download_dir }}{{ lucene_zip }}"
   register: il_zip
 
@@ -21,7 +22,8 @@
 
 #---Unzipping Lucene---
 
-- stat:
+- name: "{{ play_name }}Checking if {{ lucene_path }} exists"
+  stat:
     path: "{{ lucene_path }}"
   register: il_dir
 
@@ -36,7 +38,8 @@
 
 #---Setup file---
 
-- stat:
+- name: "{{ play_name }}Checking if {{ lucene_setup }} exists"
+  stat:
     path: "{{ lucene_path }}/{{ lucene_setup }}"
   register: il_setup
 

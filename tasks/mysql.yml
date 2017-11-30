@@ -74,12 +74,14 @@
     patterns: 'mysql*'
   register: sql_service
 
-- set_fact:
+- name: "{{ play_name }}Setting Servicename to {{ sql_service.files[0].path | basename }}"
+  set_fact:
     mysql_service: "{{ sql_service.files[0].path | basename }}"
   when:
     - sql_service.matched > 0
 
-- set_fact:
+- name: "{{ play_name }}Setting Servicename to 'mysql' when service can't be found"
+  set_fact:
     mysql_service: mysql
   when:
     - sql_service.matched == 0

@@ -7,7 +7,8 @@
 
 #---Downloading TopCat---
 
-- stat:
+- name: "{{ play_name }}Checking if {{ topcat_zip }} exists"
+  stat:
     path: "{{ download_dir }}{{ topcat_zip }}"
   register: tc_zip
 
@@ -21,7 +22,8 @@
 
 #---Unzipping TopCat
 
-- stat:
+- name: "{{ play_name }}Checking if {{ topcat_path }} exists"
+  stat:
     path: "{{ topcat_path }}"
   register: tc_dir    
 
@@ -36,7 +38,8 @@
 
 #---Setup Properties File
 
-- stat:
+- name: "{{ play_name }}Checking if {{ topcat_setup }} exists"
+  stat:
     path: "{{ topcat_path }}/{{ topcat_setup }}"
   register: tp_setup
 
@@ -67,7 +70,8 @@
 
 #---Properties File---
 
-- stat:
+- name: "{{ play_name }}Checking if {{ topcat_prop }} exists"
+  stat:
     path: "{{ topcat_path }}/{{ topcat_prop }}"
   register: tp_prop      
 

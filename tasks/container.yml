@@ -7,7 +7,8 @@
 
 #---Download Container---
 
-- stat:
+- name: "{{ play_name }}Checking if {{ container_zip }} exists"
+  stat:
     path: "{{ download_dir }}{{ container_zip }}"
   register: ctr_zip
 
@@ -21,7 +22,8 @@
 
 #---Unzip Container---
 
-- stat:
+- name: "{{ play_name }}Checking if {{ container_path }} exists"
+  stat:
     path: "{{ container_path }}"
   register: ctr_dir
 
@@ -33,17 +35,12 @@
   when:
     - ctr_dir.stat.exists == false
 
-- name: "{{ play_name }}Renaming Payara directory"
-  command: "mv {{ payara_path }} {{ glassfish_path }} -f"
-  when:
-    - container_name == "payara"
-
-
 #---
 
 #---Download Glassfish setup script---
 
-- stat:
+- name: "{{ play_name }}Checking if setup-glassfish.py exists"
+  stat:
     path: "{{ user_home }}/setup-glassfish.py"
   register: ctr_script
 
@@ -57,7 +54,8 @@
 
 #---Run Glassfish setup script---
 
-- stat:
+- name: "{{ play_name }}Checking if {{ container_domain }} exists"
+  stat:
     path: "{{ container_path }}/glassfish/domains/{{ container_domain }}"
   register: ctr_dom
 

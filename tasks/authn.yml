@@ -110,7 +110,8 @@
 
 #---Downloading Authn---
 
-- stat:
+- name: "{{ play_name }}Checking if {{ authn_zip }} exists"
+  stat:
     path: "{{ download_dir }}{{ authn_zip }}"
   register: sa_zip
 
@@ -124,7 +125,8 @@
 
 #---Unzipping Authn---
 
-- stat:
+- name: "{{ play_name }}Checking if {{ authn_path }} exists"
+  stat:
     path: "{{ authn_path }}"
   register: sa_dir
 
@@ -139,7 +141,8 @@
 
 #---Setup-Properties---
 
-- stat:
+- name: "{{ play_name }}Checking if {{ authn_setup }} exists"
+  stat:
     path: "{{ authn_path }}/{{ authn_setup }}"
   register: a_setup
 
@@ -208,7 +211,8 @@
 
 #--DB--
 
-- stat:
+- name: "{{ play_name }}Checking if PASSWD.text exists"
+  stat:
     path: "{{ download_dir }}/PASSWD.text"
   register: ps_txt
 

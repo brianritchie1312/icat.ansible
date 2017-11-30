@@ -14,7 +14,8 @@
 
 #---Downloading ICAT Server---
 
-- stat:
+- name: "{{ play_name }}Checking if {{ icat_zip }} exists"
+  stat:
     path: "{{ download_dir }}{{ icat_zip }}"
   register: is_zip
 
@@ -28,7 +29,8 @@
 
 #---Unzipping Icat Server---
 
-- stat:
+- name: "{{ play_name }}Checking if {{ icat_path }} exists"
+  stat:
     path: "{{ icat_path }}"
   register: is_dir
 
@@ -43,7 +45,8 @@
 
 #---Setup file---
 
-- stat:
+- name: "{{ play_name }}"
+  stat:
     path: "{{ icat_path }}/{{ icat_setup }}"
   register: is_setup
 
@@ -113,22 +116,27 @@
 
 #--Authn--
 
-- set_fact:
+- name: "{{ play_name }}Reseting authn list"
+  set_fact:
     authn_list:
 
-- set_fact:
+- name: "{{ play_name }}Adding Simple to authn list"
+  set_fact:
     authn_list: "{{ authn_list }} simple"
   when: authn_simple == true
 
-- set_fact:
+- name: "{{ play_name }}Adding DB to authn list"
+  set_fact:
     authn_list: "{{ authn_list }} db"
   when: authn_db == true
 
-- set_fact:
+- name: "{{ play_name }}Adding LDAP to authn list"
+  set_fact:
     authn_list: "{{ authn_list }} ldap"
   when: authn_ldap == true
 
-- set_fact:
+- name: "{{ play_name }}Adding ANON to authn list"
+  set_fact:
     authn_list: "{{ authn_list }} anon"
   when: authn_anon == true
 

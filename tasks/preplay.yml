@@ -5,7 +5,8 @@
 
 #---Container Domain---
 
-- stat:
+- name: "{{ play_name }}Checking if {{ container_path }} exists"
+  stat:
     path: "{{ container_path }}"
   register: check_ctr
 
@@ -16,7 +17,8 @@
   when: check_ctr.stat.exists == true
   register: check_ctr_doms
 
-- set_fact:
+- name: "{{ play_name }}Setting conditional variable for next task"
+  set_fact:
     ctr_dom: "{{ container_domain }} not running"
 
 - name: "{{ play_name }}Starting {{ container_domain }}"

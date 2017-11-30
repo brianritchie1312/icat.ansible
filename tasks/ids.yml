@@ -29,7 +29,8 @@
 
 #---Downloading IDS---
 
-- stat:
+- name: "{{ play_name }}Checking {{ ids_zip }} exists"
+  stat:
     path: "{{ download_dir }}{{ ids_zip }}"
   register: ip_zip
 
@@ -43,7 +44,8 @@
 
 #---Unzipping IDS---
 
-- stat:
+- name: "{{ play_name }}Checking {{ ids_path }} exists"
+  stat:
     path: "{{ ids_path }}"
   register: ip_dir    
 
@@ -58,7 +60,8 @@
 
 #---Setup Properties file---
 
-- stat:
+- name: "{{ play_name }}Checking if {{ ids_setup }} exists"
+  stat:
     path: "{{ ids_path }}/{{ ids_setup }}"
   register: ip_setup
 

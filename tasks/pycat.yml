@@ -11,20 +11,13 @@
   command: "curl -k -X POST -d 'json={\"plugin\" : \"{{ icat_mech }}\", \"credentials\" : [{\"username\":\"root\"},{\"password\":\"{{ icat_pass }}\"}]}' {{ icat_url }}/{{ icat_name }}/session"
   register: icat_sess
 
-- set_fact:
+- name: "{{ play_name }}Recording Session ID"
+  set_fact:
      icat_id: "{{ icat_sess.stdout | replace('\":\"','=') | replace('\"','') | replace('{','') | replace('}','') }}"
-
-- debug: msg="{{ item }}"
-  with_items:
-    - "{{ icat_sess.stdout }}" 
-    - "{{ icat_id }}"
-  when: '"sessionId" in icat_sess.stdout'
 
 - name: "{{ play_name }}Checking existing facilities"
   command: "curl -k -G --data-urlencode \"{{ icat_id }}\" --data-urlencode \"query=SELECT f from Facility f\" {{ icat_url }}/icat/entityManager"
   register: icat_facs
-
-- debug: var=icat_facs.stdout
 
 #---
 
@@ -65,7 +58,8 @@
     - delete_fac == true
   register: sql_msg
 
-- set_fact:
+- name: "{{ play_name }}Recording Facility ID"
+  set_fact:
     icat_fac_id: "{{ sql_msg.msg | replace('ID','') | replace('\\n','') }}"
   when:
     - 'fac_name in icat_facs.stdout'
@@ -98,7 +92,8 @@
     - ( wipe_icat == true ) or ( delete_fac == true )
   register: icat_facs2    
 
-- set_fact:
+- name: "{{ play_name }}Recording Existing Facilities"
+  set_fact:
     icat_facs: "{{ icat_facs2 }}"
   when:
     - '"sessionId=" in icat_id'
@@ -140,7 +135,8 @@
 
 #---Downloading PyCAT---
 
-- stat:
+- name: "{{ play_name }}Checking {{ pycat_zip }} exists"
+  stat:
     path: "{{ download_dir }}{{ pycat_zip }}"
   register: pi_zip
 
@@ -156,7 +152,8 @@
 
 #---Unzipping PyCAT
 
-- stat:
+- name: "{{ play_name }}Checking {{ pycat_path }} exists"
+  stat:
     path: "{{ pycat_path }}"
   register: pi_dir
   become: yes
@@ -212,7 +209,8 @@
 
 #---Populating Database---
 
-- stat:
+- name: "{{ play_name }}Checking if dump file exists"
+  stat:
     path: "{{ download_dir }}lils.yml"
   register: pi_lils
 
