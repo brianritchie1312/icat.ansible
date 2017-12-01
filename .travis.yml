@@ -53,7 +53,7 @@ script:
   - "echo 'deprecation_warnings = False' >> ansible.cfg"		# Ignore Depriciation Warnings
   - "echo 'command_warnings = False' >> ansible.cfg"			# Ignore Command Module Warnings
   - "echo 'system_warnings = False' >> ansible.cfg"			# Ignore System Warnings
-  - "ANSIBLE_CONFIG=ansible.cfg ansible-playbook -i tests/inventory tests/test.yml --connection=local --extra-vars '@presets/travis_4.9.1.yml --diff"  
+  - "ANSIBLE_CONFIG=ansible.cfg ansible-playbook -i tests/inventory tests/test.yml --connection=local --extra-vars '@presets/travis_4.9.1.yml' --diff"  
 # Reduce changed tasks to lowest possible number (0 if possible) then check that changed value does not exceed that, fail if it does 
 #
   - "echo 'Interface Test'"
