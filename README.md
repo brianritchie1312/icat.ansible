@@ -1,5 +1,3 @@
-# THIS BRANCH IS INCOMPLETE AND WILL NOT WORK!
-
 ICAT Installer
 =============
 [![Build Status](https://travis-ci.org/JHaydock-Pro/ICAT-Ansible.svg?branch=master)](https://travis-ci.org/JHaydock-Pro/ICAT-Ansible)
@@ -101,23 +99,31 @@ If you prefer to use your own playbook, follow steps 1-3 above then
 
 ##### Here are some useful options to add onto command line
 
-| Option                        | Function |
-|:-----------------------------:|:--------:|
-| -vvvv                         | Add extra verbosity, increase output text (useful for debugging) |
-| --list-tags                   | List tags used in role. |
-| --tags "tag1, tag2,..."       | Only play tasks tagged with whatever you put in the quotes (use comma separation for multiple tags). |
-| --skip-tags "tag1, tag2,..."  | Play all tasks except those in the quotes. Some tasks have the 'always' tag, meaning they will always be run unless `--skip-tags "always"` is used, regardless of how other tags are setup and skipped. |
-| --diff                        | Detailed look at what changes have been made to files. |
+| Option                            | Function |
+|:---------------------------------:|:--------:|
+| -vvvv                             | Add extra verbosity, increase output text (useful for debugging) |
+| --list-tags                       | List tags used in role. |
+| --tags "tag1, tag2,..."           | Only play tasks tagged with whatever you put in the quotes (use comma separation for multiple tags). |
+| --skip-tags "tag1, tag2,..."      | Play all tasks except those in the quotes. Some tasks have the 'always' tag, meaning they will always be run unless `--skip-tags "always"` is used, regardless of how other tags are setup and skipped. |
+| --diff                            | Detailed look at what changes have been made to files. |
+| --extra-vars "var_name=var_value" | Overwrite variables from the command line , see 'presets' below. Use a space separated list. |
 
 You can find more here: https://www.mankier.com/1/ansible-playbook
 
 If you wish to reduce clutter you can stop skipped tasks from playing by adding `display_skipped_hosts = False` to `ansible.cfg`  
 or you can add `stdout_callback = actionable` to ansible.cfg to only display tasks that return changed or failed.
 
-Author Information
-------------------
+Presets
+-------
+There are several preset configurations for convenience in the `presets/` directory. These are yml/json files with lists of variables to overwrite allowing for easy reconfiguration with digging around in the config.yml or other variable files.
 
-Jack Haydock, Computing Apprentice, Science and Technology Facilities Council
+To use them simply add this to the command line.
+
+```Shell
+--extra-vars "@presets/filename.yml"
+```
+
+*Note: These will only overwrite the variables that are specified, any variables not in the file will be taken from elsewhere.*
 
 
 Notes
@@ -131,7 +137,8 @@ Notes
 * If you already have mysql installed be sure to change the `mysql_root_pass` variable in `config.yml`
 * If you are using a VM with pip 1.0 installed, run `pip install --index-url=https://pypi.python.org/simple/ -U pip` to upgrade.
 * Some tasks involve finding a file with partial name and no absolute path. In these cases it will select the first matching file. For example If you have multiple 'mysql-connector-java-*.jar' files in /usr/share/java it will only use the first one. 
-
+* Sometimes adding boolean variables to --extra-vars cause them to return false even when set to true, assigning the value in a preset file seems to work anyway
+* Don't change the payara_verison unless you are also changing payara_src, the current repository I'm using seems to be incorrect, 4.1.1.171.0.1 is downloaded from icatproject.org
 
 TODO
 ----
@@ -148,9 +155,12 @@ TODO
 * Auto grab icat root from first entry in enabled authn user lists
 * Improve Idempotence and speed
 * Add Selenium setup for travis runs
-* Add Payara Conditional
-* Reconfigure to allow removal of glassfish
-* Update with ICAT 4.9.1
+* Create task to remove all non LILS facilties from topcat.json
+* Change pycat.yml to be more changeable
+* Topcart broken, diagnose
+* Automatically generate files of correct size from ingest
+* Find Better src for payara zips, current non-defaults are broken
+* Currently topcat.json is modified to add all authn plugins to list in topcat. This should be replaced to only include enabled plugins.
 
 
 Tested Configurations
@@ -158,17 +168,26 @@ Tested Configurations
 
 These configurations have only been tested to a basic level (ie. they run without fatal errors and the end product seems to be operational).
 
-| Config     | OS         | Ansible | Java | Python | MySQL | Glassfish | Payara | Simple Authn | DB Authn | LDAP Authn | Anon Authn | ICAT | IDS | IDS Storage | Python-ICAT | Topcat |
-|:----------:|:----------:|:-------:|:----:|:------:|:-----:|:---------:|:------:|:------------:|:--------:|:----------:|:----------:|:----:|:---:|:-----------:|:-----------:|:------:|
-|RedHat #1   |SL6         |2.3.1.0  |1.8.0 |2.6.6   |5.1.73 |4.0        |--      |1.1.0         |1.2.0     |1.2.0       |1.1.1       |4.8.0 |1.7.0|1.3.3        |0.13.01      |2.2.1   |
-|Debian #1   |Ubuntu 14.04|2.3.1.0  |1.8.0 |2.6.6   |5.1.73 |4.0        |--      |1.1.0         |1.2.0     |1.2.0       |1.1.1       |4.8.0 |1.7.0|1.3.3        |0.13.01      |2.2.1   |
-|Travis CI   |Ubuntu 14.04|2.4.1.0  |1.8.0 |2.7.13  |5.6    |4.0        |--      |1.1.0         |1.2.0     |1.2.0       |1.1.1       |4.8.0 |1.7.0|1.3.3        |0.13.01      |2.2.1   |
-
+| Config       | OSs              | Ansible | Java | Python | MySQL | Glassfish | Payara       | Simple Authn | DB Authn | LDAP Authn | Anon Authn | Lucene | ICAT | IDS | IDS Storage | Topcat |
+|:------------:|:----------------:|:-------:|:----:|:------:|:-----:|:---------:|:------------:|:------------:|:--------:|:----------:|:----------:|:------:|:----:|:---:|:-----------:|:------:|
+|Default_4.9.1 | Sl6/Ubuntu 14.04 |2.3.1.0  |1.8.0 |2.6.6   |5.1.73 |--         |4.1.1.171.0.1 |2.0.0         |2.0.0     |--          |--          |1.1.0   |4.9.1 |1.8.0|1.4.0        |2.3.6   |
+|Travis_4.9.1  | Ubuntu 14.04     |2.4.1.0  |1.8.0 |2.7.13  |5.6    |--         |4.1.1.171.0.1 |2.0.0         |2.0.0     |2.0.0       |2.0.0       |1.1.0   |4.9.1 |1.8.0|1.4.0        |2.3.6   |
+|Default_4.8.0 | SL6/Ubuntu 14.04 |2.3.1.0  |1.8.0 |2.6.6   |5.1.73 |4.0        |--            |1.1.0         |1.2.0     |1.2.0       |1.1.1       |--      |4.8.0 |1.7.0|1.3.3        |2.2.1   |
 
 Changelog
 ---------
 
-#### 28/11/17 INCOMPLETE
+#### 1/12/17
+* PolyVersion branch should now work
+* Fixed missing icatUrl in topcat.json for topcat 2.3.0 and above
+* Added command line configuration files
+* Added payara install
+* Added names to all tasks, including stat, set_fact and debug tasks
+* Added version numbers to play_names
+* Improved variable version numbers. Url and Filenames should be automatically changed depending on versions
+* Created presets for overwrittig variables from command line
+
+#### 28/11/17
 * Replaced glassfish with container to include payara
 * removed separate glassfish and payara files
 * Replaced urls and properties filenames with conditionals depending on version

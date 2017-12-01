@@ -22,8 +22,8 @@ glassfish_path: "{{ user_home }}/glassfish4"
 
 #---Payara--
 
-#payara_src: "https://search.maven.org/remotecontent?filepath=fish/payara/blue/distributions/payara/{{ payara_version }}/{{ payara_zip }}"
-payara_src: "https://icatproject.org/misc/install/payara-4.1.1.171.0.1.zip"
+payara_src: "https://search.maven.org/remotecontent?filepath=fish/payara/blue/distributions/payara/{{ payara_version }}/{{ payara_zip }}"
+payara_src_icat: "https://icatproject.org/misc/install/payara-4.1.1.171.0.1.zip"
 payara_zip: "payara-{{ payara_version }}.zip"
 payara_path: "{{ user_home }}/payara41"
 

@@ -120,32 +120,41 @@
     - { regexp: "8181",                    rep: "{{ icat_port }}" }
     - { regexp: "18080",                   rep: "{{ icat_port }}" }
     - { regexp: "localhost",               rep: "{{ inventory_hostname }}" }
-#    - { regexp: 'your facility name[^"]*', rep: "LILS" }
-    - { regexp: '"idsUrl": "http://isisicatds.stfc.ac.uk",', rep: '' }
-
-- name: "{{ play_name }}Replacing ISIS URLs to avoid errors"
-  lineinfile:
-    path: "{{ topcat_path }}/{{ topcat_json }}"
-#    regexp: "{{ item.regexp }}"
-    line: "{{ item.line }}"
-    state: "{{ item.state }}"
-    insertafter: '"title": "ISIS",'    
-  with_items:
-    - { line: '"idsUrl": "http://isisicatds.stfc.ac.uk",',          state: absent }
-    - { line: '"icatUrl": "http://icat-dev.isis.stfc.ac.uk",',     state: absent }
-    - { line: '"idsUrl": "http://idsdev2.isis.cclrc.ac.uk:8080",', state: absent }
-    - { line: '"icatUrl": "https://icat-dev.isis.stfc.ac.uk",',     state: absent }
-    - { line: '"idsUrl": "https://idsdev2.isis.cclrc.ac.uk:8080",', state: absent }
-    - { line: '"icatUrl": "https://icat-dev.isis.stfc.ac.uk",',     state: present }
-    - { line: '"idsUrl": "https://idsdev2.isis.cclrc.ac.uk:8080",', state: present }
-
-#- name: "{{ play_name }}Adding Authentication types to {{ topcat_json }}"
-#  replace:
-#    path: "{{ topcat_path }}/{{ topcat_json }}"
-#    regexp: "\"authenticationTypes\"\: \[\n{\n"
-    
+    - { regexp: 'your facility name[^"]*', rep: "LILS" }
 
 #---
+# TODO replace with task to remove all facilities not in mysql \/
+#---
+
+- name: "{{ play_name }}Correcting errors in ISIS facilty in JSOn file"
+  replace:
+    path: "{{ topcat_path }}/{{ topcat_json }}"
+    regexp: '"title": "ISIS",(?s)(.*?)"hierarchy"'
+    replace: '"title": "ISIS",
+\n            "idsUrl": "",
+\n            "icatUrl": "",
+\n            "hierarchy"'
+  when:
+    - topcat_version | version_compare('2.3.0','>=') == true
+
+#---JSON AUTHENTICATORS---    
+
+# TODO create tasks to remove any disabled authenticators
+
+- name: "{{ play_name }}Adding Authentication types to {{ topcat_json }}"
+  replace:
+    path: "{{ topcat_path }}/{{ topcat_json }}"
+    regexp: '"authenticationTypes": \[(?s)(.*?)\]'
+    replace: '"authenticationTypes": [
+\n                { "title": "Simple", "plugin": "simple" },
+\n                { "title": "DB",     "plugin": "db" },
+\n                { "title": "LDAP",   "plugin": "ldap" },
+\n                { "title": "Anon",   "plugin": "anon" }
+\n            ]'    
+
+#---
+
+#---Install---
 
 - name: "{{ play_name }}Copying content.example for version newer than 2.3.0"
   command: cp {{ content_path }}.example {{ content_path }} -r

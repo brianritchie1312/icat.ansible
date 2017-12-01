@@ -10,49 +10,19 @@
     # Choose what you want installed
     # Most of these are dependent on each other so be careful when changing
 
-#   Playbook										Tasks (in /tasks/)		Variables (In config.yml and /defaults/)		Users
+#  |Playbook		|Description				|Tags					|Tasks (All use main.yml)	|Variables(All use config.yml)
+    update: true         # Update Package list/cache		root, update			
+    java: true           # Installs java			root, java				java.yml			java.yml
+    mysql: true          # Installs Mysql			root, mysql, pexpect 			mysql.yml			mysql.yml
+    createuser: true     # Creates non-root user		createuser		
+    container: true      # Installs glassfish/payara		user, container				container.yml, preplay.yml	container.yml
+    authn: true          # Installs Authentication Plugins	user, authn, simple, db, ldap, anon     authn.yml, preplay.yml		authn.yml, container.yml, mysql.yml
+    lucene: true         # Installs icat.lucene			user, lucene				lucene.yml, preplay.yml		lucene.yml, container.yml
+    icat: true           # Installs Icat			user, icat				icatserver.yml, preplay.yml     icat.yml, container.yml
+    testdata: true       # Ingests data with python-icat	user, pycat, testdata			pycat.yml, preplay.yml		pycat.yml, container.yml
+    topcat: true         # Installs Topcat			user, topcat				topcat.yml			topcat.yml, container.yml
+    cleanup: true        # Moves unused files into download_dir root, cleanup
 
-    update: true
-    # Updates package lists								main.yml			config.yml						root
-  
-    java: true
-    # Installs java and some dependencies						java.yml			config.yml, java.yml					root	
-    
-    mysql: true
-    # Installs and configures Mysql							pexpect.yml, mysql.yml		config.yml, pexpect.yml, mysql.yml			root, mysql-root				
-    
-    createuser: true
-    # Creates non-root user, almost all tasks after this don't use root			main.yml			config.yml						root		
-    
-    container: true
-    # Install chosen container, see below						glassfish.yml, payara.yml	config.yml, glassfish.yml, payara.yml			non-root
-    
-    authn: true
-    # Installs and configures authentication plugin(s) -See Below  			authn.yml			config.yml, authn.yml, glassfish.yml			non-root, icat-root
-    
-    icat: true
-    # Installs and configures ICAT Server						icat.yml			config.yml, icat.yml, glassfish.yml			non-root
-    
-    storage: true
-    # Installs and configures IDS Storage Plugin					storage.yml			config.yml, storage.yml, glassfish.yml			non-root
-    
-    ids: true
-    # Installs and configures ICAT Data Service						ids.yml				config.yml, ids.yml, glassfish.yml			non-root
-    
-    lucene: true
-    # Installs icat.lucene	WIP							lucene.yml			config.yml,
-
-    utils: false
-    # Installs icat.utils       WIP
-
-    testdata: true
-    # Installs Python-ICAT and ingests data into database 				pycat.yml			config.yml, pycat.yml					root, non-root, mysql-root, icat-root
-    
-    topcat: true
-    # Installs and configures TopCat interface						topcat.yml			config.myl, topcat.yml					non-root, icat-root
-    
-    cleanup: false
-    # Moves used files to download_dir after finish to reduce clutter			main.yml			config.yml						root, non-root
 
 # I may have missed some variables files, but the prefix of the variable should indicate where it's declared
 # i.e. pycat_zip is declared in pycat.yml
@@ -80,11 +50,10 @@
     
 
    #---Container---
-    # One and only one of these must be enabled
+    # One and only one of these must be enabled, comment out the other
 
-    container_name: glassfish
-#    container_name: payara
-    # PAYARA NOT YET COMPLETE
+#    container_name: glassfish
+    container_name: payara
 
    #---Authentication Plugins---
     # At least one of these must be installed but any combination of multiple should work
@@ -117,8 +86,8 @@
     delete_fac: true
 
    
-  #---Creating files for TestData---(pycat.yml)
-   # icatingest.py does actually create any files, it just generates the meta data used by the database
+  #---Creating files for TestData---
+   # icatingest.py does not actually create any files, it just generates the meta data used by the database
    # for proper testing some files must be created
    # Selecting individual files is complicated in this setup so instead the following methods will create every file matching certain conditions
    # Note these will create every file they find, even if their facility has been deleted with 'delete_fac' (use wipe_icat to remove all entries)

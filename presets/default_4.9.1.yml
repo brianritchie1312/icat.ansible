@@ -1,0 +1,53 @@
+---
+
+#---Setup--
+java: true
+mysql: true
+
+#---Containers---
+container: true
+
+container_name: payara
+
+payara_version: 4.1.1.171.0.1
+   
+#---Authenticators---
+authn: true
+
+authn_simple: true
+authn_db: true
+authn_ldap: false
+authn_anon: true
+
+simple_version: 2.0.0
+db_version: 2.0.0
+anon_version: 2.0.0
+
+#---ICAT and Plugins---
+lucene: true
+icat: true
+storage: true
+ids: true
+testdata: true
+topcat: true
+
+delete_fac: false
+
+lucene_version: 1.1.0
+icat_version: 4.9.1
+storage_version: 1.4.0
+ids_version: 1.8.0
+topcat_version: 2.3.6
+
+#---Users---
+
+icat_mech: simple
+icat_root: root
+icat_pass: pass
+
+authn_simple_users:
+  - user: root
+    pass: pass
+
+  - user: user1
+    pass: pass1

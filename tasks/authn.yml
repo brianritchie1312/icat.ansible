@@ -40,7 +40,7 @@
     authn_cnf_list: "{{ authn_cnf_list }} + {{ mysql_cnf_list | replace('target','vendor') }}"
   when:
     - authn_plugin == "db"
-    - db_version | version_compare('2.0.0', '<')
+    - db_version | version_compare('2.0.0', '<') == true
 
 #---Changing Sub Domains for older versions---
 
@@ -96,7 +96,7 @@
     authn_prop: "authn_{{ authn_plugin }}.properties"
   when:
     - ( authn_plugin == "simple" ) or ( authn_plugin == "db" ) or ( authn_plugin == "ldap" )
-    - authn_version | version_compare('2.0.0', '<' )
+    - authn_version | version_compare('2.0.0', '<' ) == true
 
 - name: "{{ play_name }}Changing filenames for Anon versions older than 1.1.2"
   set_fact:

@@ -5,13 +5,13 @@
 
 #---
 
-- name: "{{ play_name }}Changing URL and filenames for versions newer than 1.3.3"
+- name: "{{ play_name }}Changing URL and filenames for versions 1.4.0 and later"
   set_fact:
     sub_domain: repo
     url_mvn: 
     storage_setup: setup.properties
   when:
-    - storage_version | version_compare('1.3.3', '>')
+    - storage_version | version_compare('1.4.0', '>=')
 
 - name: "{{ play_name }}Changing url for versions older than 1.4.0"
   set_fact:

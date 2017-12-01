@@ -5,6 +5,13 @@
 
 #---
 
+- name: "{{ play_name }}Changing Url for payara version 4.1.1.171.0.1"
+  set_fact:
+    container_src: "{{ payara_src_icat }}"
+  when:
+    - container_name == "payara"
+    - payara_version == "4.1.1.171.0.1"
+
 #---Download Container---
 
 - name: "{{ play_name }}Checking if {{ container_zip }} exists"
@@ -67,7 +74,7 @@
 
 - name: "{{ play_name }}Running setup script"
   environment:
-    PATH: "{{ ansible_env.PATH }}:/{{ container_path }}/bin"
+    PATH: "{{ ansible_env.PATH }}:{{ container_path }}/bin"
   command: "python {{ user_home }}/setup-glassfish.py {{ container_domain }} 75% {{ mysql_root_pass }}"
 
 #---

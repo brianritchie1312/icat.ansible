@@ -1,0 +1,53 @@
+---
+
+#---Setup--
+java: true
+mysql: true
+
+#---Containers---
+container: true
+
+container_name: glassfish
+
+glassfish_version: 4.0
+   
+#---Authenticators---
+authn: true
+
+authn_simple: true
+authn_db: true
+authn_ldap: true
+authn_anon: true
+
+simple_version: 1.1.0
+db_version: 1.2.0
+ldap_version: 1.2.0
+anon_version: 1.1.1
+
+#---ICAT and Plugins---
+lucene: false
+icat: true
+storage: true
+ids: true
+testdata: true
+topcat: true
+
+delete_fac: false
+
+icat_version: 4.8.0
+storage_version: 1.3.3
+ids_version: 1.7.0
+topcat_version: 2.2.1
+
+#---Users---
+
+icat_mech: simple
+icat_root: root
+icat_pass: pass
+
+authn_simple_users:
+  - user: root
+    pass: pass
+ 
+  - user: user1
+    pass: pass1
