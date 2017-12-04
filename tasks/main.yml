@@ -339,5 +339,23 @@
     - "{{ user_home }}/setup-glassfish.py"
   when: 
     - cleanup == true
+  tags:
+    - cleanup
 
 #---
+
+#---Selenium---
+ # This step is only needed for travis/selenium testing
+
+- name: "{{ play_name }}Loading Selenium Setup"
+  include: "selenium.yml"
+  become: yes
+  become_user: "{{ user_name }}"
+  vars:
+    play_name: "Selenium : "
+  when:
+    - selenium == true
+  tags:
+    - user
+    - selenium
+

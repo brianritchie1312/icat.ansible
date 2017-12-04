@@ -3,10 +3,10 @@
  # Near duplicate of default_4.9.1
 
 
-
 #---Setup--
 java: true
 mysql: true
+selenium: true
 
 #---Containers---
 container: true

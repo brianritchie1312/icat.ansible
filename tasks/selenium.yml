@@ -1,0 +1,33 @@
+---
+
+- name: "{{ play_name }}Creating test directories"
+  file:
+    path: "{{ download_dir }}{{ item }}"
+    state: directory
+  with_items:
+    - 
+    - Tests
+    - Tests/Firefox
+    - Tests/Chrome
+
+- name: "{{ play_name }}Downloading Webdrivers"
+  get_url:
+    url: "{{ item }}"
+    dest: "{{ download_dir }}"
+  with_items:
+    - "{{ firefox_src }}"
+    - "{{ chrome_src }}"
+
+- name: "{{ play_name }}Unzipping Webdrivers"
+  unarchive:
+    src: "{{ download_dir }}{{ item }}"
+    dest: "{{ download_dir }}Tests"
+    remote_src: yes
+  with_items:
+    - "{{ firefox_zip }}"
+    - "{{ chrome_zip }}"
+
+- name: "{{ play_name }}Templating Selenium Script"
+  template:
+    src: selenium_test.py
+    dest: "{{ download_dir }}Tests/selenium_test.py"

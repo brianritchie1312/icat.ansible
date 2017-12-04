@@ -57,8 +57,8 @@ script:
 # Reduce changed tasks to lowest possible number (0 if possible) then check that changed value does not exceed that, fail if it does 
 #
   - "echo 'Interface Test'"
-# download chrome/firefox webdrivers
-# add path of executables to bash
+  - "cd /home/user1/icatdownloads/Tests"
+  - "python selenium_test/py"
 # run topcat_test.py, tee output
 # grep ^ output fail if the string 'Failed' appears
 
