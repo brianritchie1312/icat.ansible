@@ -58,7 +58,7 @@ script:
 #
   - "echo 'Interface Test'"
   - "cd /home/user1/icatdownloads/Tests"
-  - "python selenium_test/py"
+  - "python selenium_test.py"
 # run topcat_test.py, tee output
 # grep ^ output fail if the string 'Failed' appears
 
