@@ -76,6 +76,8 @@
   environment:
     PATH: "{{ ansible_env.PATH }}:{{ container_path }}/bin"
   command: "python {{ user_home }}/setup-glassfish.py {{ container_domain }} 75% {{ mysql_root_pass }}"
+  tags:
+    - install
 
 #---
 

@@ -307,5 +307,7 @@
   shell:
     cmd: ./setup install
     chdir: "{{ authn_path }}"
+  tags:
+    - install
 
 #---

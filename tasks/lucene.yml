@@ -83,6 +83,7 @@
     line: "{{ item.line }}"
   with_items:
     - { regexp: 'directory', line: 'directory = {{ lucene_dir }}' }
+    - { regexp: 'ip',        line: 'ip = 127.0.01/0' }
 
 #---
 

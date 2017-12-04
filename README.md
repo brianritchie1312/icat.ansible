@@ -132,7 +132,7 @@ Notes
 * The setup excutable for the storage plugin returns a fatal error but still performs it's function (currently it's set to ignore this error but this needs to be improved)
 * Currently the mysql root password is automatically reset to default before running mysqld_secure_installation, it ignores errors. So having the password set to any other than the variable mysql_root_pass will return an error but will be skipped (including the default password). THIS NEEDS TO BE REPLACED!
 * The Icat Ingest Script is forced to timeout after 60secs and the resulting error is ignored
-* Hosts must be added to `/etc/ansible/hosts` or `tests/inventory` and have valid ssh keys
+* Hosts must be added to `/etc/ansible/hosts` or `tests/inventory` and have valid ssh keys, simply SSHing into target machine once beforehand should work.
 * All package installs (except pexpect) are set to present instead of latest, this greatly improves speed but may cause some problems if you have an old version of a package but with the same name, I have yet to encounter this (except for Pexpect)
 * If you already have mysql installed be sure to change the `mysql_root_pass` variable in `config.yml`
 * If you are using a VM with pip 1.0 installed, run `pip install --index-url=https://pypi.python.org/simple/ -U pip` to upgrade.
@@ -157,7 +157,6 @@ TODO
 * Add Selenium setup for travis runs
 * Create task to remove all non LILS facilties from topcat.json
 * Change pycat.yml to be more changeable
-* Topcart broken, diagnose
 * Automatically generate files of correct size from ingest
 * Find Better src for payara zips, current non-defaults are broken
 * Currently topcat.json is modified to add all authn plugins to list in topcat. This should be replaced to only include enabled plugins.
@@ -176,6 +175,10 @@ These configurations have only been tested to a basic level (ie. they run withou
 
 Changelog
 ---------
+
+#### 4/12/17
+* Fixed Topcat Issue (replace module was replace transport type, 'http' is not a transport type, 'https' is)
+* Added install tags to setup scripts
 
 #### 1/12/17
 * PolyVersion branch should now work

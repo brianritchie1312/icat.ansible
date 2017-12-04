@@ -117,6 +117,7 @@
     replace: "{{ item.rep }}"
   with_items:
     - { regexp: "https",                   rep: "http" }
+    - { regexp: '"type" : "http"',         rep: '"type" : "https"' }
     - { regexp: "8181",                    rep: "{{ icat_port }}" }
     - { regexp: "18080",                   rep: "{{ icat_port }}" }
     - { regexp: "localhost",               rep: "{{ inventory_hostname }}" }
@@ -172,5 +173,7 @@
   shell:
     cmd: ./setup install
     chdir: "{{ topcat_path }}"
+  tags:
+    - install
 
 #---

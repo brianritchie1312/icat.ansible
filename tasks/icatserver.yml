@@ -272,6 +272,8 @@
   shell:
     cmd: ./setup install
     chdir: "{{ icat_path }}"
+  tags:
+    - install
 
 - name: "{{ play_name }}Checking ICAT"
   command: "curl -k {{ icat_url }}/icat/version"
