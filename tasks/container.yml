@@ -5,13 +5,6 @@
 
 #---
 
-- name: "{{ play_name }}Changing Url for payara version 4.1.1.171.0.1"
-  set_fact:
-    container_src: "{{ payara_src_icat }}"
-  when:
-    - container_name == "payara"
-    - payara_version == "4.1.1.171.0.1"
-
 #---Download Container---
 
 - name: "{{ play_name }}Checking if {{ container_zip }} exists"

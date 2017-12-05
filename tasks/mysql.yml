@@ -26,7 +26,7 @@
 - name: "{{ play_name }}Installing MySQL Packages for Yum"
   yum:
     name: "{{ item }}"
-    state: present
+    state: latest
   with_items: "{{ mysql_pkg_yum }}"
   when: 
     - ansible_pkg_mgr == "yum"
@@ -36,7 +36,7 @@
 - name: "{{ play_name }}Installing MySQL Packages for Apt"
   apt:
     name: "{{ item }}"
-    state: present
+    state: latest
   with_items: "{{ mysql_pkg_apt }}"
   when: 
     - ansible_pkg_mgr == "apt"

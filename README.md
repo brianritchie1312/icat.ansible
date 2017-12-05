@@ -37,7 +37,7 @@ How to use
 
 2. Download or clone this repository
 
-3. Modify `config.yml` and yml files in `defaults/` as desired
+3. Modify `config.yml` and yml files in `defaults/` as desired. Or use/create a preset (see below).
 
 4. Add hosts to `tests/inventory` 
 
@@ -138,7 +138,6 @@ Notes
 * If you are using a VM with pip 1.0 installed, run `pip install --index-url=https://pypi.python.org/simple/ -U pip` to upgrade.
 * Some tasks involve finding a file with partial name and no absolute path. In these cases it will select the first matching file. For example If you have multiple 'mysql-connector-java-*.jar' files in /usr/share/java it will only use the first one. 
 * Sometimes adding boolean variables to --extra-vars cause them to return false even when set to true, assigning the value in a preset file seems to work anyway
-* Don't change the payara_verison unless you are also changing payara_src, the current repository I'm using seems to be incorrect, 4.1.1.171.0.1 is downloaded from icatproject.org
 
 TODO
 ----
@@ -156,9 +155,7 @@ TODO
 * Improve Idempotence and speed
 * Add Selenium setup for travis runs
 * Create task to remove all non LILS facilties from topcat.json
-* Change pycat.yml to be more changeable
-* Automatically generate files of correct size from ingest
-* Find Better src for payara zips, current non-defaults are broken
+* Make pycat.yml more adaptable
 * Currently topcat.json is modified to add all authn plugins to list in topcat. This should be replaced to only include enabled plugins.
 
 
@@ -167,14 +164,17 @@ Tested Configurations
 
 These configurations have only been tested to a basic level (ie. they run without fatal errors and the end product seems to be operational).
 
-| Config       | OSs              | Ansible | Java | Python | MySQL | Glassfish | Payara       | Simple Authn | DB Authn | LDAP Authn | Anon Authn | Lucene | ICAT | IDS | IDS Storage | Topcat |
-|:------------:|:----------------:|:-------:|:----:|:------:|:-----:|:---------:|:------------:|:------------:|:--------:|:----------:|:----------:|:------:|:----:|:---:|:-----------:|:------:|
-|Default_4.9.1 | Sl6/Ubuntu 14.04 |2.3.1.0  |1.8.0 |2.6.6   |5.1.73 |--         |4.1.1.171.0.1 |2.0.0         |2.0.0     |--          |--          |1.1.0   |4.9.1 |1.8.0|1.4.0        |2.3.6   |
-|Travis_4.9.1  | Ubuntu 14.04     |2.4.1.0  |1.8.0 |2.7.13  |5.6    |--         |4.1.1.171.0.1 |2.0.0         |2.0.0     |2.0.0       |2.0.0       |1.1.0   |4.9.1 |1.8.0|1.4.0        |2.3.6   |
-|Default_4.8.0 | SL6/Ubuntu 14.04 |2.3.1.0  |1.8.0 |2.6.6   |5.1.73 |4.0        |--            |1.1.0         |1.2.0     |1.2.0       |1.1.1       |--      |4.8.0 |1.7.0|1.3.3        |2.2.1   |
+| Config       | OSs              | Ansible | Java | Python | MySQL | Glassfish | Payara   | Simple Authn | DB Authn | LDAP Authn | Anon Authn | Lucene | ICAT | IDS | IDS Storage | Topcat |
+|:------------:|:----------------:|:-------:|:----:|:------:|:-----:|:---------:|:--------:|:------------:|:--------:|:----------:|:----------:|:------:|:----:|:---:|:-----------:|:------:|
+|Default_4.9.1 | Sl6/Ubuntu 14.04 |2.3.1.0  |1.8.0 |2.6.6   |5.1.73 |--         |4.1.2.174 |2.0.0         |2.0.0     |--          |--          |1.1.0   |4.9.1 |1.8.0|1.4.0        |2.3.6   |
+|Travis_4.9.1  | Ubuntu 14.04     |2.4.1.0  |1.8.0 |2.7.13  |5.6    |--         |4.1.2.174 |2.0.0         |2.0.0     |2.0.0       |2.0.0       |1.1.0   |4.9.1 |1.8.0|1.4.0        |2.3.6   |
+|Default_4.8.0 | SL6/Ubuntu 14.04 |2.3.1.0  |1.8.0 |2.6.6   |5.1.73 |4.0        |--        |1.1.0         |1.2.0     |1.2.0       |1.1.1       |--      |4.8.0 |1.7.0|1.3.3        |2.2.1   |
 
 Changelog
 ---------
+
+#### 05/12/17
+* Replaced payara_src
 
 #### 4/12/17
 * Fixed Topcat Issue (replace module was replace transport type, 'http' is not a transport type, 'https' is)
