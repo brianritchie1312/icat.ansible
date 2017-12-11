@@ -143,6 +143,12 @@
     icat_pass: pass
     # Name and Password of admin account. Must be included below!
 
+#TODO replace with system similar to this
+#   simple_root: "{{ authn_simple_users[0].user }}"
+#   simple_pass: "{{ authn_simple_users[0].pass }}"
+# ETC.
+
+
    #---Simple Authn Users---
     # These users will be added to authn_simple.properties
     # In theory this should handle as many users as you wish so long as you use the format below    

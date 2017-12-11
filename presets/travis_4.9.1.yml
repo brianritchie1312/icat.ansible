@@ -54,3 +54,20 @@ authn_simple_users:
 
   - user: user1
     pass: pass1
+
+authn_db_users:
+  - user: root
+    pass: password
+
+  - user: notroot
+    pass: password
+
+  - user: piOne
+    pass: piOne
+
+  - user: piTwo
+    pass: piTwo
+
+  - user: guest
+    pass: guess
+

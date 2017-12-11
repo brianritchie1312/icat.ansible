@@ -1,5 +1,43 @@
 ---
 
+- name: "{{ play_name }}Installing Dependencies for Yum"
+  yum:
+    name: "{{ item }}"
+    state: present
+  become: yes
+  become_user: root
+  become_method: sudo
+  with_items:
+    - firefox
+    - xorg-x11-server-Xvfb
+  when:
+    - ansible_pkg_mgr == "yum"
+
+- name: "{{ play_name }}Installing Dependencies for Apt"
+  apt:
+    name: "{{ item }}"
+    state: present
+  become: yes
+  become_user: root
+  become_method: sudo
+  with_items:
+    - firefox
+    - xvfb
+  when:
+    - ansible_pkg_mgr == "apt"
+
+
+- name: "{{ play_name }}Installing dependencies with Pip"
+  pip:
+    name: "{{ item }}"
+    state: present
+  become: yes
+  become_user: root
+  become_method: sudo
+  with_items:
+    - pyvirtualdisplay
+    - selenium
+
 - name: "{{ play_name }}Creating test directories"
   file:
     path: "{{ download_dir }}{{ item }}"
@@ -27,7 +65,16 @@
     - "{{ firefox_zip }}"
     - "{{ chrome_zip }}"
 
-- name: "{{ play_name }}Templating Selenium Script"
+- name: "{{ play_name }}Copying Selenium Script and geckodriver workaround script"
   template:
-    src: selenium_test.py
-    dest: "{{ download_dir }}Tests/selenium_test.py"
+    src: "{{ role_path }}/files/{{ item }}"
+    dest: "{{ download_dir }}Tests/"
+    mode: "u+x"
+  with_items:
+    - topcat_test.py
+    - gecko.sh
+
+- name: "{{ play_name }}Templating Arguments for Selenium Script"
+  template:
+    src: "{{ role_path }}/files/test_args.txt"
+    dest: "{{ download_dir }}Tests/"

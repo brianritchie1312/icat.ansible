@@ -14,7 +14,7 @@ Requirements
 ------------
 
 * RedHat or Debian flavoured OS and root access
-* At least python 2.6
+* At least python 2.6 (selenium test requires 2.7)
 * Ansible and it's dependencies (Only needed on host machine)
 * Ideally a fresh machine but should work regardless
 * Probably a bunch of other stuff I forgot
@@ -126,38 +126,33 @@ To use them simply add this to the command line.
 *Note: These will only overwrite the variables that are specified, any variables not in the file will be taken from elsewhere.*
 
 
-Notes
------
+Selenium
+--------
 
-* The setup excutable for the storage plugin returns a fatal error but still performs it's function (currently it's set to ignore this error but this needs to be improved)
-* Currently the mysql root password is automatically reset to default before running mysqld_secure_installation, it ignores errors. So having the password set to any other than the variable mysql_root_pass will return an error but will be skipped (including the default password). THIS NEEDS TO BE REPLACED!
-* The Icat Ingest Script is forced to timeout after 60secs and the resulting error is ignored
-* Hosts must be added to `/etc/ansible/hosts` or `tests/inventory` and have valid ssh keys, simply SSHing into target machine once beforehand should work.
-* All package installs (except pexpect) are set to present instead of latest, this greatly improves speed but may cause some problems if you have an old version of a package but with the same name, I have yet to encounter this (except for Pexpect)
-* If you already have mysql installed be sure to change the `mysql_root_pass` variable in `config.yml`
-* If you are using a VM with pip 1.0 installed, run `pip install --index-url=https://pypi.python.org/simple/ -U pip` to upgrade.
-* Some tasks involve finding a file with partial name and no absolute path. In these cases it will select the first matching file. For example If you have multiple 'mysql-connector-java-*.jar' files in /usr/share/java it will only use the first one. 
-* Sometimes adding boolean variables to --extra-vars cause them to return false even when set to true, assigning the value in a preset file seems to work anyway
+To run the selenium tests (Topcat UI testing), you will need python 2.7.
+This test is not automatically run by ansible, however if 'selenium: true' is set in config.yml or a preset it will setup the environment for the script to be run by travis or a user.
 
-TODO
-----
+Example:
+```Shell
+python topcat_test.py --url http://localhost:8080 --root simple root pass --non-root db root password --virtual-display
+```
 
-* Improve commenting and documentation
-* Improve feedback (eg. run automatic tests and report back with the debug module)
-* Fix Storage setup script not working
-* Better workaround for mysql root pass
-* Learn how ldap works
-* Figure out how to automatically test plugin installs
-* Use smaller file for icat ingest
-* Consider replacing env_path with shell scripts for sourcing
-* Improve Debug feedback
-* Auto grab icat root from first entry in enabled authn user lists
-* Improve Idempotence and speed
-* Add Selenium setup for travis runs
-* Create task to remove all non LILS facilties from topcat.json
-* Make pycat.yml more adaptable
-* Currently topcat.json is modified to add all authn plugins to list in topcat. This should be replaced to only include enabled plugins.
+The script has several command line arguments:
+| Option                                       | Required? | Function |
+|:--------------------------------------------:|:---------:|:--------:|
+| --url {url}                                  | Yes       | The url and port number of the topcat interface. eg. '--url http://localhost:8080' |
+| --root {mechanism} {username} {password}     | Yes       | The plugin, username and password of the user with access to the testdata. eg. '--root simple root pass' |
+| --non-root {mechanism} {username} {password} | No        | The plugin, username and password of the user without access to the testdata. If not used, non-root user tests will not be performed. eg. '--non-root db root password' |
+| --virtual-display			       | No        | Creates a virtual display with pyvirtualdisplay. Use if standard GUI is unavailiable. If not used, standard GUI will be used. |
+| --browsers {browser1} {browser2} ...         | No        | List of browsers to test. If not used, only Firefox will be used. eg. '--browsers firefox chrome'. |
 
+*Note 1: Ansible only installs firefox, any other browsers must be manually installed.*
+
+*Note 2: The script currently only supports Firefox and Chrome*
+
+*Note 3: There is currently a bug with geckodriver (Firefox Webdriver) making it impossible to specify the marionette port within the selenium script, the workaround for this is to point the script to a shell script, containing the executable and the marionette port argument, instead of pointing directly to the excutable. https://bugzilla.mozilla.org/show_bug.cgi?id=1421766*
+
+*Note 4: If the script fails for whatever reason, you will need to close the browser manually (kill from command line if needed) to free up the port before running again.*
 
 Tested Configurations
 ---------------------
@@ -170,8 +165,46 @@ These configurations have only been tested to a basic level (ie. they run withou
 |Travis_4.9.1  | Ubuntu 14.04     |2.4.1.0  |1.8.0 |2.7.13  |5.6    |--         |4.1.2.174 |2.0.0         |2.0.0     |2.0.0       |2.0.0       |1.1.0   |4.9.1 |1.8.0|1.4.0        |2.3.6   |
 |Default_4.8.0 | SL6/Ubuntu 14.04 |2.3.1.0  |1.8.0 |2.6.6   |5.1.73 |4.0        |--        |1.1.0         |1.2.0     |1.2.0       |1.1.1       |--      |4.8.0 |1.7.0|1.3.3        |2.2.1   |
 
+
+Notes
+-----
+
+* The setup excutable for the storage plugin returns a fatal error but still performs it's function (currently it's set to ignore this error but this needs to be improved)
+* Currently the mysql root password is automatically reset to default before running mysqld_secure_installation, it ignores errors. So having the password set to any other than the variable mysql_root_pass will return an error but will be skipped (including the default password). THIS NEEDS TO BE REPLACED!
+* The Icat Ingest Script is forced to timeout after 60secs and the resulting error is ignored
+* Hosts must be added to `/etc/ansible/hosts` or `tests/inventory` and have valid ssh keys, simply SSHing into target machine once beforehand should work.
+* All package installs (except pexpect) are set to present instead of latest, this greatly improves speed but may cause some problems if you have an old version of a package but with the same name, I have yet to encounter this (except for Pexpect)
+* If you already have mysql installed be sure to change the `mysql_root_pass` variable in `config.yml`
+* If you are using a VM with pip 1.0 installed, run `pip install --index-url=https://pypi.python.org/simple/ -U pip` to upgrade.
+* Some tasks involve finding a file with partial name instead of an absolute path. In these cases it will select the first matching file. For example If you have multiple 'mysql-connector-java-*.jar' files in /usr/share/java it will only use the first one. 
+* Sometimes adding boolean variables to --extra-vars cause them to return false even when set to true, assigning the value in a preset file seems to work anyway
+
+TODO
+----
+
+* Improve commenting and documentation
+* Improve feedback (eg. run automatic tests and report back with the debug module)
+* Fix Storage setup script not working
+* Better workaround for mysql root pass
+* Learn how ldap works
+* Figure out how to automatically test plugin installs (eg. curl /authn/version)
+* Use smaller file for icat ingest
+* Consider replacing env_path with shell scripts for sourcing
+* Improve Debug feedback
+* Auto grab icat root from first entry in enabled authn user lists
+* Improve Idempotence and speed
+* Create task to remove all non LILS facilties from topcat.json
+* Make pycat.yml more adaptable
+* Currently topcat.json is modified to add all authn plugins to list in topcat. This should be replaced to only include enabled plugins.
+* Allow selenium to rerun even if port is used (eg. autokill ps using port or auto select new port)
+* Add support for other browsers
+
+
 Changelog
 ---------
+
+#### 11/12/17
+* Added selenium setup playbook
 
 #### 05/12/17
 * Replaced payara_src

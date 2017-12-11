@@ -11,4 +11,3 @@ chrome_version: 2.33
 chrome_src: "https://chromedriver.storage.googleapis.com/{{ chrome_version }}/{{ chrome_zip }}"
 chrome_zip: "chromedriver_linux64.zip"
 
-#webdriver_path: "{{ download_dir }}/Tests"
