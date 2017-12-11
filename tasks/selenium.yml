@@ -66,13 +66,14 @@
     - "{{ chrome_zip }}"
 
 - name: "{{ play_name }}Copying Selenium Script and geckodriver workaround script"
-  template:
-    src: "{{ role_path }}/files/{{ item }}"
+  copy:
+    src: "{{ role_path }}/files/{{ item.src }}"
     dest: "{{ download_dir }}Tests/"
-    mode: "u+x"
+    mode: "{{ item.mode }}"
   with_items:
-    - topcat_test.py
-    - gecko.sh
+    - { src: topcat_test.py,  mode: "u=rw,g=rw,o=rw" }
+    - { src: gecko.sh,        mode: "u=rwx,g=rwx,o=rwx" }
+    - { src: geckodriver.log, mode: "u=rw,g=rw,o=rw" }
 
 - name: "{{ play_name }}Templating Arguments for Selenium Script"
   template:

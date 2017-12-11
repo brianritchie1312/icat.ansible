@@ -3,6 +3,7 @@
  # webdriver executables must be in system PATH or specified in arguments
  # Geckodriver excutable should be bash script with '/path/to/executable "$@" --marionette-port 2828' INSIDE
  # Python2.7 must be withn system PATH
+ # pyvirtualdisplay and xvfb are needed for virtual displays
 
 # TODO
     # If possible, no reliance on ansible
@@ -285,6 +286,7 @@ def test_login(mechanism, username, password):
 #-Check if Data exists within the datbase
 def test_data(root):
     try:
+	time.sleep(1)
         browser.find_element(By.CSS_SELECTOR, 'a[ng-click="grid.appScope.browse(row.entity)"]')
         if (root == True):
             print ("Data Existence Test: Success: Data elements exist")

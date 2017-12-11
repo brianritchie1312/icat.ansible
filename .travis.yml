@@ -41,14 +41,14 @@ install:
 # Many warnings are ignored on the Idempotence run, this is to reduce clutter, making it easier to see which tasks are not idempotent, all default warnings are enabled for the first run
 
 script:
-  - "echo 'First Run Test'"
+  - "printf '########################################\n# First Run Test\n########################################\n'"
   - "echo 'allow_world_readable_tmpfiles=True' >> ansible.cfg"		# Allows world readable temp files, not secure should only be used within Travis
   - "ANSIBLE_CONFIG=ansible.cfg ansible-playbook -i tests/inventory tests/test.yml --connection=local --extra-vars '@presets/travis_4.9.1.yml'"
 #
-  - "echo 'Deletion Script Test'"
+  - "printf '########################################\n# Deletion Script Test\n########################################\n'"
   - "ANSIBLE_CONFIG=ansible.cfg ansible-playbook -i tests/inventory tests/test.yml --connection=local --extra-vars '@presets/travis_4.9.1.yml' --extra-vars 'delete_fac=true'  --tags 'pycat'"
 #
-#  - "echo 'Idempotence Test'"
+#  - "printf '########################################\n# Idempotence Test\n########################################\n'"
 #  - "sed -i 's/delete_fac: true/delete_fac: false/g' config.yml"	# Test Idempotence
 #  - "echo 'stdout_callback = actionable' >> ansible.cfg"		# Only Output Changed or Failed Tasks
 #  - "echo 'deprecation_warnings = False' >> ansible.cfg"		# Ignore Depriciation Warnings
@@ -57,9 +57,9 @@ script:
 #  - "ANSIBLE_CONFIG=ansible.cfg ansible-playbook -i tests/inventory tests/test.yml --connection=local --extra-vars '@presets/travis_4.9.1.yml' --diff"  
 # Reduce changed tasks to lowest possible number (0 if possible) then check that changed value does not exceed that, fail if it does 
 #
-  - "echo 'Interface Test'"
+  - "printf '########################################\n# Interface Test\n########################################\n'"
   - "cd /home/user1/icatdownloads/Tests"
-  - "cat test_args.txt | xargs python topcat_test.py"
+  - "cat test_args.txt | sudo xargs python topcat_test.py"
 # run topcat_test.py, tee output
 # grep ^ output fail if the string 'Failed' appears
 

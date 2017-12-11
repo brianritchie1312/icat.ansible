@@ -138,9 +138,10 @@ python topcat_test.py --url http://localhost:8080 --root simple root pass --non-
 ```
 
 The script has several command line arguments:
+
 | Option                                       | Required? | Function |
 |:--------------------------------------------:|:---------:|:--------:|
-| --url {url}                                  | Yes       | The url and port number of the topcat interface. eg. '--url http://localhost:8080' |
+| --url {url}                                  | Yes       | The url and port number of the topcat interface. eg. '--url http://<nolink>localhost:8080' |
 | --root {mechanism} {username} {password}     | Yes       | The plugin, username and password of the user with access to the testdata. eg. '--root simple root pass' |
 | --non-root {mechanism} {username} {password} | No        | The plugin, username and password of the user without access to the testdata. If not used, non-root user tests will not be performed. eg. '--non-root db root password' |
 | --virtual-display			       | No        | Creates a virtual display with pyvirtualdisplay. Use if standard GUI is unavailiable. If not used, standard GUI will be used. |
@@ -152,7 +153,7 @@ The script has several command line arguments:
 
 *Note 3: There is currently a bug with geckodriver (Firefox Webdriver) making it impossible to specify the marionette port within the selenium script, the workaround for this is to point the script to a shell script, containing the executable and the marionette port argument, instead of pointing directly to the excutable. https://bugzilla.mozilla.org/show_bug.cgi?id=1421766*
 
-*Note 4: If the script fails for whatever reason, you will need to close the browser manually (kill from command line if needed) to free up the port before running again.*
+*Note 4: If the script fails for whatever reason, you may need to close the browser manually (kill from command line if needed) to free up the port before running again.*
 
 Tested Configurations
 ---------------------
@@ -198,6 +199,7 @@ TODO
 * Currently topcat.json is modified to add all authn plugins to list in topcat. This should be replaced to only include enabled plugins.
 * Allow selenium to rerun even if port is used (eg. autokill ps using port or auto select new port)
 * Add support for other browsers
+* Replace time delays in selenium with appropriate wait_until()
 
 
 Changelog
