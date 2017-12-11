@@ -206,6 +206,9 @@ Changelog
 ---------
 
 #### 11/12/17
+* Travis now fails if 'Failed' is found in selenium output
+
+#### 11/12/17
 * Added selenium setup playbook
 
 #### 05/12/17
