@@ -58,6 +58,7 @@ script:
 # Reduce changed tasks to lowest possible number (0 if possible) then check that changed value does not exceed that, fail if it does 
 #
 # Interface Test
+  - "su - user1"
   - "cd /home/user1/icatdownloads/Tests"
   - "touch topcat_test.log"
   - "cat test_args.txt | sudo xargs python topcat_test.py | tee topcat_test.log"
