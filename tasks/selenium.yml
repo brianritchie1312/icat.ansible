@@ -73,7 +73,15 @@
   with_items:
     - { src: topcat_test.py,  mode: "u=rw,g=rw,o=rw" }
     - { src: gecko.sh,        mode: "u=rwx,g=rwx,o=rwx" }
-    - { src: geckodriver.log, mode: "u=rw,g=rw,o=rw" }
+
+- name: "{{ play_name }}Creating Blank files with travis friendly permissions"
+  file:
+    path: "{{ download_dir }}Tests/{{ item }}"
+    state: touch
+    mode: "u=rw,g=rw,o=rw"
+  with_items:
+    - geckodriver.log
+    - topcat_test.log
 
 - name: "{{ play_name }}Templating Arguments for Selenium Script"
   template:
