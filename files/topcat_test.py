@@ -60,7 +60,8 @@ parser.add_argument('--path',
                     required=False)
 
 parser.add_argument('--browsers',
-                    action='store',
+                    action='append',
+                    nargs='+',
                     dest='browsers',
                     help='List of browsers to test. eg. "--browsers firefox chrome" (default: firefox) (supported: firefox, chrome)',
                     required=False)
@@ -106,15 +107,14 @@ args = parser.parse_args()
 
 # browsers
 if (args.browsers != None):
-    print(args.browsers)
     # Firefox
-    if ('firefox' in args.browsers) or ('Firefox' in args.browsers):      # if --browser is used and firefox is in list
+    if ('firefox' in args.browsers[0]) or ('Firefox' in args.browsers[0]):      # if --browser is used and firefox is in list
         firefox = True
     else:                   # if --browser is used and firefox is not in list
         firefox = False
 
     # Chrome
-    if ('chrome' in args.browsers) or ('Chrome' in args.browsers):
+    if ('chrome' in args.browsers[0]) or ('Chrome' in args.browsers[0]):
         chrome = True
     else:
         chrome = False

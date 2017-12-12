@@ -2,4 +2,4 @@
 --root {{ icat_mech }} {{ icat_root }} {{ icat_pass }} 
 --non-root db {{ authn_db_users[0].user }} {{ authn_db_users[0].pass }} 
 --virtual-display
-
+--browsers firefox chrome
