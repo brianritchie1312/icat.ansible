@@ -81,7 +81,7 @@
     mode: "u=rw,g=rw,o=rw"
   with_items:
     - geckodriver.log
-    - topcat_test.log
+    - topcat_test_output
 
 - name: "{{ play_name }}Templating Arguments for Selenium Script"
   template:

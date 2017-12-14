@@ -139,13 +139,16 @@ python topcat_test.py --url http://localhost:8080 --root simple root pass --non-
 
 The script has several command line arguments:
 
-| Option                                       | Required? | Function |
-|:--------------------------------------------:|:---------:|:--------:|
-| --url {url}                                  | Yes       | The url and port number of the topcat interface. eg. '--url http://<nolink>localhost:8080' |
-| --root {mechanism} {username} {password}     | Yes       | The plugin, username and password of the user with access to the testdata. eg. '--root simple root pass' |
-| --non-root {mechanism} {username} {password} | No        | The plugin, username and password of the user without access to the testdata. If not used, non-root user tests will not be performed. eg. '--non-root db root password' |
-| --virtual-display			       | No        | Creates a virtual display with pyvirtualdisplay. Use if standard GUI is unavailiable. If not used, standard GUI will be used. |
-| --browsers {browser1} {browser2} ...         | No        | List of browsers to test. If not used, only Firefox will be used. eg. '--browsers firefox chrome'. |
+| Option                                          | Required? | Function |
+|:-----------------------------------------------:|:---------:|:--------:|
+| --url {url}                                     | Yes       | The url and port number of the topcat interface. eg. '--url http://<nolink>localhost:8080' |
+| --user-data {mechanism} {username} {password}   | Yes       | The plugin, username and password of the user with access to the testdata. eg. '--user-data simple root pass' |
+| --user-nodata {mechanism} {username} {password} | No        | The plugin, username and password of the user without access to the testdata. If not used, non-root user tests will not be performed. eg. '--user-nodata db root password' |
+| --user-admin {mechanism} {username} {password}  | No        | The plugin, username and password of the admin user. If not used, --user-data will be assumed to be admin. eg. '--user-admin simple root pass' |
+| --virtual-display			          | No        | Creates a virtual display with pyvirtualdisplay. Use if standard GUI is unavailiable. If not used, standard GUI will be used. |
+| --path                                          | No        | Directory where webdriver excutables are and files will be downloaded to. If not used, the script's parent directory will be used |
+| --browsers {browser1} {browser2} ...            | No        | List of browsers to test. If not used, only Firefox will be used. eg. '--browsers firefox chrome'. |
+| --log-level {loglevel}                          | No        | Log level of webdrivers. Currently only geckodriver.log (firefox webdriver) is modified. eg. '--log-level trace' |
 
 *Note 1: Ansible only installs firefox, any other browsers must be manually installed.*
 
@@ -200,10 +203,18 @@ TODO
 * Allow selenium to rerun even if port is used (eg. autokill ps using port or auto select new port)
 * Add support for other browsers
 * Replace time delays in selenium with appropriate wait_until()
+* Complete topcat_test script
+* Swap Root/Non-Root users for Data/NoData/Admin
 
 
 Changelog
 ---------
+
+#### 14/12/17
+* Major restructure of topcat_test.py (selenium script). It's much longer but is also more organised and easier to read.
+* Corrected lucene IP
+* Added extra arguments to topcat_test.py
+* Split Root and Non-Root users into Data User, No Data User and Admin User in selenium script (TODO do same for ansible)
 
 #### 11/12/17
 * Travis now fails if 'Failed' is found in selenium output
