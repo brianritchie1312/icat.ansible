@@ -61,6 +61,7 @@ script:
   - "cd /home/user1/icatdownloads/Tests"
   - "cat test_args.txt | sudo xargs python topcat_test.py | tee topcat_test_output"
   - "cat topcat_test_output | grep Failed && (echo 'Interface Test Failed' && exit 1) || (echo 'Interface Test Passed' && exit 0)"
+  - "cat topcat_test_output | grep error && (echo 'Interface Test Failed' && exit 1) || (echo 'Interface Test Passed' && exit 0)"
 # run topcat_test.py, tee output
 # grep ^ output fail if the string 'Failed' appears
 

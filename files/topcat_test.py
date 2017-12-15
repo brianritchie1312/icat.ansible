@@ -125,7 +125,7 @@ parser.add_argument('--log-level',
 
 # Gather all arguments
 
-# Example arguments, meant for testing within IDE
+# Example arguments, meant for testing within IDE (eg. Atom Runner)
 #args = parser.parse_args(['--url', 'http://vm8.nubes.stfc.ac.uk:8080',
 #                          '--user-data', 'simple', 'root', 'pass',
 #                          '--user-nodata', 'db', 'root', 'password',
@@ -143,6 +143,17 @@ args = parser.parse_args()
 #-------------------------------------------------------------------------------
 # Variables
 #-------------------------------------------------------------------------------
+
+class txt:
+    BASIC = '\033[0m'
+    BOLD = '\033[1m'
+    UNDERLINE = '\033[4m'
+    RED = '\033[31m'
+    GREEN = '\033[32m'
+    YELLOW = '\033[33m'
+    BLUE = '\033[34m'
+    Success = GREEN + 'Success' + BASIC
+    Failed = RED + 'Failed' + BASIC
 
 # Facilty
 # TODO make these args
@@ -339,8 +350,9 @@ def cart_clear():
 # Clear downloads
 def downloads_clear():
     try:
-        element_click('.glyphicon.glyphicon-download-alt')
-        time.sleep(3)
+        if (element_exists('div[class="modal-content ng-scope"]') == False):
+            element_click('.glyphicon.glyphicon-download-alt')
+        time.sleep(1)
 
         while (element_exists('a[translate="DOWNLOAD.ACTIONS.LINK.REMOVE.TEXT"]') == True):
             element_click('a[translate="DOWNLOAD.ACTIONS.LINK.REMOVE.TEXT"]')
@@ -359,12 +371,12 @@ def link_check(element, target):
         time.sleep(1)
 
         if (browser.current_url == icat_url + target):
-            return ("Success")
+            return (txt.Success)
         else:
-            return ("Failed (current url: " + browser.current_url + ")")
+            return (txt.Failed + " (current url: " + browser.current_url + ")")
 
     except NoSuchElementException as ex:
-        return ("Failed (link element does not exist)")
+        return (txt.Failed + " (link element does not exist)")
         print(ex)
 #-END-
 
@@ -391,27 +403,29 @@ def search_test(search, visit, dataset, datafile):
 
 # Check results of search and output results
   # search = String to searched
-  # tab = String, which tabs are you looking in (eg. Visit, Dataset, Datfile)
-  # target = should there be results in the respective target
+  # tab = String, which tabs are you looking in (eg. Visit, Dataset, Datafile)
+  # target = Bool,should there be results in the respective tab?
 def search_results(search, tab, target):
     print("Search Results for '" + search + "' in " + tab + ": ", end='')
 
+    # element clicked below is not named visit but is named investigation, despite visible text saying visit, so quick name change is declared here
     if (tab == "Visit"):
         tab = "investigation"
 
     element_click('a[ng-click="searchResultsController.currentTab = \'' + tab.lower() + '\'"]')
     time.sleep(1)
 
-    if (element_exists('div[class="ui-grid-cell-contents ng-scope"]') == True):
-        if (target == True):
-            print("Success")
+    if (target == True): # If results should exist
+        if (element_exists('div[class="ui-grid-cell-contents ng-scope"]') == True): # IF results DO exist
+            print(txt.Success + " (Results Exist)")
         else:
-            print("Failed (Results exist when they shouldn't)")
-    else:
-        if (target == False):
-            print("Success")
+            print(txt.Failed + " (Results Do Not Exist)")
+
+    else:        # If results shouldn't exist
+        if (element_exists('div[class="ui-grid-cell-contents ng-scope"]') == False):
+            print(txt.Success + " (No Results)")
         else:
-            print("Failed (No Results)")
+            print(txt.Failed + " (Results Exist)")
 #-END-
 
 # Click on first item and check if naviagate to correct location
@@ -424,16 +438,38 @@ def browse_click(current, target):
     time.sleep(1)
 
     if (element_exists('i[translate="ENTITIES.' + target.upper() + '.NAME"]') == True):
-        print("Success")
+        print(txt.Success)
     else:
-        print("Failed (on page:" + browser.current_url + ")")
+        print(txt.Failed + " (on page:" + browser.current_url + ")")
 #-END-
+
+# Click non-active section of row and check if info tab appears
+  # level = String, current level (eg. Visit, Dataset, Datafile)
+  # url = String, url to naviagte to before checking for infotab
+def datanav_infotab(level, url):
+    print("Info Tab " + level + " Level: ", end='')
+    browser.get(url)
+    time.sleep(1)
+
+    # At visit level this clicks link not non-active
+    # browser.find_element(By.CSS_SELECTOR, 'div[class="ui-grid-cell-contents ng-scope"]').click()
+    # print(element_find('div[class="ui-grid-cell-contents ng-binding ng-scope"]').text)
+    element_click('div[class="ui-grid-cell-contents ng-binding ng-scope"]')
+    time.sleep(1)
+
+    if (element_exists('div[class="ui-grid-row ng-scope"]') == True):
+        print(txt.Success)
+    else:
+        print(txt.Failed + " (Info Tab Not Present)")
+#-END-
+
 
 #-------------------------------------------------------------------------------
 # Tests
 #-------------------------------------------------------------------------------
 
 # Test Modules
+  # These modules are mainly for organisation and do not affect the code itself, except in naming conventions
     #--Browser--
         # Open browser and navigate to url
     #--Login--
@@ -462,11 +498,11 @@ def test_browser():
         browser.get(icat_url)
         time.sleep(2)
         if (browser.current_url == icat_url + '/#/login'):
-            print("Success (" + browser.current_url + ")")
+            print(txt.Success + " (" + browser.current_url + ")")
         else:
-            print("Failed (" + browser.current_url + ")")
+            print(txt.Failed + " (" + browser.current_url + ")")
     except NoSuchElementException as ex:
-        print("Failed")
+        print(txt.Failed)
         print(ex)
 #-END-
 
@@ -479,9 +515,9 @@ def test_login(mechanism, username, password):
 
     time.sleep(2)
     if (browser.current_url == icat_home):
-        print("Success")
+        print(txt.Success)
     else:
-        print("Failed (On page '" + browser.current_url + "')")
+        print(txt.Failed + " (On page '" + browser.current_url + "')")
 #-END-
 
 #---Navigation------------------------------------------------------------------
@@ -516,48 +552,48 @@ def test_nav_toolbar_admin(admin):
     else:
         print("Toolbar Admin Page Link Hidden: ", end='')
         if (element_find('li[ng-show="indexController.adminFacilities.length > 0"]').get_attribute("class") == "ng-hide"):
-            print("Success")
+            print(txt.Success)
         else:
-            print("Failed")
+            print(txt.Failed)
 #-END-
 
 # Check footer elements exist
 def test_nav_footer():
     print("Footer Existence: ", end='')
     if (element_exists('footer[class="footer"]') == True):
-        print("Success")
+        print(txt.Success)
     else:
-        print("Failed")
+        print(txt.Failed)
 
     # TODO see if it can specified that these must be children of footer element
 
     print("Footer Facility Link Existence: ", end='')
     try:
         browser.find_element(By.LINK_TEXT, facilty_long_name)
-        print("Success")
+        print(txt.Success)
     except NoSuchElementException:
-        print("Failed (trying to find: " + facilty_long_name + ")")
+        print(txt.Failed + " (trying to find: " + facilty_long_name + ")")
 
     print("Footer Privacy Policy Link Existence: ", end='')
     try:
         browser.find_element(By.LINK_TEXT, 'Privacy Policy')
-        print("Success")
+        print(txt.Success)
     except NoSuchElementException:
-        print("Failed")
+        print(txt.Failed)
 
     print("Footer Cookie Policy Link Existence: ", end='')
     try:
         browser.find_element(By.LINK_TEXT, 'Cookie Policy')
-        print("Success")
+        print(txt.Success)
     except NoSuchElementException:
-        print("Failed")
+        print(txt.Failed)
 
     print("Footer About Us Link Existence: ", end='')
     try:
         browser.find_element(By.LINK_TEXT, 'About Us')
-        print("Success")
+        print(txt.Success)
     except NoSuchElementException:
-        print("Failed")
+        print(txt.Failed)
 #-END-
 
 # Find and click 'My Data', 'Browse' and 'Search' tabs
@@ -602,22 +638,22 @@ def test_data_exists(data):
     if (data == True):
         print("Data Existence Test: ", end='')
         if (element_exists('a[ng-click="grid.appScope.browse(row.entity)"]') == True):
-            print("Success")
+            print(txt.Success)
         else:
-            print("Failed")
+            print(txt.Failed)
     else:
         print("Data Absence Test: ", end='')
         if (element_exists('a[ng-click="grid.appScope.browse(row.entity)"]') == True):
-            print("Failed")
+            print(txt.Failed)
         else:
-            print("Success")
+            print(txt.Success)
 #-END-
 
 #-Check that cart does not exist when first logging in
 def test_data_cart():
     print("Initial Cart Empty Test: ", end='')
     if (element_exists('.glyphicon.glyphicon-shopping-cart') == True):
-        print("Failed (" + element_find('span[ng-click="indexController.showCart()"]').text + ")", end='')
+        print(txt.Failed + " (" + element_find('span[ng-click="indexController.showCart()"]').text + ")", end='')
 
         while (element_exists('.glyphicon.glyphicon-shopping-cart') == True):
             cart_clear()
@@ -628,14 +664,14 @@ def test_data_cart():
         else:
             print(" - Cart Still Exists")
     else:
-        print("Success")
+        print(txt.Success)
 #-END-
 
 #-Check that downloads does not exist when first logging in
 def test_data_downloads():
     print("Initial Downloads Empty Test: ", end='')
     if (element_exists('.glyphicon.glyphicon-download-alt') == True):
-        print("Failed", end='')
+        print(txt.Failed, end='')
         downloads_clear()
         time.sleep(1)
         if (element_exists('.glyphicon.glyphicon-download-alt') == False):
@@ -643,7 +679,7 @@ def test_data_downloads():
         else:
             print(" - Downloads still exist")
     else:
-        print("Success")
+        print(txt.Success)
 #-END-
 
 #---Data Navigation-------------------------------------------------------------
@@ -653,12 +689,25 @@ def test_datanav_browse():
     time.sleep(1)
 
     browse_click("Proposal", "Investigation")
+    # global visit_url
+    # visit_url = browser.current_url
+
     browse_click("Investigation", "Dataset")
     global dataset_url
     dataset_url = browser.current_url
+
     browse_click("Dataset", "Datafile")
     global datafile_url
     datafile_url = browser.current_url
+#-END-
+
+# Check if info tab show when clicking non active area of items
+def test_datanav_infotab():
+    datanav_infotab("Visit", icat_home)
+
+    datanav_infotab("Dataset", dataset_url)
+
+    datanav_infotab("Datafile", datafile_url)
 #-END-
 
 #---Cart------------------------------------------------------------------------
@@ -671,19 +720,20 @@ def test_cart_add():
 
     print("Add Dataset to Cart: ", end='')
     if (cart_add() == 1):
-        print ("Success (" + element_find('span[ng-click="indexController.showCart()"]').text + ")" )
+        print (txt.Success + " (" + element_find('span[ng-click="indexController.showCart()"]').text + ")" )
     else:
-        print ("Failed (" + element_find('span[ng-click="indexController.showCart()"]').text + ")" )
+        print (txt.Failed + " (" + element_find('span[ng-click="indexController.showCart()"]').text + ")" )
 
+    time.sleep(3)
     # Click 2nd Dataset, Entire Dataset 1 is already in cart
     browser.find_element(By.LINK_TEXT, 'Dataset 2').click()
     time.sleep(1)
 
     print("Add Datafile to Cart: ", end='')
     if (cart_add() == 2):
-        print ("Success (" + element_find('span[ng-click="indexController.showCart()"]').text + ")" )
+        print (txt.Success + " (" + element_find('span[ng-click="indexController.showCart()"]').text + ")" )
     else:
-        print ("Failed (" + element_find('span[ng-click="indexController.showCart()"]').text + ")" )
+        print (txt.Failed + " (" + element_find('span[ng-click="indexController.showCart()"]').text + ")" )
 #-END-
 
 # Remove 1 item from cart
@@ -692,9 +742,9 @@ def test_cart_rm():
     cart_rm()
     time.sleep(1)
     if (cart_items() == 1):
-        print("Success (" + element_find('span[ng-click="indexController.showCart()"]').text + ")")
+        print(txt.Success + " (" + element_find('span[ng-click="indexController.showCart()"]').text + ")")
     else:
-        print("Failed (" + element_find('span[ng-click="indexController.showCart()"]').text + ")")
+        print(txt.Failed + " (" + element_find('span[ng-click="indexController.showCart()"]').text + ")")
 #-END-
 
 def test_cart_clear():
@@ -703,9 +753,9 @@ def test_cart_clear():
     time.sleep(1)
 
     if (element_exists('.glyphicon.glyphicon-shopping-cart') == False):
-        print("Success")
+        print(txt.Success)
     else:
-        print("Failed (" + element_find('span[ng-click="indexController.showCart()"]').text + ")")
+        print(txt.Failed + " (" + element_find('span[ng-click="indexController.showCart()"]').text + ")")
 #-END-
 
 #---Download--------------------------------------------------------------------
@@ -720,10 +770,10 @@ def test_download_action():
         element_wait((By.CSS_SELECTOR, 'a[translate="DOWNLOAD_ENTITY_ACTION_BUTTON.TEXT"]'))
         element_click('a[translate="DOWNLOAD_ENTITY_ACTION_BUTTON.TEXT"]')
 
-        print("Success (NOTE: file existence not checked)")
+        print(txt.Success + " (NOTE: file existence not checked)")
 
     except NoSuchElementException as ex:
-        print("Failed")
+        print(txt.Failed)
         print(ex)
 #-END-
 
@@ -752,29 +802,56 @@ def test_download_cart():
         if (element_exists('.glyphicon.glyphicon-shopping-cart') == False):
             # Check if downloads has appeared
             if (element_exists('.glyphicon.glyphicon-download-alt') == True):
-                print("Success (NOTE: File existence not checked)")
+                print(txt.Success + " (NOTE: File existence not checked)")
             else:    # Downloads has not appeared
-                print("Failed (Download icon does not exist)")
+                print(txt.Failed + " (Download icon does not exist)")
 
         else:    # Cart has not been removed
-            print("Failed (Cart still exists)")
+            print(txt.Failed + " (Cart still exists)")
 
     except NoSuchElementException as ex:
         print(ex)
 #-END-
+
+def test_download_avaliable():
+    print("Download Is Available in Downloads: ", end='')
+    if (element_exists('.glyphicon.glyphicon-download-alt')):
+
+        # If downloads not already open
+        if (element_exists('div[class="modal-content ng-scope"]') == False):
+            element_click('.glyphicon.glyphicon-download-alt')
+
+        time.sleep(1)
+
+        # If Status text Says Availiable
+        if (element_find('span[class="ng-binding ng-scope"]').text == "Available"):
+            print(txt.Success)
+        else:
+            print(txt.Failed + "(Download is '" + element_find('span[class="ng-binding ng-scope"]').text + "')")
+
+        # If Download Button exists
+        print("Download Button Exists in Downloads: ", end='')
+        if (element_exists('a[translate="DOWNLOAD.ACTIONS.LINK.HTTP_DOWNLOAD.TEXT"]') == True) or (element_exists('a[translate="DOWNLOAD.ACTIONS.LINK.GLOBUS_DOWNLOAD.TEXT"]') == True):
+            print(txt.Success)
+        else:
+            print(txt.Failed + " (Download button does not exist)")
+
+    else:
+        print(txt.Failed + " (Downloads does not exist)")
 
 # Rename zip file to be downloaded by cart
 def test_download_rename():
     print("Downloading Rename Test Not Yet Written")
 #-END-
 
+# Remove all items from downloads
 def test_download_clear():
     print("Clear Downloads: ", end='')
     downloads_clear()
     if (element_exists('.glyphicon.glyphicon-download-alt') == True):
-        print("Failed (Downloads still exists)")
+        print(txt.Failed + " (Downloads still exists)")
     else:
-        print("Success")
+        print(txt.Success)
 #-END-
 
 #---Other-----------------------------------------------------------------------
@@ -800,6 +877,7 @@ def test_master(browser_name):
     test_data_downloads()
     #--Data Navigation--
     test_datanav_browse()
+    test_datanav_infotab()
     #--Cart--
     test_cart_add()
     test_cart_rm()
@@ -807,6 +885,7 @@ def test_master(browser_name):
     #--Download--
     test_download_action()
     test_download_cart()
+    test_download_avaliable()
     # test_download_rename()
     test_download_clear()
     #--Other--
@@ -846,7 +925,7 @@ def test_master(browser_name):
 #-------------------------------------------------------------------------------
 
 #---Print Info Output for debug-------------------------------------------------
-print("---Gathering Variables---")
+print(txt.BOLD + "---Gathering Variables---" + txt.BASIC)
 
 # Virtual Display
 if (args.virtual_display == True):
@@ -905,7 +984,7 @@ print("")
 
 # Firefox tests
 if (firefox == True):
-    print("---Firefox Test---")
+    print(txt.BOLD + "---Firefox Test---" + txt.BASIC)
 
     # Force Firefox to download without prompting user
     profile = webdriver.FirefoxProfile()
@@ -928,7 +1007,7 @@ if (firefox == True):
 
 # Chrome tests
 if (chrome == True):
-    print("---Chrome Test---")
+    print(txt.BOLD + "---Chrome Test---" + txt.BASIC)
 
     chrome_options = ChromeOptions()
     # if (log_level != 'default'):

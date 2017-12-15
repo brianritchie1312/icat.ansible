@@ -87,6 +87,12 @@
     wipe_icat: false
     delete_fac: true
 
+  #---Ingest timeout---
+   # The current ingest file is large and takes a lot of time to complete.
+   # Use this variable to force timeout the ingest after a specific ammount of seconds
+   # NOTE: I think this is currently setup to run until the timeout, even if the ingest is complete
+
+    ingest_timeout: 60
    
   #---Creating files for TestData---
    # icatingest.py does not actually create any files, it just generates the meta data used by the database

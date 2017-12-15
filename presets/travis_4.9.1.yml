@@ -2,7 +2,6 @@
 # Intended for use with .travis.yml
  # Near duplicate of default_4.9.1
 
-
 #---Setup--
 java: true
 mysql: true
@@ -41,6 +40,10 @@ icat_version: 4.9.1
 storage_version: 1.4.0
 ids_version: 1.8.0
 topcat_version: 2.3.6
+
+#---Ingest---
+
+ingest_timeout: 120
 
 #---Users---
 

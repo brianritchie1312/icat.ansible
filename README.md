@@ -204,11 +204,19 @@ TODO
 * Add support for other browsers
 * Replace time delays in selenium with appropriate wait_until()
 * Complete topcat_test script
-* Swap Root/Non-Root users for Data/NoData/Admin
+* Swap Root/Non-Root users for Data/NoData/Admin in ansible setup
+* Fix chrome launch in selenium
 
 
 Changelog
 ---------
+
+#### 15/12/17
+* Extra tests in selenium script
+* Minor improvements and fixes in selenium script
+* Added ANSI colour and formatting to script output, making failures easier to spot
+* Added variable for ingest timeout (default = 60s, travis = 120s)
+* Temporary removal of chrome from test_args until chrome works
 
 #### 14/12/17
 * Major restructure of topcat_test.py (selenium script). It's much longer but is also more organised and easier to read.

@@ -238,7 +238,7 @@
   when: 
     - 'fac_name not in icat_facs.stdout'
   ignore_errors: yes
-  async: 60
+  async: "{{ ingest_timeout }}"
   poll: 5
 
 #---
