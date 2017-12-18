@@ -211,6 +211,10 @@ TODO
 Changelog
 ---------
 
+#### 18/12/17 (2)
+* Add facilty arguments to Selenium Script
+* Further Improved Output of Selenium Script
+
 #### 18/12/17
 * Reorganised Master functions in selenium script
 * Further Improved Output of Selenium

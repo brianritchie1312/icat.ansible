@@ -70,12 +70,26 @@ required.add_argument('--url',
                       help='The url of the icat build you wish to test, including port number.',
                       required=True)
 
+parser.add_argument('--fac-short',
+                    action='store',
+                    dest='fac_short',
+                    help='Short Name of Facility, used in URLs. (eg. --fac-short LILS) (default: LILS)',
+                    required=False,
+                    )
+
+parser.add_argument('--fac-long',
+                    action='store',
+                    dest='fac_long',
+                    help='Long Name of Facility, used in Login and footer. (eg. --fac-short Lorum Ipsum Light Source) (default: Lorum Ipsum Light Source)',
+                    required=False,
+                    )
+
 # Priviillged user
 required.add_argument('--user-data',
                       action='append',
                       nargs='+',
                       dest='user_data',
-                      help='The user with rights to the testdata. syntax: "--user-data <mechanism> <username> <password>" eg. "--user-data simple root pass"',
+                      help='The user with rights to the testdata. (syntax: --user-data <mechanism> <username> <password>) (eg. --user-data simple root pass)',
                       required=True)
 
 # Unprivillaged user
@@ -83,7 +97,7 @@ parser.add_argument('--user-nodata',
                     action='append',
                     nargs='+',
                     dest='user_nodata',
-                    help='The user without rights to the testdata, used to ensure unprivileged users can not access data. (Syntax: "--user-nodata <mechanism> <username> <password>" eg. "--user-nodata simple user1 pass")',
+                    help='The user without rights to the testdata, used to ensure unprivileged users can not access data. If not used, No Data User Tests will not be performed. (syntax: --user-nodata <mechanism> <username> <password>) (eg. --user-nodata simple user1 pass)',
                     required=False)
 
 # Unprivillaged user
@@ -91,7 +105,7 @@ parser.add_argument('--user-admin',
                     action='append',
                     nargs='+',
                     dest='user_admin',
-                    help='The admin user, only needed if --user-data is not admin. syntax: "--user-admin <mechanism> <username> <password>" eg. "--user-admin simple root pass"',
+                    help='The admin user, only needed if --user-data is not admin. If not used, Data User will perform admin tests. (syntax: --user-admin <mechanism> <username> <password>) (eg. --user-admin simple root pass)',
                     required=False)
 
 # Create Virtual Display if GUI unavailiable
@@ -127,12 +141,14 @@ parser.add_argument('--log-level',
 
 # Example arguments, meant for testing within IDE (eg. Atom Runner)
 #args = parser.parse_args(['--url', 'http://vm8.nubes.stfc.ac.uk:8080',
+#                          # '--fac-short', 'LILS',
+#                          # '--fac-long', 'Lorum Ipsum Light Source',
 #                          '--user-data', 'simple', 'root', 'pass',
 #                          '--user-nodata', 'db', 'root', 'password',
 #                          # '--user-admin', 'simple', 'root', 'pass',
 #                          '--browsers', 'firefox', 'chrome',
 #                          '--log-level', 'trace',
-#                          # '--path', 'C:\Users\Uvn88637\Documents\AutoICAT2',
+#                          # '--path', '/home/user1/icatdownloads/Tests',
 #                          # '--virtual-display',
 #                          ])
 
@@ -152,15 +168,22 @@ class txt:
     GREEN = '\033[32m'
     YELLOW = '\033[93m'
     BLUE = '\033[94m'
-    HEADING = YELLOW
+    HEADING = YELLOW + BOLD
     SUBHEADING = BOLD
     Success = GREEN + 'Success' + BASIC
     Failed = RED + 'Failed' + BASIC
 
-# Facilty
-# TODO make these args
-facilty_short_name = "LILS"
-facilty_long_name = "Lorum Ipsum Light Source"
+# --fac-short
+if (args.fac_short != None):
+    facilty_short_name = args.fac_short
+else:
+    facilty_short_name = "LILS"
+
+# --fac-long
+if (args.fac_long != None):
+    facilty_long_name = arg.fac_long
+else:
+    facilty_long_name = "Lorum Ipsum Light Source"
 
 # --url
 icat_url = args.icat_url
@@ -240,8 +263,16 @@ def login(mechanism, username, password):
     else:
         mechanism = mechanism.upper()
 
-    element_wait((By.ID, "plugin"))
-    Select(browser.find_element(By.ID, 'plugin')).select_by_visible_text(mechanism)
+    element_wait((By.ID, "username"))
+
+    # Select Facility if multiple exist
+    if (element_exists('select[id="facilityName"]') == True):
+        Select(browser.find_element(By.ID, 'facilityName')).select_by_visible_text(facilty_long_name)
+
+    # Select Plugin if multiple exist
+    if (element_exists('select[id="plugin"]') == True):
+        Select(browser.find_element(By.ID, 'plugin')).select_by_visible_text(mechanism)
+
     browser.find_element(By.ID, 'username').send_keys(username)
     browser.find_element(By.ID, 'password').send_keys(password)
     browser.find_element(By.ID, 'login').click()
@@ -701,17 +732,18 @@ def test_data_downloads():
 
 def test_datanav_browse():
     browser.get(icat_url + '/#/browse/facility/' + facilty_short_name + '/proposal')
-    time.sleep(1)
 
-    # Down
+    time.sleep(1)
     browse_click("Proposal", "Investigation", obj_row_link)
     # global visit_url
     # visit_url = browser.current_url
 
+    time.sleep(1)
     browse_click("Investigation", "Dataset", obj_row_link)
     global dataset_url
     dataset_url = browser.current_url
 
+    time.sleep(1)
     browse_click("Dataset", "Datafile", obj_row_link)
     global datafile_url
     datafile_url = browser.current_url
@@ -932,35 +964,11 @@ def print_variables():
     print("")
     print(txt.HEADING + "[ Gathering Variables ]" + txt.BASIC)
 
-    # Virtual Display
-    if (args.virtual_display == True):
-        w = 1920
-        h = 1080
-        display = Display(visible=0, size=(w, h))
-        display.start()
-        print("Virtual Display Used (" + str(w) + "x" + str(h) + ")")
-    else:
-        print("Virtual Display Not Used")
-
-    # Browsers
-    print("Browsers: ", end="")
-    if (firefox == True):
-        print("Firefox, ", end="")
-    if (chrome == True):
-        print("Chrome, ", end="")
-    print("")
-
     # URL
     print("URL: " + icat_url)
 
     # Facilty
     print("Facility: " + facilty_short_name + "(" + facilty_long_name + ")")
-
-    # Directory
-    print("Directory: " + download_dir)
-
-    # Log Level
-    print("Log Level: " + log_level)
 
     # Root User
     print("Data User: " + user_data_mech + "/" + user_data_name)
@@ -974,6 +982,7 @@ def print_variables():
     else:
         print("NULL")
 
+    # Admin User
     print("Admin User: ", end='')
     if (args.user_admin != None):
         print(user_admin_mech + "/" + user_admin_name)
@@ -981,8 +990,32 @@ def print_variables():
     else:
         print("Same as Data User")
 
+    # Virtual Display
+    if (args.virtual_display == True):
+        w = 1920
+        h = 1080
+        display = Display(visible=0, size=(w, h))
+        display.start()
+        print("Virtual Display Used (" + str(w) + "x" + str(h) + ")")
+    else:
+        print("Virtual Display Not Used")
+
+    # Directory
+    print("Directory: " + download_dir)
+
+    # Browsers
+    print("Browsers: ", end="")
+    if (firefox == True):
+        print("Firefox, ", end="")
+    if (chrome == True):
+        print("Chrome, ", end="")
+    print("")
+
+    # Log Level
+    print("Log Level: " + log_level)
+
     # Newline
-        print(txt.BOLD + "[ Gathering Variables Complete ]" + txt.BASIC)
+    print(txt.BOLD + "[ Gathering Variables Complete ]" + txt.BASIC)
     #---
 #-END-
 
@@ -1081,7 +1114,6 @@ print("    |_|\___/| .__/ \_____\__,_|\__|    |_|\___||___/\__| ")
 print("            | |                                          ")
 print("            |_|                                          ")
 print("---------------------------------------------------------")
-print("                                                         ")
 
 test_master()
 
