@@ -127,7 +127,7 @@
 # TODO replace with task to remove all facilities not in mysql \/
 #---
 
-- name: "{{ play_name }}Correcting errors in ISIS facilty in JSOn file"
+- name: "{{ play_name }}Correcting errors in ISIS facilty in JSON file"
   replace:
     path: "{{ topcat_path }}/{{ topcat_json }}"
     regexp: '"title": "ISIS",(?s)(.*?)"hierarchy"'

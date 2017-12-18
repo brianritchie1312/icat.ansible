@@ -134,7 +134,7 @@ This test is not automatically run by ansible, however if 'selenium: true' is se
 
 Example:
 ```Shell
-python topcat_test.py --url http://localhost:8080 --root simple root pass --non-root db root password --virtual-display
+python topcat_test.py --url http://localhost:8080 --user-data simple root pass --user-nodata db root password --virtual-display
 ```
 
 The script has several command line arguments:
@@ -210,6 +210,12 @@ TODO
 
 Changelog
 ---------
+
+#### 18/12/17
+* Reorganised Master functions in selenium script
+* Further Improved Output of Selenium
+* Corrected typo in tasks/topcat.yml
+* Corrected example CL in README
 
 #### 15/12/17
 * Extra tests in selenium script

@@ -150,8 +150,10 @@ class txt:
     UNDERLINE = '\033[4m'
     RED = '\033[31m'
     GREEN = '\033[32m'
-    YELLOW = '\033[33m'
-    BLUE = '\033[34m'
+    YELLOW = '\033[93m'
+    BLUE = '\033[94m'
+    HEADING = YELLOW
+    SUBHEADING = BOLD
     Success = GREEN + 'Success' + BASIC
     Failed = RED + 'Failed' + BASIC
 
@@ -215,14 +217,20 @@ if (args.log_level != None):
 else:
     log_level = 'default'
 
+# CSS_SELECTOR of Frequently Used Elements
+obj_cart_icon = '.glyphicon.glyphicon-shopping-cart'
+obj_downloads_icon = '.glyphicon.glyphicon-download-alt'
+obj_row_link = 'a[ng-click="grid.appScope.browse(row.entity)"]'
+
+
 #-------------------------------------------------------------------------------
 # Alliases/Shortcuts
 #-------------------------------------------------------------------------------
 
 # Login as specific user
-  # mechanism = mnemonic of desired plugin
-  # username = username of user
-  # password = password of user
+  # mechanism = String, mnemonic of desired plugin
+  # username = String, username of user
+  # password = String, password of user
 def login(mechanism, username, password):
     logout()
 
@@ -247,14 +255,14 @@ def logout():
 #-END-
 
 # Find element by CSS_SELECTOR
-  # element = CSS_SELECTOR of element
+  # element = String, CSS_SELECTOR of element
     # non CSS_SELECTOR need full command
 def element_find(element):
     return browser.find_element(By.CSS_SELECTOR, (element))
 #-END-
 
 # Click element by CSS_SELECTOR
-  # element = CSS_SELECTOR of element you wish to click on
+  # element = String, CSS_SELECTOR of element you wish to click on
     # non CSS_SELECTOR need full command
 def element_click(element):
     element_find(element).click()
@@ -287,7 +295,7 @@ def cart_items():
 # Add first element to cart and check it has been added
 def cart_add():
     # Get number of items in cart
-    if (element_exists('.glyphicon.glyphicon-shopping-cart')):
+    if (element_exists(obj_cart_icon)):
         pre_items = cart_items()
     else:
         pre_items = 0
@@ -297,7 +305,7 @@ def cart_add():
 
     # Compare no. of items in cart to previous
     try:
-        element_wait((By.CSS_SELECTOR, '.glyphicon.glyphicon-shopping-cart'))
+        element_wait((By.CSS_SELECTOR, obj_cart_icon))
         time.sleep(1)
         post_items = cart_items()
         if (post_items == (pre_items + 1)):
@@ -315,7 +323,7 @@ def cart_rm():
         pre_items = cart_items()
 
         if (element_exists('div[class="modal-dialog modal-lg"]') == False):
-            element_click('.glyphicon.glyphicon-shopping-cart')
+            element_click(obj_cart_icon)
 
         element_wait((By.CSS_SELECTOR, 'a[translate="CART.ACTIONS.LINK.REMOVE.TEXT"]'))
         element_click('a[translate="CART.ACTIONS.LINK.REMOVE.TEXT"]')
@@ -336,7 +344,7 @@ def cart_rm():
 def cart_clear():
     try:
         if (element_exists('div[class="modal-dialog modal-lg"]') == False):
-            element_click('.glyphicon.glyphicon-shopping-cart')
+            element_click(obj_cart_icon)
 
         element_wait((By.CSS_SELECTOR, 'button[translate="CART.REMOVE_ALL_BUTTON.TEXT"]'))
         time.sleep(1)
@@ -350,8 +358,9 @@ def cart_clear():
 # Clear downloads
 def downloads_clear():
     try:
+        # If downloads not already open click downloads icon
         if (element_exists('div[class="modal-content ng-scope"]') == False):
-            element_click('.glyphicon.glyphicon-download-alt')
+            element_click(obj_downloads_icon)
         time.sleep(1)
 
         while (element_exists('a[translate="DOWNLOAD.ACTIONS.LINK.REMOVE.TEXT"]') == True):
@@ -364,6 +373,8 @@ def downloads_clear():
 #-END-
 
 # Click a link and check if directed to correct url
+  # element = String, CSS_SELECTOR of element to click
+  # target = String, Url the element should take user to (appended after baseurl, eg. '/#/my-data' not 'http://localhost:8080/#/my-data')
 def link_check(element, target):
     try:
         element_wait((By.CSS_SELECTOR, element))
@@ -402,7 +413,7 @@ def search_test(search, visit, dataset, datafile):
 #-END-
 
 # Check results of search and output results
-  # search = String to searched
+  # search = String, sting to be searched
   # tab = String, which tabs are you looking in (eg. Visit, Dataset, Datafile)
   # target = Bool,should there be results in the respective tab?
 def search_results(search, tab, target):
@@ -429,12 +440,14 @@ def search_results(search, tab, target):
 #-END-
 
 # Click on first item and check if naviagate to correct location
-  # current = String, current level of browsing (eg. proposal, investigation, dataset, datafile)
-def browse_click(current, target):
-    print("Browse " + current + " to " + target + ": ", end='')
+  # level = String, current level of browsing (eg. proposal, investigation, dataset, datafile)
+  # target = String, level to navigate to
+  # element = String, CSS_SELECTOR of element to click
+def browse_click(level, target, element):
+    print("Browse " + level + " to " + target + ": ", end='')
 
-    element_wait((By.CSS_SELECTOR, 'a[ng-click="grid.appScope.browse(row.entity)"]'))
-    element_click('a[ng-click="grid.appScope.browse(row.entity)"]')
+    element_wait((By.CSS_SELECTOR, obj_row_link))
+    element_click(obj_row_link)
     time.sleep(1)
 
     if (element_exists('i[translate="ENTITIES.' + target.upper() + '.NAME"]') == True):
@@ -451,9 +464,8 @@ def datanav_infotab(level, url):
     browser.get(url)
     time.sleep(1)
 
-    # At visit level this clicks link not non-active
-    # browser.find_element(By.CSS_SELECTOR, 'div[class="ui-grid-cell-contents ng-scope"]').click()
-    # print(element_find('div[class="ui-grid-cell-contents ng-binding ng-scope"]').text)
+    # Click empty space on row, not link text
+        # WARNING this does not guarantee child element (hyperlink) will not be clicked, especially on smaller resolutions
     element_click('div[class="ui-grid-cell-contents ng-binding ng-scope"]')
     time.sleep(1)
 
@@ -492,7 +504,7 @@ def datanav_infotab(level, url):
 #---Browser---------------------------------------------------------------------
 
 #-Navigate to Topcat home page and check if redirected to login
-def test_browser():
+def test_url():
     print("Load Login Page: ", end='')
     try:
         browser.get(icat_url)
@@ -509,6 +521,9 @@ def test_browser():
 #---Login-----------------------------------------------------------------------
 
 #-Check that user can login as specific user without error
+  # mechanism = String, mnemonic of plugin (lowercase)
+  # username = String, username
+  # password = String, password
 def test_login(mechanism, username, password):
     print("Login Test: ", end='')
     login(mechanism, username, password)
@@ -637,13 +652,13 @@ def test_data_exists(data):
 
     if (data == True):
         print("Data Existence Test: ", end='')
-        if (element_exists('a[ng-click="grid.appScope.browse(row.entity)"]') == True):
+        if (element_exists(obj_row_link) == True):
             print(txt.Success)
         else:
             print(txt.Failed)
     else:
         print("Data Absence Test: ", end='')
-        if (element_exists('a[ng-click="grid.appScope.browse(row.entity)"]') == True):
+        if (element_exists(obj_row_link) == True):
             print(txt.Failed)
         else:
             print(txt.Success)
@@ -652,14 +667,14 @@ def test_data_exists(data):
 #-Check that cart does not exist when first logging in
 def test_data_cart():
     print("Initial Cart Empty Test: ", end='')
-    if (element_exists('.glyphicon.glyphicon-shopping-cart') == True):
+    if (element_exists(obj_cart_icon) == True):
         print(txt.Failed + " (" + element_find('span[ng-click="indexController.showCart()"]').text + ")", end='')
 
-        while (element_exists('.glyphicon.glyphicon-shopping-cart') == True):
+        while (element_exists(obj_cart_icon) == True):
             cart_clear()
             time.sleep(1)
 
-        if (element_exists('.glyphicon.glyphicon-shopping-cart') == False):
+        if (element_exists(obj_cart_icon) == False):
             print(" - Cart Now Empty")
         else:
             print(" - Cart Still Exists")
@@ -670,11 +685,11 @@ def test_data_cart():
 #-Check that downloads does not exist when first logging in
 def test_data_downloads():
     print("Initial Downloads Empty Test: ", end='')
-    if (element_exists('.glyphicon.glyphicon-download-alt') == True):
+    if (element_exists(obj_downloads_icon) == True):
         print(txt.Failed, end='')
         downloads_clear()
         time.sleep(1)
-        if (element_exists('.glyphicon.glyphicon-download-alt') == False):
+        if (element_exists(obj_downloads_icon) == False):
             print(" - Downloads Now Empty")
         else:
             print(" - Downloads still exist")
@@ -688,17 +703,21 @@ def test_datanav_browse():
     browser.get(icat_url + '/#/browse/facility/' + facilty_short_name + '/proposal')
     time.sleep(1)
 
-    browse_click("Proposal", "Investigation")
+    # Down
+    browse_click("Proposal", "Investigation", obj_row_link)
     # global visit_url
     # visit_url = browser.current_url
 
-    browse_click("Investigation", "Dataset")
+    browse_click("Investigation", "Dataset", obj_row_link)
     global dataset_url
     dataset_url = browser.current_url
 
-    browse_click("Dataset", "Datafile")
+    browse_click("Dataset", "Datafile", obj_row_link)
     global datafile_url
     datafile_url = browser.current_url
+
+    # TODO - Add upwards browsing (eg. click breadcrumb links)
+
 #-END-
 
 # Check if info tab show when clicking non active area of items
@@ -747,12 +766,13 @@ def test_cart_rm():
         print(txt.Failed + " (" + element_find('span[ng-click="indexController.showCart()"]').text + ")")
 #-END-
 
+# CLear the cart
 def test_cart_clear():
     print("Clear Cart: ", end='')
     cart_clear()
     time.sleep(1)
 
-    if (element_exists('.glyphicon.glyphicon-shopping-cart') == False):
+    if (element_exists(obj_cart_icon) == False):
         print(txt.Success)
     else:
         print(txt.Failed + " (" + element_find('span[ng-click="indexController.showCart()"]').text + ")")
@@ -786,8 +806,8 @@ def test_download_cart():
     time.sleep(1)
 
     try:
-        element_wait((By.CSS_SELECTOR, '.glyphicon.glyphicon-shopping-cart'))
-        element_click('.glyphicon.glyphicon-shopping-cart')
+        element_wait((By.CSS_SELECTOR, obj_cart_icon))
+        element_click(obj_cart_icon)
 
         element_wait((By.CSS_SELECTOR, 'button[translate="CART.DOWNLOAD_CART_BUTTON.TEXT"]'))
         time.sleep(1)
@@ -799,9 +819,9 @@ def test_download_cart():
         time.sleep(1)
 
         # Check if cart hidden
-        if (element_exists('.glyphicon.glyphicon-shopping-cart') == False):
+        if (element_exists(obj_cart_icon) == False):
             # Check if downloads has appeared
-            if (element_exists('.glyphicon.glyphicon-download-alt') == True):
+            if (element_exists(obj_downloads_icon) == True):
                 print(txt.Success + " (NOTE: File existence not checked)")
             else:    # Downloads has not appeared
                 print(txt.Failed + " (Download icon does not exist)")
@@ -815,11 +835,11 @@ def test_download_cart():
 
 def test_download_avaliable():
     print("Download Is Available in Downloads: ", end='')
-    if (element_exists('.glyphicon.glyphicon-download-alt')):
+    if (element_exists(obj_downloads_icon)):
 
         # If downloads not already open
         if (element_exists('div[class="modal-content ng-scope"]') == False):
-            element_click('.glyphicon.glyphicon-download-alt')
+            element_click(obj_downloads_icon)
 
         time.sleep(1)
 
@@ -848,22 +868,135 @@ def test_download_rename():
 def test_download_clear():
     print("Clear Downloads: ", end='')
     downloads_clear()
-    if (element_exists('.glyphicon.glyphicon-download-alt') == True):
+    if (element_exists(obj_downloads_icon) == True):
         print(txt.Failed + " (Downloads still exists)")
     else:
         print(txt.Success)
 #-END-
 
+#---Browsers--------------------------------------------------------------------
+
+# Setup and run tests fo Firefox
+def test_firefox():
+    print("")
+    print(txt.HEADING + "[ Firefox Test ]" + txt.BASIC)
+
+    # Force Firefox to download without prompting user
+    profile = webdriver.FirefoxProfile()
+    profile.set_preference("browser.download.folderList", 2)
+    profile.set_preference('browser.download.dir', download_dir + "Firefox")
+    profile.set_preference('browser.download.manager.showWhenStarting', False)
+    profile.set_preference('browser.helperApps.neverAsk.saveToDisk', 'application/octet-stream')
+
+    ff_options = FirefoxOptions()
+    if (log_level != 'default'):
+        ff_options.log.level = log_level
+        ff_options.log.path = download_dir + 'geckodriver.log'
+
+    # Start Tests
+    global browser
+    browser = webdriver.Firefox(profile, firefox_options=ff_options, executable_path=download_dir+exc_firefox)
+    test_browser()
+    print("Closing Firefox")
+    browser.close()
+    print(txt.BOLD + "[ Firefox Test Complete ]" + txt.BASIC)
+#-END-
+
+# Setup and run tests for Chrome
+def test_chrome():
+    print("")
+    print(txt.HEADING + "[ Chrome Test ]" + txt.BASIC)
+
+    chrome_options = ChromeOptions()
+    # if (log_level != 'default'):
+    #     chrome_options.log.level = log_level
+
+    chrome_prefs = {"download.default_directory" : download_dir + "Chrome"}
+    chrome_options.add_experimental_option("prefs", chrome_prefs)
+
+    #Start Tests
+    global browser
+    browser = webdriver.Chrome(chrome_options=chrome_options, executable_path=download_dir+exc_chrome)
+    test_browser()
+    print("Closing Chrome")
+    browser.close()
+    print(txt.BOLD + "[ Chrome Test Complete ]" + txt.BASIC)
+#-END-
+
+# TODO - Add support for more browsers (eg. Chromium, Edge, Safari)
+
 #---Other-----------------------------------------------------------------------
 
-#---Master----------------------------------------------------------------------
-def test_master(browser_name):
-    #--Browser--
-    test_browser()
+# Output useful variables for debuging
+def print_variables():
+    print("")
+    print(txt.HEADING + "[ Gathering Variables ]" + txt.BASIC)
+
+    # Virtual Display
+    if (args.virtual_display == True):
+        w = 1920
+        h = 1080
+        display = Display(visible=0, size=(w, h))
+        display.start()
+        print("Virtual Display Used (" + str(w) + "x" + str(h) + ")")
+    else:
+        print("Virtual Display Not Used")
+
+    # Browsers
+    print("Browsers: ", end="")
+    if (firefox == True):
+        print("Firefox, ", end="")
+    if (chrome == True):
+        print("Chrome, ", end="")
     print("")
 
-    #--Login--
-    print('--Data User Test--')
+    # URL
+    print("URL: " + icat_url)
+
+    # Facilty
+    print("Facility: " + facilty_short_name + "(" + facilty_long_name + ")")
+
+    # Directory
+    print("Directory: " + download_dir)
+
+    # Log Level
+    print("Log Level: " + log_level)
+
+    # Root User
+    print("Data User: " + user_data_mech + "/" + user_data_name)
+    print("Data User Password: " + user_data_pass)
+
+    # Non Root User
+    print("No Data User: ", end='')
+    if (args.user_nodata != None):
+        print(user_nodata_mech + "/" + user_nodata_name)
+        print("No Data User Password: " + user_nodata_pass)
+    else:
+        print("NULL")
+
+    print("Admin User: ", end='')
+    if (args.user_admin != None):
+        print(user_admin_mech + "/" + user_admin_name)
+        print("Admin Password: " + user_admin_pass)
+    else:
+        print("Same as Data User")
+
+    # Newline
+        print(txt.BOLD + "[ Gathering Variables Complete ]" + txt.BASIC)
+    #---
+#-END-
+
+#---Master----------------------------------------------------------------------
+
+# List of tests to run for each user
+def test_browser():
+    #--Browser--
+    test_url()
+    print("")
+
+    # User with access to testdata
+    print(txt.SUBHEADING + '[ Data User Test ]' + txt.BASIC)
+    #---Login--
     test_login(user_data_mech, user_data_name, user_data_pass)
     #--Navigation--
     test_nav_toolbar()
@@ -892,10 +1025,11 @@ def test_master(browser_name):
     #--Finish--
     logout()
     print("Logging Out")
-    print("")
 
+    # User without access to test date (if included in CLI args)
     if (args.user_nodata != None):
-        print('--No Data User Test--')
+        print("")
+        print(txt.SUBHEADING + '[ No Data User Test ]' + txt.BASIC)
         test_login(user_nodata_mech, user_nodata_name, user_nodata_pass)
         #---Nav---
         test_nav_toolbar_admin(False)
@@ -908,121 +1042,46 @@ def test_master(browser_name):
         print ("Logging Out")
         print("")
 
+    # User with admin access (if not same as User with data)
     if (args.user_admin != None):
-        print('--Admin User Test--')
+        print("")
+        print(txt.SUBHEADING + '[ Admin User Test ]' + txt.BASIC)
         test_login(user_admin_mech, user_admin_name, user_admin_pass)
         test_nav_toolbar_admin(True)
         logout()
         print ("Logging Out")
         print("")
+#-END-
 
-    print("Closing " + browser_name)
-    browser.close()
+# Master function
+def test_master():
+    print_variables()
+
+    if (firefox == True):
+        test_firefox()
+
+    if (chrome == True):
+        test_chrome()
+
+    print("")
+    print( txt.GREEN + "Test Complete" + txt.BASIC)
 #-END-
 
 #-------------------------------------------------------------------------------
 # Runtime
 #-------------------------------------------------------------------------------
 
-#---Print Info Output for debug-------------------------------------------------
-print(txt.BOLD + "---Gathering Variables---" + txt.BASIC)
+# Made with (http://patorjk.com/software/taag/#p=display&f=Big&t=TopCat%20Test)
+print("  _______           _____      _     _______        _    ")
+print(" |__   __|         / ____|    | |   |__   __|      | |   ")
+print("    | | ___  _ __ | |     __ _| |_     | | ___  ___| |_  ")
+print("    | |/ _ \| '_ \| |    / _` | __|    | |/ _ \/ __| __| ")
+print("    | | (_) | |_) | |___| (_| | |_     | |  __/\__ \ |_  ")
+print("    |_|\___/| .__/ \_____\__,_|\__|    |_|\___||___/\__| ")
+print("            | |                                          ")
+print("            |_|                                          ")
+print("---------------------------------------------------------")
+print("                                                         ")
 
-# Virtual Display
-if (args.virtual_display == True):
-    w = 1920
-    h = 1080
-    display = Display(visible=0, size=(w, h))
-    display.start()
-    print("Virtual Display Used (" + str(w) + "x" + str(h) + ")")
-else:
-    print("Virtual Display Not Used")
-
-# Browsers
-print("Browsers: ", end="")
-if (firefox == True):
-    print("Firefox, ", end="")
-if (chrome == True):
-    print("Chrome, ", end="")
-print("")
-
-# URL
-print("URL: " + icat_url)
-
-# Facilty
-print("Facility: " + facilty_short_name + "(" + facilty_long_name + ")")
-
-# Directory
-print("Directory: " + download_dir)
-
-# Log Level
-print("Log Level: " + log_level)
-
-# Root User
-print("Data User: " + user_data_mech + "/" + user_data_name)
-print("Data User Password: " + user_data_pass)
-
-# Non Root User
-print("No Data User: ", end='')
-if (args.user_nodata != None):
-    print(user_nodata_mech + "/" + user_nodata_name)
-    print("No Data User Password: " + user_nodata_pass)
-else:
-    print("NULL")
-
-print("Admin User: ", end='')
-if (args.user_admin != None):
-    print(user_admin_mech + "/" + user_admin_name)
-    print("Admin Password: " + user_admin_pass)
-else:
-    print("Same as Data User")
-
-# Newline
-print("")
-#---
-
-#---Setup and Run Browsers------------------------------------------------------
-
-# Firefox tests
-if (firefox == True):
-    print(txt.BOLD + "---Firefox Test---" + txt.BASIC)
-
-    # Force Firefox to download without prompting user
-    profile = webdriver.FirefoxProfile()
-    profile.set_preference("browser.download.folderList", 2)
-    profile.set_preference('browser.download.dir', download_dir + "Firefox")
-    profile.set_preference('browser.download.manager.showWhenStarting', False)
-    profile.set_preference('browser.helperApps.neverAsk.saveToDisk', 'application/octet-stream')
-
-    ff_options = FirefoxOptions()
-    if (log_level != 'default'):
-        ff_options.log.level = log_level
-        ff_options.log.path = download_dir + 'geckodriver.log'
-
-    # Start Tests
-    browser = webdriver.Firefox(profile, firefox_options=ff_options, executable_path=download_dir+exc_firefox)
-    print("")
-    test_master("Firefox")
-    print("")
-#-END if-
-
-# Chrome tests
-if (chrome == True):
-    print(txt.BOLD + "---Chrome Test---" + txt.BASIC)
-
-    chrome_options = ChromeOptions()
-    # if (log_level != 'default'):
-    #     chrome_options.log.level = log_level
-
-    chrome_prefs = {"download.default_directory" : download_dir + "Chrome"}
-    chrome_options.add_experimental_option("prefs", chrome_prefs)
-
-    #Start Tests
-    browser = webdriver.Chrome(chrome_options=chrome_options, executable_path=download_dir+exc_chrome)
-    print("")
-    test_master("Chrome")
-    print("")
-#-END if-
-
-print("Test Complete")
-#-END-
+test_master()
 
