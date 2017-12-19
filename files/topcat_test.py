@@ -484,7 +484,7 @@ def browse_click(level, target, element):
     if (element_exists('i[translate="ENTITIES.' + target.upper() + '.NAME"]') == True):
         print(txt.Success)
     else:
-        print(txt.Failed + " (on page:" + browser.current_url + ")")
+	print(txt.Failed + " ( Can't find + on page:" + "ENTITIES." + target.upper() + ".NAME" + " | on page: " + browser.current_url + ")")
 #-END-
 
 # Click non-active section of row and check if info tab appears
