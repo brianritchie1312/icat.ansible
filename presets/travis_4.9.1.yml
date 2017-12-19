@@ -47,9 +47,9 @@ ingest_timeout: 120
 
 #---Users---
 
-icat_mech: simple
-icat_root: root
-icat_pass: pass
+icat_admin_mech: simple
+icat_admin_user: root
+icat_admin_pass: pass
 
 authn_simple_users:
   - user: root

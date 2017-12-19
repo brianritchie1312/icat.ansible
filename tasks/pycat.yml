@@ -8,7 +8,7 @@
 #---Checking existing facilities---
 
 - name: "{{ play_name }}Getting ICAT session ID"
-  command: "curl -k -X POST -d 'json={\"plugin\" : \"{{ icat_mech }}\", \"credentials\" : [{\"username\":\"root\"},{\"password\":\"{{ icat_pass }}\"}]}' {{ icat_url }}/{{ icat_name }}/session"
+  command: "curl -k -X POST -d 'json={\"plugin\" : \"{{ icat_admin_mech }}\", \"credentials\" : [{\"username\":\"root\"},{\"password\":\"{{ icat_admin_pass }}\"}]}' {{ icat_url }}/{{ icat_name }}/session"
   register: icat_sess
 
 - name: "{{ play_name }}Recording Session ID"
@@ -26,9 +26,9 @@
  #--Wiping ICAT with Python script--
 
 - name: "{{ play_name }}Wiping ICAT"
-  command: "wipeicat.py --url \"{{ icat_url }}/ICATService/ICAT?wsdl\" -u {{ icat_root }} -p {{ icat_pass }} -a {{ icat_mech }}"
+  command: "wipeicat.py --url \"{{ icat_url }}/ICATService/ICAT?wsdl\" -a {{ icat_admin_mech }} -u {{ icat_admin_user }} -p {{ icat_admin_pass }}"
   when:
-    - 'fac_name in icat_facs.stdout'
+#    - 'fac_name in icat_facs.stdout'
     - wipe_icat == true
 
  #--
@@ -227,19 +227,27 @@
   replace:
     path: "{{ download_dir }}lils.yml"
     regexp: "simple"
-    replace: "{{ icat_mech }}"
+    replace: "{{ icat_admin_mech }}"
   when:
     - 'fac_name not in icat_facs.stdout'
 
 #TODO-create smaller file so forced timeout is not required
 
 - name: "{{ play_name }}Running ICAT ingest"
-  command: "icatingest.py --url {{ icat_url }}/ICATService/ICAT?wsdl -u root -p {{ icat_pass }} -i {{ download_dir }}lils.yml -a {{ icat_mech }}"
+  command: "icatingest.py --url {{ icat_url }}/ICATService/ICAT?wsdl -a {{ icat_admin_mech }} -u {{ icat_admin_user }} -p {{ icat_admin_pass }} -i {{ download_dir }}lils.yml"
   when: 
     - 'fac_name not in icat_facs.stdout'
+  register: ingest_output
   ignore_errors: yes
   async: "{{ ingest_timeout }}"
   poll: 5
+
+- name: "{{ play_name }}Fail if ingest failed for any reason other than async timeout"
+  fail:
+    msg: "Ingest Failed"
+  when:
+    - '"async task did not complete" not in ingest_output.msg'
+    - ingest_ouput.failed == true
 
 #---
 

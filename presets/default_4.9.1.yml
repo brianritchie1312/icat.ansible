@@ -40,9 +40,9 @@ topcat_version: 2.3.6
 
 #---Users---
 
-icat_mech: simple
-icat_root: root
-icat_pass: pass
+icat_admin_mech: simple
+icat_admin_user: root
+icat_admin_pass: pass
 
 authn_simple_users:
   - user: root
@@ -50,3 +50,20 @@ authn_simple_users:
 
   - user: user1
     pass: pass1
+
+authn_db_users:
+  - user: root
+    pass: password
+
+  - user: notroot
+    pass: password
+
+  - user: piOne
+    pass: piOne
+  
+  - user: piTwo
+    pass: piTwo
+
+  - user: guest
+    pass: guess
+

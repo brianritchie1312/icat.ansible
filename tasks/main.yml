@@ -292,6 +292,22 @@
 
 #---
 
+#---Topcat Interface---
+
+- name: "{{ play_name }}Loading TopCat Install"
+  include: "topcat.yml"
+  become: yes
+  become_user: "{{ user_name }}"
+  vars:
+    play_name: "TopCat ({{ topcat_version }}): "
+  when:
+    - topcat == true
+  tags:
+    - user
+    - topcat
+
+#---
+
 #---Test Data---
  # Ingest script currently forced to timeout after 60 secs otherwise it would run for ~17mins (replace with smaller file)
 
@@ -308,22 +324,6 @@
     - testdata
     - pycat
     - lorem
-  
-#---
-
-#---Topcat Interface---
-
-- name: "{{ play_name }}Loading TopCat Install"
-  include: "topcat.yml"
-  become: yes
-  become_user: "{{ user_name }}"
-  vars:
-    play_name: "TopCat ({{ topcat_version }}): "
-  when:
-    - topcat == true
-  tags:
-    - user
-    - topcat
   
 #---
 

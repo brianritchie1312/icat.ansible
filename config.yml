@@ -149,11 +149,22 @@
     icat_pass: pass
     # Name and Password of admin account. Must be included below!
 
-#TODO replace with system similar to this
-#   simple_root: "{{ authn_simple_users[0].user }}"
-#   simple_pass: "{{ authn_simple_users[0].pass }}"
-# ETC.
 
+    # These users must be included in the lists below or on LDAP
+     # mech = the mnemonic for the plugin used by the respective user, must be an enabled authn plugin
+     # user = username of the respective user
+     # pass = password of the respective user
+
+    # TODO - figure out how to separate data user and admin (currently same user)
+    # icat_data = The user with access to the testdata
+    #icat_data_mech: simple
+    #icat_data_user: root
+    #icat_data_pass: pass
+
+    # icat_admin = The Admin user of topcat, can be same as icat_data
+    icat_admin_mech: simple
+    icat_admin_user: root
+    icat_admin_pass: pass
 
    #---Simple Authn Users---
     # These users will be added to authn_simple.properties

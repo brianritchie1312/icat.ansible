@@ -115,8 +115,8 @@
   with_items:
     - { regexp: "icat.url",               line: "icat.url = {{ icat_url }}" }
     - { regexp: "cache.dir",              line: "cache.dir = {{ user_home }}/{{ icat_name }}/main/ids/cache/" }
-    - { regexp: "rootUserNames",          line: "rootUserNames = {{ icat_mech }}/{{ icat_root }}" }
-    - { regexp: "reader",                 line: "reader = {{ icat_mech }} username {{ icat_root }} password {{ icat_pass }}" }
+    - { regexp: "rootUserNames",          line: "rootUserNames = {{ icat_admin_mech }}/{{ icat_admin_user }}" }
+    - { regexp: "reader",                 line: "reader = {{ icat_admin_mech }} username {{ icat_admin_user }} password {{ icat_admin_pass }}" }
     - { regexp: "storageUnit",            line: "storageUnit = datafile" }
     - { regexp: ".lastIdFile",            line: "filesCheck.lastIdFile = {{ user_home }}/{{ icat_name }}/main/ids/lastIdFile" }
     - { regexp: ".errorLog",              line: "filesCheck.errorLog = {{ user_home }}/{{ icat_name }}/main/ids/errorLog" }

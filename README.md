@@ -130,7 +130,8 @@ Selenium
 --------
 
 To run the selenium tests (Topcat UI testing), you will need python 2.7.
-This test is not automatically run by ansible, however if 'selenium: true' is set in config.yml or a preset it will setup the environment for the script to be run by travis or a user.
+
+This test is NOT automatically run by ansible, however if 'selenium: true' is set in config.yml or a preset it will setup the environment for the script to be run by travis or a user.
 
 Example:
 ```Shell
@@ -139,16 +140,18 @@ python topcat_test.py --url http://localhost:8080 --user-data simple root pass -
 
 The script has several command line arguments:
 
-| Option                                          | Required? | Function |
-|:-----------------------------------------------:|:---------:|:--------:|
-| --url {url}                                     | Yes       | The url and port number of the topcat interface. eg. '--url http://<nolink>localhost:8080' |
-| --user-data {mechanism} {username} {password}   | Yes       | The plugin, username and password of the user with access to the testdata. eg. '--user-data simple root pass' |
-| --user-nodata {mechanism} {username} {password} | No        | The plugin, username and password of the user without access to the testdata. If not used, non-root user tests will not be performed. eg. '--user-nodata db root password' |
-| --user-admin {mechanism} {username} {password}  | No        | The plugin, username and password of the admin user. If not used, --user-data will be assumed to be admin. eg. '--user-admin simple root pass' |
-| --virtual-display			          | No        | Creates a virtual display with pyvirtualdisplay. Use if standard GUI is unavailiable. If not used, standard GUI will be used. |
-| --path                                          | No        | Directory where webdriver excutables are and files will be downloaded to. If not used, the script's parent directory will be used |
-| --browsers {browser1} {browser2} ...            | No        | List of browsers to test. If not used, only Firefox will be used. eg. '--browsers firefox chrome'. |
-| --log-level {loglevel}                          | No        | Log level of webdrivers. Currently only geckodriver.log (firefox webdriver) is modified. eg. '--log-level trace' |
+| Option                                          | Required? | If Not Used                     | Example                             | Function                                                                                 |
+|:-----------------------------------------------:|:---------:|:-------------------------------:|:-----------------------------------:|:----------------------------------------------------------------------------------------:|
+| --url {url}                                     | Yes       | Throws Error                    | --url http://localhost:8080         | The url and port number of the topcat interface.                                         |
+| --fac-short {facility}                          | No        | 'LILS' used                     | --fac-short LILS                    | The short name of the facility, used in URLs.                                            |
+| --fac-long {facility}                           | No        | 'Lorum Ipsum Light Source' Used | --fac-long Lorum Ipsum Light Source | The long name of the facilty, used in text elements.                                     |
+| --user-data {mechanism} {username} {password}   | Yes       | Throws Error                    | --user-data simple root pass        | The plugin, username and password of the user with access to the testdata.               |
+| --user-nodata {mechanism} {username} {password} | No        | No Data User Tests Ignored      | --user-nodata db root password      | The plugin, username and password of the user without access to the testdata.            |
+| --user-admin {mechanism} {username} {password}  | No        | Data User assumed to be admin   | --user-admin simple root pass       | The plugin, username and password of the admin user.                                     | 
+| --virtual-display			          | No        | Standard GUI used               | --virtual-display                   | Creates a virtual display with pyvirtualdisplay. Use if standard GUI is unavailiable.    |
+| --path {path}                                   | No        | Script's current directory used | --path /home/user1/tests            | Directory where webdriver excutables are and files will be downloaded to.                |
+| --browsers {browser1} {browser2} ...            | No        | Only firefox tested             | --browsers firefox chrome           | List of browsers to test.                                                                |
+| --log-level {loglevel}                          | No        | Default log level used          | --log-level trace                   | Log level of webdrivers. Currently only geckodriver.log (firefox webdriver) is modified. |
 
 *Note 1: Ansible only installs firefox, any other browsers must be manually installed.*
 
@@ -204,12 +207,18 @@ TODO
 * Add support for other browsers
 * Replace time delays in selenium with appropriate wait_until()
 * Complete topcat_test script
-* Swap Root/Non-Root users for Data/NoData/Admin in ansible setup
+* Split admin user into data and admin users
 * Fix chrome launch in selenium
 
 
 Changelog
 ---------
+
+#### 19/12/17
+* Added facilty arguments to README
+* Attempted to split root user into data/admin (failed: but replaced icat_root with icat_admin)
+* Removed old selenium script
+* Added conditional to ingest so if it fails for any reason other than timeout it should fail build (experimental)
 
 #### 18/12/17 (2)
 * Add facilty arguments to Selenium Script

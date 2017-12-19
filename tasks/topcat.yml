@@ -93,7 +93,7 @@
     - { regexp: "ids.getStatus",  line: "ids.getStatus.max = 100" }
     - { regexp: "poll.delay",     line: "poll.delay = 600" }
     - { regexp: "poll.interval",  line: "poll.interval.wait = 600" }
-    - { regexp: "adminUserNames", line: "adminUserNames = {{ icat_mech }}/{{ icat_root }}" }
+    - { regexp: "adminUserNames", line: "adminUserNames = {{ icat_admin_mech }}/{{ icat_admin_user }}" }
 
 #---
 

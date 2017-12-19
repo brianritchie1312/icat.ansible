@@ -105,7 +105,7 @@
     regexp: "{{ item.regexp }}"
     line: "{{ item.line }}"
   with_items:
-    - { regexp: 'rootUserNames', line: 'rootUserNames = {{ icat_mech }}/{{ icat_root }}' }
+    - { regexp: 'rootUserNames', line: 'rootUserNames = {{ icat_admin_mech }}/{{ icat_admin_user }}' }
     - { regexp: 'lucene.directory', line: 'lucene.directory = {{ lucene_dir }}' }
 
 - name: "{{ play_name }}Correcting url in {{ icat_prop }}"
