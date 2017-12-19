@@ -246,6 +246,7 @@
   fail:
     msg: "Ingest Failed"
   when:
+    - 'fac_name not in icat_facs.stdout'
     - '"async task did not complete" not in ingest_output.msg'
     - ingest_ouput.failed == true
 
