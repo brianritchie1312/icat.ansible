@@ -19,8 +19,8 @@
     authn: true          # Installs Authentication Plugins	user, authn, simple, db, ldap, anon     authn.yml, preplay.yml		authn.yml, container.yml, mysql.yml
     lucene: true         # Installs icat.lucene			user, lucene				lucene.yml, preplay.yml		lucene.yml, container.yml
     icat: true           # Installs Icat			user, icat				icatserver.yml, preplay.yml     icat.yml, container.yml
-    testdata: true       # Ingests data with python-icat	user, pycat, testdata			pycat.yml, preplay.yml		pycat.yml, container.yml
     topcat: true         # Installs Topcat			user, topcat				topcat.yml			topcat.yml, container.yml
+    testdata: true       # Ingests data with python-icat	user, pycat, testdata			pycat.yml, preplay.yml		pycat.yml, container.yml
     cleanup: true        # Moves unused files into download_dir root, cleanup
     selenium: false      # Setup test env for selenium		selenium				selenium.yml			
 
