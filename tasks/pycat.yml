@@ -213,6 +213,8 @@
   stat:
     path: "{{ download_dir }}lils.yml"
   register: pi_lils
+  tags:
+    - ingest
 
 - name: "{{ play_name }}Copying Dump file"
   copy:
@@ -222,6 +224,8 @@
   when: 
     - 'fac_name not in icat_facs.stdout'
     - pi_lils.stat.exists == false
+  tags:
+    - ingest
 
 - name: "{{ play_name }}Modifying dump file"
   replace:
@@ -230,6 +234,8 @@
     replace: "{{ icat_admin_mech }}"
   when:
     - 'fac_name not in icat_facs.stdout'
+  tags:
+    - ingest
 
 #TODO-create smaller file so forced timeout is not required
 
@@ -241,6 +247,8 @@
   ignore_errors: yes
   async: "{{ ingest_timeout }}"
   poll: 5
+  tags:
+    - ingest
 
 - name: "{{ play_name }}Fail if ingest failed for any reason other than async timeout"
   fail:
@@ -249,6 +257,8 @@
     - 'fac_name not in icat_facs.stdout'
     - '"async task did not complete" not in ingest_output.msg'
     - ingest_ouput.failed == true
+  tags:
+    - ingest
 
 #---
 
@@ -260,6 +270,8 @@
     dest: "{{ download_dir }}"
   when:
     - (create_file == true) or (create_all == true)
+  tags:
+    - createfiles
 
  #--Create 'Datafile 1' files--
 
@@ -273,6 +285,8 @@
     - "{{ datafiles }}"
   when:
     - create_file == true
+  tags:
+    - createfiles
 
  #--Create ALL files--
 
@@ -286,17 +300,24 @@
   when:
     - (create_file == true) or (create_all == true)
   register: datafile_string
+  tags:
+    - createfiles
 
-- set_fact:
+- name: "{{ play_name }}Removing 'LOCATION' string from datafile list"
+  set_fact:
     datafile_list: "{{ datafile_string.msg | replace('LOCATION','') }}"
   when:
     - (create_file == true) or (create_all == true)
+  tags:
+    - createfiles
 
-- set_fact:
+- name: "{{ play_name }}Removing newline characters from datafile list"
+  set_fact:
     datafile_list: "{{ datafile_list.split('\n') }}"
   when:
-#    - 'fac_name not in icat_facs.stdout'
     - (create_file == true) or (create_all == true)
+  tags:
+    - createfiles
         
 
 #--CREATING DATAFILES--
@@ -309,8 +330,9 @@
   with_items:
     - "{{ datafile_list }}"
   when:
-#    - 'fac_name not in icat_facs.stdout'
     - (create_file == true) or (create_all == true)
+  tags:
+    - createfiles
 
 - name: "{{ play_name }}Creating files"
   file:
@@ -319,8 +341,9 @@
   with_items:
     - "{{ datafile_list }}"
   when:
-#    - 'fac_name not in icat_facs.stdout'
     - (create_file == true) or (create_all == true)
+  tags:
+    - createfiles
 
 #---
 

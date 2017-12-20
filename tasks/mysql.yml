@@ -95,7 +95,17 @@
 
 - name: "{{ play_name }}Temporarly reseting MySQL root password (This will return an error on first run but should ignore it)"
   command: "mysqladmin -u root -p'{{ mysql_root_pass }}' password ''"
+  register: sql_pass
   ignore_errors: true
+
+- name: "{{ play_name }}Failing if password reset failed for any reason other than password is blank"
+  fail:
+    msg: 
+      - "Problem with previous task"
+      - "If current password for mysql root does not equal '' or '{{ mysql_root_pass }}' (mysql_root_pass variable), then please change mysql_root_pass in config.yml or with '--extra-vars'"
+  when:
+    - sql_pass|failed
+    - sql_pass.rc != 1
 
 #---TODO!---add responses to variable
 

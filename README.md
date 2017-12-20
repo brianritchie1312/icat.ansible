@@ -177,28 +177,24 @@ Notes
 -----
 
 * The setup excutable for the storage plugin returns a fatal error but still performs it's function (currently it's set to ignore this error but this needs to be improved)
-* Currently the mysql root password is automatically reset to default before running mysqld_secure_installation, it ignores errors. So having the password set to any other than the variable mysql_root_pass will return an error but will be skipped (including the default password). THIS NEEDS TO BE REPLACED!
-* The Icat Ingest Script is forced to timeout after 60secs and the resulting error is ignored
+* Some tasks will fail even when correct (Mysql password reset and icat ingest). These errors are ignored with a conditional fail following them. It should return a fatal error if the previous task failed in anyway that was not the expected failure (eg. the ingest returns a different error than async timeout).
 * Hosts must be added to `/etc/ansible/hosts` or `tests/inventory` and have valid ssh keys, simply SSHing into target machine once beforehand should work.
 * All package installs (except pexpect) are set to present instead of latest, this greatly improves speed but may cause some problems if you have an old version of a package but with the same name, I have yet to encounter this (except for Pexpect)
 * If you already have mysql installed be sure to change the `mysql_root_pass` variable in `config.yml`
 * If you are using a VM with pip 1.0 installed, run `pip install --index-url=https://pypi.python.org/simple/ -U pip` to upgrade.
 * Some tasks involve finding a file with partial name instead of an absolute path. In these cases it will select the first matching file. For example If you have multiple 'mysql-connector-java-*.jar' files in /usr/share/java it will only use the first one. 
-* Sometimes adding boolean variables to --extra-vars cause them to return false even when set to true, assigning the value in a preset file seems to work anyway
+* Sometimes adding boolean variables to --extra-vars cause them to return false even when set to true, assigning the value in a preset file seems to work anyway.
 
 TODO
 ----
 
 * Improve commenting and documentation
 * Improve feedback (eg. run automatic tests and report back with the debug module)
+* Improve Idempotence
 * Fix Storage setup script not working
-* Better workaround for mysql root pass
 * Learn how ldap works
-* Figure out how to automatically test plugin installs (eg. curl /authn/version)
 * Use smaller file for icat ingest
 * Consider replacing env_path with shell scripts for sourcing
-* Improve Debug feedback
-* Improve Idempotence and speed
 * Create task to remove all non LILS facilties from topcat.json
 * Make pycat.yml more adaptable (eg. pycat version numbers, control which user gets data, clearer args"
 * Currently topcat.json is modified to add all authn plugins to list in topcat. This should be replaced to only include enabled plugins.
@@ -208,15 +204,20 @@ TODO
 * Complete topcat_test script
 * Split admin user into data and admin users
 * Fix chrome launch in selenium
+* Auto close failed selenium browsers
 
 
 Changelog
 ---------
 
+#### 21/12/17 (2)
+* Add conditional fail to mysql password reset. If command fails for any reason other than wrong password it will fail the build. 
+* Added some extra tags to pycat.yml to allow skipping ingest or file creation. This means output won't be pushed out of frame by massive ammounts of output from ingest and create file tasks.
+* Corrected some nameless tasks in pycat.yml
+
 #### 20/12/17
 * Removed with_items from authn.yml includes, this means it will no longer say authn has failed conditional when tag other than authn is used.
 * Added curl tests to; authn plugins, lucene, icat.server, ids.server and topcat. Tests for payara, glassfish and ids.storage are needed.
-
 
 #### 19/12/17
 * Added facilty arguments to README
