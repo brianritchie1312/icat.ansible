@@ -177,3 +177,22 @@
     - install
 
 #---
+
+#--Quick Test--
+
+- name: "{{ play_name }}Checking Installed TopCat Version"
+  command: "curl {{ icat_url }}/topcat/version"
+  register: curl_topcat
+
+- name: "{{ play_name }}Failing If TopCat Output Incorrect"
+  fail:
+    msg:
+      - 'TopCat has a problem.'
+      - 'Expected stdout: "{"version":"{{ topcat_version }}"}"'
+      - 'Actual stdout:   "{{ curl_topcat.stdout }}"'
+      - 'NOTE: Only version number is check all other text and syntax are ignored.'
+  when:
+    - topcat_version not in curl_topcat.stdout
+
+#---
+

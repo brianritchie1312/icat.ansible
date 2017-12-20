@@ -158,8 +158,23 @@
     chdir: "{{ ids_path }}"
   tags:
     - install
+#---
 
-- name: "{{ play_name }}Checking IDS"
-  command: "curl -k {{ icat_url }}/ids/ping"
+#--Quick Test--
+
+- name: "{{ play_name }}Checking Installed IDS Version"
+  command: "curl {{ icat_url }}/ids/version"
+  register: curl_ids
+
+- name: "{{ play_name }}Failing If IDS  Output Incorrect"
+  fail:
+    msg:
+      - 'IDS has a problem.'
+      - 'Expected stdout: "{"version":"{{ ids_version }}"}"'
+      - 'Actual stdout:   "{{ curl_ids.stdout }}"'
+      - 'NOTE: Only version number is check all other text and syntax are ignored.'
+  when:
+    - ids_version not in curl_ids.stdout
 
 #---
+

@@ -159,11 +159,9 @@
  # The same playbook will be run for each plugin so you may see DB tasks being skipped even if set to true, don't worry, the playbook will be run again and the relevent plugin will be run
 
 - name: "{{ play_name }}Loading Simple Authenticaton install"
-  include: "{{ item }}"
+  include: "authn.yml"
   become: yes
   become_user: "{{ user_name }}"
-  with_items:
-    - authn.yml
   vars:
     play_name: "Authn Simple ({{ simple_version }}) : "
     authn_plugin: simple
@@ -176,16 +174,14 @@
     - simple
 
 - name: "{{ play_name }}Loading DB Authenticaton install"
-  include: "{{ item }}"
+  include: "authn.yml"
   become: yes
   become_user: "{{ user_name }}"
-  with_items:
-    - authn.yml
   vars:
     play_name: "Authn DB ({{ db_version }}) : "
     authn_plugin: db
   when: 
-    - authn== true 
+    - authn == true 
     - authn_db == true
   tags:
     - user
@@ -193,11 +189,9 @@
     - db
 
 - name: "{{ play_name }}Loading LDAP Authenticaton install"
-  include: "{{ item }}"
+  include: "authn.yml"
   become: yes
   become_user: "{{ user_name }}"
-  with_items:
-    - authn.yml
   vars:
     play_name: "Authn Ldap ({{ ldap_version }}) : "
     authn_plugin: ldap 
@@ -210,11 +204,9 @@
     - ldap
 
 - name: "{{ play_name }}Loading Anon Authenticaton install"
-  include: "{{ item }}"
+  include: "authn.yml"
   become: yes
   become_user: "{{ user_name }}"
-  with_items:
-    - authn.yml
   vars:
     play_name: "Authn Anon ({{ anon_version }}): "
     authn_plugin: anon
@@ -323,7 +315,7 @@
     - user
     - testdata
     - pycat
-    - lorem
+    - lorum
   
 #---
 

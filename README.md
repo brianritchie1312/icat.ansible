@@ -198,10 +198,9 @@ TODO
 * Use smaller file for icat ingest
 * Consider replacing env_path with shell scripts for sourcing
 * Improve Debug feedback
-* Auto grab icat root from first entry in enabled authn user lists
 * Improve Idempotence and speed
 * Create task to remove all non LILS facilties from topcat.json
-* Make pycat.yml more adaptable
+* Make pycat.yml more adaptable (eg. pycat version numbers, control which user gets data, clearer args"
 * Currently topcat.json is modified to add all authn plugins to list in topcat. This should be replaced to only include enabled plugins.
 * Allow selenium to rerun even if port is used (eg. autokill ps using port or auto select new port)
 * Add support for other browsers
@@ -213,6 +212,11 @@ TODO
 
 Changelog
 ---------
+
+#### 20/12/17
+* Removed with_items from authn.yml includes, this means it will no longer say authn has failed conditional when tag other than authn is used.
+* Added curl tests to; authn plugins, lucene, icat.server, ids.server and topcat. Tests for payara, glassfish and ids.storage are needed.
+
 
 #### 19/12/17
 * Added facilty arguments to README

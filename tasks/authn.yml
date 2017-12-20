@@ -5,9 +5,6 @@
 
 #---
 
-#-NOTE-if for whatever reason a plugin's variables don't match the standard format in defaults/authn.yml, add them here
- # eg. Chosen version of authn anon has different url, add 'authn_src: {NEW URL}' to the anon set_fact below
-
 - name: "{{ play_name }}Setting Variables for Authn Simple"
   set_fact:
     authn_version: "{{ simple_version }}"
@@ -35,7 +32,7 @@
 
 #---
 
-- name: "{{ play_name }}Replacing target with vendor for Db versions older than 2.0.0"
+- name: "{{ play_name }}Replacing target with vendor for DB versions older than 2.0.0"
   set_fact:
     authn_cnf_list: "{{ authn_cnf_list }} + {{ mysql_cnf_list | replace('target','vendor') }}"
   when:
@@ -311,3 +308,22 @@
     - install
 
 #---
+
+#--Quick Test--
+
+- name: "{{ play_name }}Checking Installed Authenticator Version"
+  command: "curl {{ icat_url }}/authn.{{ authn_plugin }}/version"
+  register: curl_authn
+
+- name: "{{ play_name }}Failing If Authenticator Output Incorrect"
+  fail:
+    msg: 
+      - 'Authn has a problem.'
+      - 'Expected stdout: "{"version":"{{ authn_version }}"}"'
+      - 'Actual stdout:   "{{ curl_authn.stdout }}"'
+      - 'NOTE: Only version number is check all other text and syntax are ignored.'
+  when:
+    - authn_version not in curl_authn.stdout
+
+#---
+
