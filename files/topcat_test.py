@@ -13,6 +13,9 @@
       # Install selenium, pyvirtualdisplay, etc.
     # Replace time.sleep with reliable wait_until
     # Add tests for everything in checklist
+    # Add Upwards Browsing to browse tests
+    # Add Tickbox checking for Search Test
+    # Check for correct info in Infotab Test
 
 #-------------------------------------------------------------------------------
 # Imports
@@ -20,6 +23,10 @@
 
 # Print, this has been imported to allow 'print("string", end="")'
 from __future__ import print_function
+
+# Path
+#from __future__ import pathlib
+# from pathlib2 import Path
 
 # Selenium
 from selenium import webdriver
@@ -37,9 +44,13 @@ from pyvirtualdisplay import Display
 
 # OS
 import os
+import os.path
 
 # Delay
 import time
+
+# Time
+import datetime
 
 # Argparse
 import argparse
@@ -118,7 +129,7 @@ parser.add_argument('--virtual-display',
 # Working directory if in alternative location
 parser.add_argument('--path',
                     action='store',
-                    dest='download_dir',
+                    dest='dir_test',
                     help='Absolute path to directory containing webdrivers and download folders (default: parent directory of this script)',
                     required=False)
 
@@ -210,10 +221,10 @@ else:
     data_is_admin = True
 
 # --path
-if (args.download_dir != None):
-    download_dir = (args.download_dir + "/")
+if (args.dir_test != None):
+    dir_test = args.dir_test
 else:
-    download_dir = (os.path.dirname(os.path.abspath(__file__)) + "/")
+    dir_test = os.path.dirname(os.path.abspath(__file__))
 
 # --browsers
 if (args.browsers != None):
@@ -231,8 +242,8 @@ else:                       # if --browser is not used
     firefox = True
     chrome = False
 
-exc_firefox = 'gecko.sh'
-exc_chrome = 'chromedriver'
+exc_firefox = os.path.join(dir_test,'gecko.sh')
+exc_chrome = os.path.join(dir_test,'chromedriver')
 
 # --log-level
 if (args.log_level != None):
@@ -283,6 +294,10 @@ def logout():
         browser.get(icat_url + "/#/")   # Return to Home, Topcat saves browse path across multiple users, this should reset it
         time.sleep(1)
         browser.get(icat_url + "/#/logout")
+#-END-
+
+def current_time():
+    return datetime.datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
 #-END-
 
 # Find element by CSS_SELECTOR
@@ -484,7 +499,7 @@ def browse_click(level, target, element):
     if (element_exists('i[translate="ENTITIES.' + target.upper() + '.NAME"]') == True):
         print(txt.Success)
     else:
-	print(txt.Failed + " ( Can't find + on page:" + "ENTITIES." + target.upper() + ".NAME" + " | on page: " + browser.current_url + ")")
+        print(txt.Failed + " ( Can't find + on page:" + "ENTITIES." + target.upper() + ".NAME" + " | on page: " + browser.current_url + ")")
 #-END-
 
 # Click non-active section of row and check if info tab appears
@@ -815,57 +830,105 @@ def test_cart_clear():
 # Download Datafile via action button
 # TODO check if file exists
 def test_download_action():
+    print("Create Download Directory: ", end='')
+
     print("Download By Action: ", end='')
     browser.get(datafile_url)
     time.sleep(1)
+
     try:
         element_wait((By.CSS_SELECTOR, 'a[translate="DOWNLOAD_ENTITY_ACTION_BUTTON.TEXT"]'))
         element_click('a[translate="DOWNLOAD_ENTITY_ACTION_BUTTON.TEXT"]')
 
         print(txt.Success + " (NOTE: file existence not checked)")
-
     except NoSuchElementException as ex:
         print(txt.Failed)
         print(ex)
+
+    print("Downloaded File Exists: ", end='')
+    file_datafile = os.path.join(dir_dwn_browser, "Datafile 1")
+
+    time.sleep(3)
+
+    if os.path.isfile(file_datafile):
+        print(txt.Success + " ('" + file_datafile + "' exists)")
+
+    else:
+        print(txt.Failed + " (" + file_datafile + " does not exist)")
 #-END-
 
 # Download via cart
 # TODO check if file exists
 # TODO check if download properly added to downloads (eg. download action exists)
 def test_download_cart():
-    print("Download by Cart: ", end='')
+
     cart_add()
     time.sleep(1)
 
-    try:
-        element_wait((By.CSS_SELECTOR, obj_cart_icon))
+    # Open Cart
+    if (element_exists('div[class="modal-dialog modal-lg"]') == False):
         element_click(obj_cart_icon)
 
+    try:
+        # Click 'Downlaod Cart'
         element_wait((By.CSS_SELECTOR, 'button[translate="CART.DOWNLOAD_CART_BUTTON.TEXT"]'))
         time.sleep(1)
         element_click('button[translate="CART.DOWNLOAD_CART_BUTTON.TEXT"]')
-
-        element_wait((By.CSS_SELECTOR, 'button[translate="CART.DOWNLOAD.MODAL.BUTTON.OK.TEXT"]'))
-        time.sleep(1)
-        element_click('button[translate="CART.DOWNLOAD.MODAL.BUTTON.OK.TEXT"]')
-        time.sleep(1)
-
-        # Check if cart hidden
-        if (element_exists(obj_cart_icon) == False):
-            # Check if downloads has appeared
-            if (element_exists(obj_downloads_icon) == True):
-                print(txt.Success + " (NOTE: File existence not checked)")
-            else:    # Downloads has not appeared
-                print(txt.Failed + " (Download icon does not exist)")
-
-        else:    # Cart has not been removed
-            print(txt.Failed + " (Cart still exists)")
-
     except NoSuchElementException as ex:
         print(ex)
+
+    # Change Download Name
+    print("Cart Rename Zip Test: ", end='')
+    try:
+
+        zipfile_name = "RENAME_TEST-" + current_time()
+
+        element_wait((By.CSS_SELECTOR, 'input[ng-model="download.fileName"]'))
+        browser.find_element(By.CSS_SELECTOR, 'input[ng-model="download.fileName"]').send_keys(Keys.CONTROL + "a")
+        browser.find_element(By.CSS_SELECTOR, 'input[ng-model="download.fileName"]').send_keys(zipfile_name)
+        print(txt.Success + " (NOTE: File not downloaded or checked. Only checking for lack of errors.)")
+    except NoSuchElementException as ex:
+        print (txt.Failed)
+
+    # Check https method option availiable
+    print("Cart Transport/Access Method 'https' Option Exists: ", end='')
+    if (element_exists('option[label="https"]') == True):
+        print(txt.Success)
+    else:
+        print(txt.Failed + " (https method not an option)")
+
+    # Check https method option availiable
+    print("Cart Transport/Access Method 'globus' Option Exists: ", end='')
+    if (element_exists('option[label="globus"]') == True):
+        print(txt.Success)
+    else:
+        print(txt.Failed + " (globus method not an option)")
+
+
+    # Download
+    print("Cart Download Via https: ", end='')
+
+    # Select https if not already selected
+    Select(element_find('select[ng-model="download.transportType"]')).select_by_visible_text('https')
+
+    # Click 'OK'
+    element_wait((By.CSS_SELECTOR, 'button[translate="CART.DOWNLOAD.MODAL.BUTTON.OK.TEXT"]'))
+    time.sleep(1)
+    element_click('button[translate="CART.DOWNLOAD.MODAL.BUTTON.OK.TEXT"]')
+    time.sleep(1)
+
+    # Check if cart hidden
+    if (element_exists(obj_cart_icon) == False):
+        # Check if downloads has appeared
+        if (element_exists(obj_downloads_icon) == True):
+            print(txt.Success + " (NOTE: File existence not checked)")
+        else:    # Downloads has not appeared
+            print(txt.Failed + " (Download icon does not exist)")
+    else:    # Cart has not been removed
+            print(txt.Failed + " (Cart still exists)")
 #-END-
 
-def test_download_avaliable():
+def test_download_available():
     print("Download Is Available in Downloads: ", end='')
     if (element_exists(obj_downloads_icon)):
 
@@ -891,11 +954,6 @@ def test_download_avaliable():
     else:
         print(txt.Failed + " (Downloads does not exist)")
 
-# Rename zip file to be downloaded by cart
-def test_download_rename():
-    print("Downloading Rename Test Not Yet Written")
-#-END-
-
 # Remove all items from downloads
 def test_download_clear():
     print("Clear Downloads: ", end='')
@@ -913,21 +971,28 @@ def test_firefox():
     print("")
     print(txt.HEADING + "[ Firefox Test ]" + txt.BASIC)
 
+    # Create Download Directory Under dir_test/Downloads/Timestamp/Browser
+    global dir_dwn_browser
+    dir_dwn_browser = os.path.join(dir_dwn, "Firefox")
+    os.makedirs(dir_dwn_browser)
+    print("Firefox Download Directory: " + dir_dwn_browser)
+
+
     # Force Firefox to download without prompting user
     profile = webdriver.FirefoxProfile()
-    profile.set_preference("browser.download.folderList", 2)
-    profile.set_preference('browser.download.dir', download_dir + "Firefox")
+    profile.set_preference('browser.download.folderList', 2)
+    profile.set_preference('browser.download.dir', dir_dwn_browser)
     profile.set_preference('browser.download.manager.showWhenStarting', False)
     profile.set_preference('browser.helperApps.neverAsk.saveToDisk', 'application/octet-stream')
 
     ff_options = FirefoxOptions()
     if (log_level != 'default'):
         ff_options.log.level = log_level
-        ff_options.log.path = download_dir + 'geckodriver.log'
+        ff_options.log.path = dir_test + 'geckodriver.log'
 
     # Start Tests
     global browser
-    browser = webdriver.Firefox(profile, firefox_options=ff_options, executable_path=download_dir+exc_firefox)
+    browser = webdriver.Firefox(profile, firefox_options=ff_options, executable_path=exc_firefox)
     test_browser()
     print("Closing Firefox")
     browser.close()
@@ -939,16 +1004,22 @@ def test_chrome():
     print("")
     print(txt.HEADING + "[ Chrome Test ]" + txt.BASIC)
 
+    # Create Download Directory Under dir_test/Downloads/Timestamp/Browser
+    global dir_dwn_browser
+    dir_dwn_browser = os.path.join(dir_dwn, "Chrome")
+    os.makedirs(dir_dwn_browser)
+    print("Chrome Download Directory: " + dir_dwn_browser)
+
     chrome_options = ChromeOptions()
     # if (log_level != 'default'):
     #     chrome_options.log.level = log_level
 
-    chrome_prefs = {"download.default_directory" : download_dir + "Chrome"}
+    chrome_prefs = {"download.default_directory" : dir_dwn_browser}
     chrome_options.add_experimental_option("prefs", chrome_prefs)
 
     #Start Tests
     global browser
-    browser = webdriver.Chrome(chrome_options=chrome_options, executable_path=download_dir+exc_chrome)
+    browser = webdriver.Chrome(chrome_options=chrome_options, executable_path=exc_chrome)
     test_browser()
     print("Closing Chrome")
     browser.close()
@@ -1001,7 +1072,8 @@ def print_variables():
         print("Virtual Display Not Used")
 
     # Directory
-    print("Directory: " + download_dir)
+    print("Testing Directory: " + dir_test)
+    print("Download Directory: " + dir_dwn)
 
     # Browsers
     print("Browsers: ", end="")
@@ -1051,8 +1123,7 @@ def test_browser():
     #--Download--
     test_download_action()
     test_download_cart()
-    test_download_avaliable()
-    # test_download_rename()
+    test_download_available()
     test_download_clear()
     #--Other--
     #--Finish--
@@ -1088,6 +1159,9 @@ def test_browser():
 
 # Master function
 def test_master():
+    global dir_dwn
+    dir_dwn = os.path.join(dir_test, "Downloads", current_time())
+
     print_variables()
 
     if (firefox == True):

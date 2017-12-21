@@ -210,7 +210,14 @@ TODO
 Changelog
 ---------
 
-#### 21/12/17 (2)
+#### 21/12/17
+* Added More tests to selenium
+    * Check file downloaded by action exists in folder
+    * Check Renaming zip works without error
+    * Check https and globus are both selectable options
+* Selenium now creates new directory with timestamp as name for downloads (Ensures only downloads from respective run will be present in path)
+
+#### 20/12/17 (2)
 * Add conditional fail to mysql password reset. If command fails for any reason other than wrong password it will fail the build. 
 * Added some extra tags to pycat.yml to allow skipping ingest or file creation. This means output won't be pushed out of frame by massive ammounts of output from ingest and create file tasks.
 * Corrected some nameless tasks in pycat.yml
