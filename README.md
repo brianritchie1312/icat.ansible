@@ -212,7 +212,9 @@ TODO
     * Add Globus tests if possible
     * More detailed tests for search and infotabs
     * Add skips similar to ansible tags   
-
+* Travis
+    * Test Idempotence
+    * Get chrome selenium test working
 
 Changelog
 ---------
