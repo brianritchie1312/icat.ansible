@@ -46,6 +46,9 @@ from pyvirtualdisplay import Display
 import os
 import os.path
 
+# Check if zipfle exists
+import zipfile
+
 # Delay
 import time
 
@@ -480,9 +483,9 @@ def search_results(search, tab, target):
 
     else:        # If results shouldn't exist
         if (element_exists('div[class="ui-grid-cell-contents ng-scope"]') == False):
-            print(txt.Success + " (No Results)")
+            print(txt.Success + " (No Results, None Expected)")
         else:
-            print(txt.Failed + " (Results Exist)")
+            print(txt.Failed + " (Results Exist, None Expected)")
 #-END-
 
 # Click on first item and check if naviagate to correct location
@@ -764,7 +767,6 @@ def test_datanav_browse():
     datafile_url = browser.current_url
 
     # TODO - Add upwards browsing (eg. click breadcrumb links)
-
 #-END-
 
 # Check if info tab show when clicking non active area of items
@@ -828,9 +830,10 @@ def test_cart_clear():
 #---Download--------------------------------------------------------------------
 
 # Download Datafile via action button
-# TODO check if file exists
+# TODO - Add varaible for which file gets selected (By name if possible)
 def test_download_action():
-    print("Create Download Directory: ", end='')
+
+    datafile_name = "Datafile 1"
 
     print("Download By Action: ", end='')
     browser.get(datafile_url)
@@ -840,21 +843,22 @@ def test_download_action():
         element_wait((By.CSS_SELECTOR, 'a[translate="DOWNLOAD_ENTITY_ACTION_BUTTON.TEXT"]'))
         element_click('a[translate="DOWNLOAD_ENTITY_ACTION_BUTTON.TEXT"]')
 
-        print(txt.Success + " (NOTE: file existence not checked)")
+        print(txt.Success)
     except NoSuchElementException as ex:
         print(txt.Failed)
         print(ex)
 
-    print("Downloaded File Exists: ", end='')
-    file_datafile = os.path.join(dir_dwn_browser, "Datafile 1")
+    print("Downloaded Datafile Exists: ", end='')
+    file_datafile = os.path.join(dir_dwn_browser, datafile_name)
 
+    # TODO - Replace with wait-until/timeout
     time.sleep(3)
 
     if os.path.isfile(file_datafile):
-        print(txt.Success + " ('" + file_datafile + "' exists)")
+        print(txt.Success + " ('" + datafile_name + "' exists in browser's download directory)")
 
     else:
-        print(txt.Failed + " (" + file_datafile + " does not exist)")
+        print(txt.Failed + " (" + datafile_name + " does not exist in browser's download directory)")
 #-END-
 
 # Download via cart
@@ -886,9 +890,10 @@ def test_download_cart():
         element_wait((By.CSS_SELECTOR, 'input[ng-model="download.fileName"]'))
         browser.find_element(By.CSS_SELECTOR, 'input[ng-model="download.fileName"]').send_keys(Keys.CONTROL + "a")
         browser.find_element(By.CSS_SELECTOR, 'input[ng-model="download.fileName"]').send_keys(zipfile_name)
-        print(txt.Success + " (NOTE: File not downloaded or checked. Only checking for lack of errors.)")
+        print(txt.Success)
     except NoSuchElementException as ex:
         print (txt.Failed)
+
 
     # Check https method option availiable
     print("Cart Transport/Access Method 'https' Option Exists: ", end='')
@@ -897,10 +902,10 @@ def test_download_cart():
     else:
         print(txt.Failed + " (https method not an option)")
 
-    # Check https method option availiable
+    # Check Globus method option availiable
     print("Cart Transport/Access Method 'globus' Option Exists: ", end='')
     if (element_exists('option[label="globus"]') == True):
-        print(txt.Success)
+        print(txt.Success + " (Note: Download Via Globus not tested)")
     else:
         print(txt.Failed + " (globus method not an option)")
 
@@ -921,13 +926,27 @@ def test_download_cart():
     if (element_exists(obj_cart_icon) == False):
         # Check if downloads has appeared
         if (element_exists(obj_downloads_icon) == True):
-            print(txt.Success + " (NOTE: File existence not checked)")
+            print(txt.Success)
         else:    # Downloads has not appeared
             print(txt.Failed + " (Download icon does not exist)")
     else:    # Cart has not been removed
             print(txt.Failed + " (Cart still exists)")
+
+    # Check If Zip file exists where expected
+    print("Downloaded Zip Exists: ", end='')
+    file_zip = os.path.join(dir_dwn_browser, zipfile_name)
+
+    # TODO - Replace with wait-until/timeout
+    time.sleep(3)
+
+    # It be worth moving this to a repeatable function/method
+    if zipfile.is_zipfile(file_zip + ".zip"):
+        print(txt.Success + " ('" + zipfile_name + ".zip' exists in browser's download directory)")
+    else:
+        print(txt.Failed + " ('" + zipfile_name + ".zip' does not exist in browser's download directory)")
 #-END-
 
+# Check if download is marked as 'Availiable' is downloads window
 def test_download_available():
     print("Download Is Available in Downloads: ", end='')
     if (element_exists(obj_downloads_icon)):
@@ -953,6 +972,7 @@ def test_download_available():
 
     else:
         print(txt.Failed + " (Downloads does not exist)")
+#-END-
 
 # Remove all items from downloads
 def test_download_clear():

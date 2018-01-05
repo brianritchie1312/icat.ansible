@@ -184,31 +184,45 @@ Notes
 * If you are using a VM with pip 1.0 installed, run `pip install --index-url=https://pypi.python.org/simple/ -U pip` to upgrade.
 * Some tasks involve finding a file with partial name instead of an absolute path. In these cases it will select the first matching file. For example If you have multiple 'mysql-connector-java-*.jar' files in /usr/share/java it will only use the first one. 
 * Sometimes adding boolean variables to --extra-vars cause them to return false even when set to true, assigning the value in a preset file seems to work anyway.
+* Topcat_test assumes all cart downloads are '.zip's
 
 TODO
 ----
 
-* Improve commenting and documentation
-* Improve feedback (eg. run automatic tests and report back with the debug module)
-* Improve Idempotence
-* Fix Storage setup script not working
-* Learn how ldap works
-* Use smaller file for icat ingest
-* Consider replacing env_path with shell scripts for sourcing
-* Create task to remove all non LILS facilties from topcat.json
-* Make pycat.yml more adaptable (eg. pycat version numbers, control which user gets data, clearer args"
-* Currently topcat.json is modified to add all authn plugins to list in topcat. This should be replaced to only include enabled plugins.
-* Allow selenium to rerun even if port is used (eg. autokill ps using port or auto select new port)
-* Add support for other browsers
-* Replace time delays in selenium with appropriate wait_until()
-* Complete topcat_test script
-* Split admin user into data and admin users
-* Fix chrome launch in selenium
-* Auto close failed selenium browsers
+* Universal
+    * Improve commenting and documentation (eg. full tutorials, detailed descriptions of how things are ordered)
+    * Learn how ldap works and implement proper setup and test if possible
+* Ansible    
+    * Improve feedback (eg. run automatic tests and report back with the debug module)
+    * Improve Idempotence
+    * Fix Storage setup script not working (or use conditional fail)
+    * Use smaller file for icat ingest
+    * Consider replacing env_path with shell scripts for sourcing
+    * Create task to remove all non LILS facilties from topcat.json
+    * Make pycat.yml more adaptable (eg. pycat version numbers, control which user gets data, clearer args"
+    * Currently topcat.json is modified to add all authn plugins to list in topcat. This should be replaced to only include enabled plugins.
+    * Split Admin user into Data/Admin Users
+* Selenium
+    * Allow selenium to rerun even if port is used (eg. autokill ps using port or auto select new port)
+    * Add support for other browsers (eg. Chromium, Edge, Safari)
+    * Replace time delays in selenium with appropriate wait_until()
+    * Fix chrome launch in selenium (or use chromium)
+    * Auto close failed selenium browsers
+    * Add upwards browsing tests
+    * Add Globus tests if possible
+    * More detailed tests for search and infotabs
+    * Add skips similar to ansible tags   
 
 
 Changelog
 ---------
+
+#### 05/01/18
+* Downloaded Zip existence check added to topcat_test
+* Removed unused 'Create Download Dir' print function from topcat_test
+* Removed 'file existence not checked' warnings from download tests in topcat_test
+* Shortened file existence ouput to just basename instead of full path (parent directory printed at begining of output)
+* Changed datafile name to variable, not yet configurable from outside script
 
 #### 21/12/17
 * Added More tests to selenium
