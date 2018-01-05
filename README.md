@@ -219,6 +219,12 @@ TODO
 Changelog
 ---------
 
+#### 05/01/18(2)
+* Attempted Chrome fix for travis
+* Changed variable names for webdrivers to avoid confusion
+* Topcat_test directory now a variable
+* gecko.sh uses relative path instead of absolute
+
 #### 05/01/18
 * Downloaded Zip existence check added to topcat_test
 * Removed unused 'Create Download Dir' print function from topcat_test

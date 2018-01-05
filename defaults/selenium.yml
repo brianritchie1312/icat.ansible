@@ -1,13 +1,12 @@
 ---
 
-# These are not downloads for the browsers but for the respective webdrivers used by Selenium
- # Actual browser are installed by travis.yml
+test_dir: "{{ download_dir }}/topcat_tests"
 
-firefox_version: 0.19.1
-firefox_src: "https://github.com/mozilla/geckodriver/releases/download/v{{ firefox_version }}/{{ firefox_zip }}"
-firefox_zip: "geckodriver-v{{ firefox_version }}-linux64.tar.gz"
+geckodriver_version: 0.19.1
+geckodriver_src: "https://github.com/mozilla/geckodriver/releases/download/v{{ geckodriver_version }}/{{ geckodriver_zip }}"
+geckodriver_zip: "geckodriver-v{{ geckodriver_version }}-linux64.tar.gz"
 
-chrome_version: 2.33
-chrome_src: "https://chromedriver.storage.googleapis.com/{{ chrome_version }}/{{ chrome_zip }}"
-chrome_zip: "chromedriver_linux64.zip"
+chromedriver_version: 2.33
+chromedriver_src: "https://chromedriver.storage.googleapis.com/{{ chromedriver_version }}/{{ chromedriver_zip }}"
+chromedriver_zip: "chromedriver_linux64.zip"
 

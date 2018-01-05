@@ -6,6 +6,8 @@ notifications:
 #---Language---
 
 language: python
+python:
+  - "2.7"
 
 #---Branches---
 
@@ -16,6 +18,7 @@ branches:
 #---Environment---
 
 sudo: required
+dist: trusty
 
 #---Services---
 
@@ -60,10 +63,8 @@ script:
 # Interface Test
   - "cd /home/user1/icatdownloads/Tests"
   - "cat test_args.txt | sudo xargs python topcat_test.py | tee topcat_test_output"
-  - "cat topcat_test_output | grep Failed && exit 1 || exit 0"
-  - "cat topcat_test_output | grep error && exit 1 || exit 0"
-# run topcat_test.py, tee output
-# grep ^ output fail if the string 'Failed' appears
+  - "cat topcat_test_output | grep Failed && exit 1"
+  - "cat topcat_test_output | grep error && exit 1"
 
 
  #--After Script--

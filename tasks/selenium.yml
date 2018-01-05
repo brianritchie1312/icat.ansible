@@ -40,35 +40,33 @@
 
 - name: "{{ play_name }}Creating test directories"
   file:
-    path: "{{ download_dir }}{{ item }}"
+    path: "{{ item }}"
     state: directory
   with_items:
-    - 
-    - Tests
-    - Tests/Firefox
-    - Tests/Chrome
+    - "{{ download_dir }}"
+    - "{{ test_dir }}"
 
 - name: "{{ play_name }}Downloading Webdrivers"
   get_url:
     url: "{{ item }}"
     dest: "{{ download_dir }}"
   with_items:
-    - "{{ firefox_src }}"
-    - "{{ chrome_src }}"
+    - "{{ geckodriver_src }}"
+    - "{{ chromedriver_src }}"
 
 - name: "{{ play_name }}Unzipping Webdrivers"
   unarchive:
     src: "{{ download_dir }}{{ item }}"
-    dest: "{{ download_dir }}Tests"
+    dest: "{{ test_dir }}"
     remote_src: yes
   with_items:
-    - "{{ firefox_zip }}"
-    - "{{ chrome_zip }}"
+    - "{{ geckodriver_zip }}"
+    - "{{ chromedriver_zip }}"
 
 - name: "{{ play_name }}Copying Selenium Script and geckodriver workaround script"
   copy:
     src: "{{ role_path }}/files/{{ item.src }}"
-    dest: "{{ download_dir }}Tests/"
+    dest: "{{ test_dir }}/"
     mode: "{{ item.mode }}"
   with_items:
     - { src: topcat_test.py,  mode: "u=rw,g=rw,o=rw" }
@@ -76,7 +74,7 @@
 
 - name: "{{ play_name }}Creating Blank files with travis friendly permissions"
   file:
-    path: "{{ download_dir }}Tests/{{ item }}"
+    path: "{{ test_dir }}/{{ item }}"
     state: touch
     mode: "u=rw,g=rw,o=rw"
   with_items:
@@ -86,4 +84,4 @@
 - name: "{{ play_name }}Templating Arguments for Selenium Script"
   template:
     src: "{{ role_path }}/files/test_args.txt"
-    dest: "{{ download_dir }}Tests/"
+    dest: "{{ test_dir }}/"
