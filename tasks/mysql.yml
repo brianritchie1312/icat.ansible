@@ -46,6 +46,7 @@
 #---
 
 #---Modifying Config File---
+ # my.cnf is located in different places for each OS, this finds and uses the first file named 'my.cnf' within '/etc/' and it's child directories
 
 - name: "{{ play_name }}Finding my.cnf"
   find:
@@ -67,7 +68,9 @@
 #---
 
 #---Starting Mysql Service---
- 
+ # Service name is different for different versions and OSs so this finds and uses first file in '/etc/init.d/' that matches 'mysql*'
+ # TODO later versions may not use '/init.d/', research alternatives 
+
 - name: "{{ play_name }}Finding MySQL service name"
   find:
     paths: /etc/init.d
@@ -92,6 +95,9 @@
     state: started
 
 #---Running Secure Install---
+ # mysql_secure_installation requires a specific password input, for simplicity the password is reset to default before running mysql_secure_installation
+ # If the password is already default (eg. on first run) this task will fail.
+ # If it fails for any reason other than permission denied (return code 1) it will fail the build
 
 - name: "{{ play_name }}Temporarly reseting MySQL root password (This will return an error on first run but should ignore it)"
   command: "mysqladmin -u root -p'{{ mysql_root_pass }}' password ''"

@@ -8,3 +8,4 @@ ids_path: "{{ user_home }}/ids.server"
 ids_setup: setup.properties
 ids_prop: run.properties
 
+two_level: false

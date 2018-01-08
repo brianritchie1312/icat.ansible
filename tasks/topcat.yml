@@ -110,23 +110,27 @@
     - "{{ topcat_lang }}"
     - "{{ topcat_css }}"
 
+# First item uses 'https://' to avoid changing transport type variable, older versions have no 'http' type
 - name: "{{ play_name }}Configuring {{ topcat_json }}"
   replace:
     path: "{{ topcat_path }}/{{ topcat_json }}"
     regexp: "{{ item.regexp }}"
     replace: "{{ item.rep }}"
   with_items:
-    - { regexp: "https://",                rep: "http://" }
-    - { regexp: "8181",                    rep: "{{ icat_port }}" }
-    - { regexp: "18080",                   rep: "{{ icat_port }}" }
-    - { regexp: "localhost",               rep: "{{ inventory_hostname }}" }
-    - { regexp: 'your facility name[^"]*', rep: "LILS" }
+    - { regexp: "https://",                 rep: "http://" }
+    - { regexp: "8181",                     rep: "{{ icat_port }}" }
+    - { regexp: "18080",                    rep: "{{ icat_port }}" }
+    - { regexp: "localhost",                rep: "{{ inventory_hostname }}" }
+#    - { regexp: 'your facility name[^"]*',  rep: "{{ fac_short_name }}" }
+    - { regexp: "LILS",                     rep: "{{ fac_short_name }}" }
+    - { regexp: "Lorum Ipsum Light Source", rep: "{{ fac_long_name }}" }
 
 #---
 # TODO replace with task to remove all facilities not in mysql \/
 #---
 
-- name: "{{ play_name }}Correcting errors in ISIS facilty in JSON file"
+# Missing the icat_url variable in a facility breaks older versions of topcat, so the variable is needed even if not used
+- name: "{{ play_name }}Correcting missing icat_url variable errors in ISIS facilty in JSON file"
   replace:
     path: "{{ topcat_path }}/{{ topcat_json }}"
     regexp: '"title": "ISIS",(?s)(.*?)"hierarchy"'

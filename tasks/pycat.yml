@@ -28,7 +28,7 @@
 - name: "{{ play_name }}Wiping ICAT"
   command: "wipeicat.py --url \"{{ icat_url }}/ICATService/ICAT?wsdl\" -a {{ icat_admin_mech }} -u {{ icat_admin_user }} -p {{ icat_admin_pass }}"
   when:
-#    - 'fac_name in icat_facs.stdout'
+#    - 'fac_short_name in icat_facs.stdout'
     - wipe_icat == true
 
  #--
@@ -43,10 +43,10 @@
     - idgrab.sql
     - delusers.sql
   when:
-    - 'fac_name in icat_facs.stdout'
+    - 'fac_short_name in icat_facs.stdout'
     - delete_fac == true
 
-- name: "{{ play_name }}Getting {{ fac_name }} ID"
+- name: "{{ play_name }}Getting {{ fac_short_name }} ID"
   mysql_db:
     state: import
     target: "{{ download_dir }}idgrab.sql"
@@ -54,7 +54,7 @@
     login_password: "{{ mysql_root_pass }}"
     name: "{{ icat_name }}"
   when:
-    - 'fac_name in icat_facs.stdout'
+    - 'fac_short_name in icat_facs.stdout'
     - delete_fac == true
   register: sql_msg
 
@@ -62,13 +62,13 @@
   set_fact:
     icat_fac_id: "{{ sql_msg.msg | replace('ID','') | replace('\\n','') }}"
   when:
-    - 'fac_name in icat_facs.stdout'
+    - 'fac_short_name in icat_facs.stdout'
     - delete_fac == true
 
 - name: "{{ play_name }}Deleting facility"
   command: "curl -k --get -X DELETE --data-urlencode \"{{ icat_id  }}\" --data-urlencode 'entities={\"Facility\": {\"id\":{{ icat_fac_id }} } }' {{ icat_url }}/{{ icat_name }}/entityManager"  
   when:
-    - 'fac_name in icat_facs.stdout'
+    - 'fac_short_name in icat_facs.stdout'
     - delete_fac == true
 
 - name: "{{ play_name }}Deleting Users"
@@ -79,7 +79,7 @@
     login_password: "{{ mysql_root_pass }}"
     name: "{{ icat_name }}"
   when:
-    - 'fac_name in icat_facs.stdout'
+    - 'fac_short_name in icat_facs.stdout'
     - delete_fac == true
 
  #--
@@ -88,7 +88,7 @@
   command: "curl -k -G --data-urlencode \"{{ icat_id }}\" --data-urlencode \"query=SELECT f from Facility f\" {{ icat_url }}/icat/entityManager"
   when:
     - '"sessionId=" in icat_id'
-    - 'fac_name in icat_facs.stdout'
+    - 'fac_short_name in icat_facs.stdout'
     - ( wipe_icat == true ) or ( delete_fac == true )
   register: icat_facs2    
 
@@ -97,7 +97,7 @@
     icat_facs: "{{ icat_facs2 }}"
   when:
     - '"sessionId=" in icat_id'
-    - 'fac_name in icat_facs.stdout'
+    - 'fac_short_name in icat_facs.stdout'
     - ( wipe_icat == true ) or ( delete_fac == true )
 
 #---
@@ -113,7 +113,7 @@
     - PyYAML
   become: yes
   become_user: root
-  when: 'fac_name not in icat_facs.stdout'
+  when: 'fac_short_name not in icat_facs.stdout'
 
 - name: "{{ play_name }}Installing dependencies with Yum/Apt"
   package:
@@ -124,12 +124,12 @@
   become_user: root
   become_method: sudo
   when:
-    - 'fac_name not in icat_facs.stdout'
+    - 'fac_short_name not in icat_facs.stdout'
 
 - name: "{{ play_name }}Checking Python version"
   command: python --version
   register: pyv
-  when: 'fac_name not in icat_facs.stdout'
+  when: 'fac_short_name not in icat_facs.stdout'
 
 #---
 
@@ -145,7 +145,7 @@
     url: "{{ pycat_url }}"
     dest: "{{ download_dir }}"
   when: 
-    - 'fac_name not in icat_facs.stdout'
+    - 'fac_short_name not in icat_facs.stdout'
     - pi_zip.stat.exists == false
 
 #---
@@ -171,7 +171,7 @@
   become_user: root
   become_method: sudo
   when: 
-    - 'fac_name not in icat_facs.stdout'
+    - 'fac_short_name not in icat_facs.stdout'
     - pi_dir.stat.exists == false
 
 #---
@@ -188,7 +188,7 @@
   become_user: root
   become_method: sudo
   when: 
-    - 'fac_name not in icat_facs.stdout'
+    - 'fac_short_name not in icat_facs.stdout'
     - '"2.6." in pyv.stderr'
 
 #---
@@ -205,44 +205,48 @@
   become: yes
   become_user: root
   become_method: sudo
-  when: 'fac_name not in icat_facs.stdout'
+  when: 'fac_short_name not in icat_facs.stdout'
 
 #---Populating Database---
 
 - name: "{{ play_name }}Checking if dump file exists"
   stat:
-    path: "{{ download_dir }}lils.yml"
-  register: pi_lils
+    path: "{{ download_dir }}{{ ingest_file }}"
+  register: pi_ingest
   tags:
     - ingest
 
 - name: "{{ play_name }}Copying Dump file"
   copy:
-    src: ../files/lils.yml
-    dest: "{{ download_dir }}lils.yml"
+    src: "../files/{{ ingest_file }}"
+    dest: "{{ download_dir }}{{ ingest_file }}"
     force: no
   when: 
-    - 'fac_name not in icat_facs.stdout'
-    - pi_lils.stat.exists == false
+    - 'fac_short_name not in icat_facs.stdout'
+    - pi_ingest.stat.exists == false
   tags:
     - ingest
 
 - name: "{{ play_name }}Modifying dump file"
   replace:
-    path: "{{ download_dir }}lils.yml"
-    regexp: "simple"
-    replace: "{{ icat_admin_mech }}"
+    path: "{{ download_dir }}{{ ingest_file }}"
+    regexp: "{{ item.reg }}"
+    replace: "{{ item.rep }}"
+  with_items:
+    - { reg: "simple",                   rep: "{{ icat_admin_mech }}" }
+    - { reg: "LILS",                     rep: "{{ fac_short_name }}" }
+    - { reg: "Lorum Ipsum Light Source", rep: "{{ fac_long_name }}" }
   when:
-    - 'fac_name not in icat_facs.stdout'
+    - 'fac_short_name not in icat_facs.stdout'
   tags:
     - ingest
 
 #TODO-create smaller file so forced timeout is not required
 
 - name: "{{ play_name }}Running ICAT ingest"
-  command: "icatingest.py --url {{ icat_url }}/ICATService/ICAT?wsdl -a {{ icat_admin_mech }} -u {{ icat_admin_user }} -p {{ icat_admin_pass }} -i {{ download_dir }}lils.yml"
+  command: "icatingest.py --url {{ icat_url }}/ICATService/ICAT?wsdl -a {{ icat_admin_mech }} -u {{ icat_admin_user }} -p {{ icat_admin_pass }} -i {{ download_dir }}{{ ingest_file }}"
   when: 
-    - 'fac_name not in icat_facs.stdout'
+    - 'fac_short_name not in icat_facs.stdout'
   register: ingest_output
   ignore_errors: yes
   async: "{{ ingest_timeout }}"
@@ -254,7 +258,7 @@
   fail:
     msg: "Ingest Failed"
   when:
-    - 'fac_name not in icat_facs.stdout'
+    - 'fac_short_name not in icat_facs.stdout'
     - '"async task did not complete" not in ingest_output.msg'
     - ingest_ouput.failed == true
   tags:

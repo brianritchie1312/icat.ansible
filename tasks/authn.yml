@@ -40,6 +40,8 @@
     - db_version | version_compare('2.0.0', '<') == true
 
 #---Changing Sub Domains for older versions---
+ # Older versions of these plugins are hosted on 'www.icatproject.org' not 'repo.icatproject.org'
+ # This corrects that
 
 - name: "{{ play_name }}Reseting URL variable"
   set_fact:
@@ -80,7 +82,9 @@
 
 #---
 
-#---Changing Properties filenames for older versions
+#---Changing Properties filenames for older versions---
+ # Newer versions of these plugins use 'run.properties' and 'setup.properties' as filenames
+ # Older ones use '{{ plugin_name }}.properties' and '{{ plugin_name }}-setup.properties'
 
 - name: "{{ play_name }}Reseting filenames"
   set_fact:
@@ -279,6 +283,14 @@
   tags:
     - db
 
+- name: "{{ play_name }}Deleting password list"
+  file:
+    path: "{{ download_dir }}PASSWD.text"
+    state: absent
+  when:
+    -  authn_plugin == "db"
+  tags:
+    - db
 
 #--LDAP--
 

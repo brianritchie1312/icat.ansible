@@ -34,6 +34,7 @@ ldap_principal: \%\@fed.cclrc.ac.uk
 
 #---Universal---
 
+# Older versions of plugins use 'www.' instead of 'repo.' This changes it back for older versions
 authn_src: "https://{{ sub_domain }}.icatproject.org/{{ url_mvn }}repo/org/icatproject/authn.{{ authn_plugin }}/{{ authn_version }}/{{ authn_zip }}"
 authn_zip: "authn.{{ authn_plugin }}-{{ authn_version }}-distro.zip"
 authn_path: "{{ user_home }}/authn.{{ authn_plugin }}"

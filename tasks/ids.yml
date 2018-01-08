@@ -86,6 +86,8 @@
     regexp: "libraries"
     line: libraries=ids.storage_file*.jar
     state: present
+  when:
+    - storage == true
 
 #---
 
@@ -121,7 +123,7 @@
     - { regexp: ".lastIdFile",            line: "filesCheck.lastIdFile = {{ user_home }}/{{ icat_name }}/main/ids/lastIdFile" }
     - { regexp: ".errorLog",              line: "filesCheck.errorLog = {{ user_home }}/{{ icat_name }}/main/ids/errorLog" }
 
-- name: "{{ play_name }}Adding storage directories for storage plugin versions newer than 1.3.3"
+- name: "{{ play_name }}Adding storage directories for storage plugin versions 1.4.0 or newer"
   lineinfile:
     path: "{{ ids_path }}/{{ ids_prop }}"
     regexp: "{{ item.regexp }}"
@@ -144,7 +146,8 @@
     - { regexp: "^stopArchivingLevel",    rep: "!stopArchivingLevel" }
     - { regexp: "^storageUnit",           rep: "!storageUnit" }
     - { regexp: "^tidyBlockSize",         rep: "!tidyBlockSize" }
-
+  when:
+    - two_level == false
 
 #---
 
@@ -166,7 +169,7 @@
   command: "curl {{ icat_url }}/ids/version"
   register: curl_ids
 
-- name: "{{ play_name }}Failing If IDS  Output Incorrect"
+- name: "{{ play_name }}Failing If IDS Output Incorrect"
   fail:
     msg:
       - 'IDS has a problem.'

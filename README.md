@@ -221,6 +221,12 @@ Changelog
 
 #### 08/01/18
 * topcat.yml now only replaces 'https://' instead of 'https' then replacing transport type back
+* Facilty name now stored as two variables 'fac_short_name' and 'fac_long_name' overwrites LILS (Experimental!)
+* Ingest dump filename now variable (ingest_file)
+* Ids only copies storage*.jar if storage=true
+* IDS archive line only commented out if two_level=false
+* DB user/pass list now deleted after use
+* Slightly Improved commenting 
 
 #### 05/01/18(2)
 * Attempted Chrome fix for travis
