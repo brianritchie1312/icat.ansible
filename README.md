@@ -219,6 +219,9 @@ TODO
 Changelog
 ---------
 
+#### 08/01/18
+* topcat.yml now only replaces 'https://' instead of 'https' then replacing transport type back
+
 #### 05/01/18(2)
 * Attempted Chrome fix for travis
 * Changed variable names for webdrivers to avoid confusion
