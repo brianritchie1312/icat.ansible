@@ -1,38 +1,19 @@
 ---
 
-- name: "{{ play_name }}Loading Pre-playbook Check"
-  include: "preplay.yml"
+- name: "{{ play_name }}Starting {{ container_domain }} before tasks"
+  include: "startdomain.yml"
 
 #---
 
 #---Downloading TopCat---
 
-- name: "{{ play_name }}Checking if {{ topcat_zip }} exists"
-  stat:
-    path: "{{ download_dir }}{{ topcat_zip }}"
-  register: tc_zip
-
-- name: "{{ play_name }}Downloading {{ topcat_zip }} to '{{ download_dir }}'"
-  get_url:
-    url: "{{ topcat_src }}"
-    dest: "{{ download_dir }}"
-  when: tc_zip.stat.exists == false
-
-#---
-
-#---Unzipping TopCat
-
-- name: "{{ play_name }}Checking if {{ topcat_path }} exists"
-  stat:
-    path: "{{ topcat_path }}"
-  register: tc_dir    
-
-- name: "{{ play_name }}Unzipping {{ topcat_zip }}"
-  unarchive:
-    src: "{{ download_dir }}{{ topcat_zip }}"
-    dest: "{{ user_home }}/"
-    remote_src: yes
-  when: tc_dir.stat.exists == false
+- name: "{{ play_name }}Downloading TopCat"
+  include: "download.yml"
+  vars:
+    - download_zip: "{{ topcat_zip }}"
+    - download_src: "{{ topcat_src }}"
+    - download_path: "{{ topcat_path }}"
+    - download_dest: "{{ user_home }}"
 
 #---
 

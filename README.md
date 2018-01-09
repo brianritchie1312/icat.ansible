@@ -150,7 +150,7 @@ The script has several command line arguments:
 | --user-admin {mechanism} {username} {password}  | No        | Data User assumed to be admin   | --user-admin simple root pass       | The plugin, username and password of the admin user.                                     | 
 | --virtual-display			          | No        | Standard GUI used               | --virtual-display                   | Creates a virtual display with pyvirtualdisplay. Use if standard GUI is unavailiable.    |
 | --path {path}                                   | No        | Script's current directory used | --path /home/user1/tests            | Directory where webdriver excutables are and files will be downloaded to.                |
-| --browsers {browser1} {browser2} ...            | No        | Only firefox tested             | --browsers firefox chrome           | List of browsers to test.                                                                |
+| --browsers {browser1} {browser2} ...            | No        | Only firefox tested             | --browsers firefox chrome           | List of browsers to test. (Supported: firefox, chrome)                                                                |
 | --log-level {loglevel}                          | No        | Default log level used          | --log-level trace                   | Log level of webdrivers. Currently only geckodriver.log (firefox webdriver) is modified. |
 
 *Note 1: Ansible only installs firefox, any other browsers must be manually installed.*
@@ -164,13 +164,13 @@ The script has several command line arguments:
 Tested Configurations
 ---------------------
 
-These configurations have only been tested to a basic level (ie. they run without fatal errors and the end product seems to be operational).
+These configurations have only been tested to a basic level (ie. they run without fatal errors and the end product seems to be operational). These configuration should match the config files in presets/.
 
-| Config       | OSs              | Ansible | Java | Python | MySQL | Glassfish | Payara   | Simple Authn | DB Authn | LDAP Authn | Anon Authn | Lucene | ICAT | IDS | IDS Storage | Topcat |
-|:------------:|:----------------:|:-------:|:----:|:------:|:-----:|:---------:|:--------:|:------------:|:--------:|:----------:|:----------:|:------:|:----:|:---:|:-----------:|:------:|
-|Default_4.9.1 | Sl6/Ubuntu 14.04 |2.3.1.0  |1.8.0 |2.6.6   |5.1.73 |--         |4.1.2.174 |2.0.0         |2.0.0     |--          |--          |1.1.0   |4.9.1 |1.8.0|1.4.0        |2.3.6   |
-|Travis_4.9.1  | Ubuntu 14.04     |2.4.1.0  |1.8.0 |2.7.13  |5.6    |--         |4.1.2.174 |2.0.0         |2.0.0     |2.0.0       |2.0.0       |1.1.0   |4.9.1 |1.8.0|1.4.0        |2.3.6   |
-|Default_4.8.0 | SL6/Ubuntu 14.04 |2.3.1.0  |1.8.0 |2.6.6   |5.1.73 |4.0        |--        |1.1.0         |1.2.0     |1.2.0       |1.1.1       |--      |4.8.0 |1.7.0|1.3.3        |2.2.1   |
+| Config       | OSs              | Ansible | Java | MySQL | Glassfish | Payara   | Simple Authn | DB Authn | LDAP Authn | Anon Authn | Lucene | ICAT | IDS | IDS Storage | Topcat |
+|:------------:|:----------------:|:-------:|:----:|:-----:|:---------:|:--------:|:------------:|:--------:|:----------:|:----------:|:------:|:----:|:---:|:-----------:|:------:|
+|Default_4.9.1 | Sl6/Ubuntu 14.04 |2.3.1.0  |1.8.0 |5.1.73 |--         |4.1.2.174 |2.0.0         |2.0.0     |--          |--          |1.1.0   |4.9.1 |1.8.0|1.4.0        |2.3.6   |
+|Travis_4.9.1  | Ubuntu 14.04     |2.4.1.0  |1.8.0 |5.6    |--         |4.1.2.174 |2.0.0         |2.0.0     |2.0.0       |2.0.0       |1.1.0   |4.9.1 |1.8.0|1.4.0        |2.3.6   |
+|Default_4.8.0 | SL6/Ubuntu 14.04 |2.3.1.0  |1.8.0 |5.1.73 |4.0        |--        |1.1.0         |1.2.0     |1.2.0       |1.1.1       |--      |4.8.0 |1.7.0|1.3.3        |2.2.1   |
 
 
 Notes
@@ -192,32 +192,46 @@ TODO
 * Universal
     * Improve commenting and documentation (eg. full tutorials, detailed descriptions of how things are ordered)
     * Learn how ldap works and implement proper setup and test if possible
-* Ansible    
-    * Improve feedback (eg. run automatic tests and report back with the debug module)
-    * Improve Idempotence
-    * Fix Storage setup script not working (or use conditional fail)
-    * Use smaller file for icat ingest
-    * Consider replacing env_path with shell scripts for sourcing
-    * Create task to remove all non LILS facilties from topcat.json
-    * Make pycat.yml more adaptable (eg. pycat version numbers, control which user gets data, clearer args"
-    * Currently topcat.json is modified to add all authn plugins to list in topcat. This should be replaced to only include enabled plugins.
-    * Split Admin user into Data/Admin Users
+* Ansible
+    * General    
+        * Improve feedback (eg. run automatic tests and report back with the debug module)
+        * Improve Idempotence
+        * Modify regexp to be more robust (eg. use '^' and double check escape slashes)
+    * Workarounds
+        * Fix Storage setup script not working (or use conditional fail)
+        * Consider replacing env_path with shell scripts for sourcing
+    * topcat.json
+        * Currently topcat.json is modified to add all authn plugins to list in topcat. This should be replaced to only include enabled plugins.
+        * Create task to remove all disabled facilities from topcat.json
+        * Currently all four authn plugins are added to topcat.json, this should be changed to only add ones that exist
+    * Misc
+        * Setup Non-LILS facility
+        * Split Topcat Admin user into Data/Admin User
+        * Make pycat.yml more adaptable (eg. pycat version numbers, control which user gets data, clearer args"
 * Selenium
+    * Remove gecko.sh once bug is fixed
     * Allow selenium to rerun even if port is used (eg. autokill ps using port or auto select new port)
     * Add support for other browsers (eg. Chromium, Edge, Safari)
     * Replace time delays in selenium with appropriate wait_until()
-    * Fix chrome launch in selenium (or use chromium)
+    * Fix chrome launch in travis (or use chromium)
     * Auto close failed selenium browsers
     * Add upwards browsing tests
     * Add Globus tests if possible
     * More detailed tests for search and infotabs
-    * Add skips similar to ansible tags   
+    * Add skips similar to ansible tags
+    * Improve Debug Output (eg. detailed log file)   
 * Travis
     * Test Idempotence
     * Get chrome selenium test working
 
 Changelog
 ---------
+
+#### 09/01/18
+* Improved Commenting
+* Download and Uzip tasks moved into separate file 'download.yml'. Condensing four tasks into one with vars
+* Download Directory creation moved to download.yml
+* preplay.yml renamed to startdomain.yml and removed from container playbook
 
 #### 08/01/18
 * topcat.yml now only replaces 'https://' instead of 'https' then replacing transport type back

@@ -1,7 +1,7 @@
 ---
 
-- name: "{{ play_name }}Loading Pre-playbook Check"
-  include: "preplay.yml"
+- name: "{{ play_name }}Starting {{ container_domain }} before tasks"
+  include: "startdomain.yml"
 
 #---
 
@@ -29,32 +29,13 @@
 
 #---Downloading IDS---
 
-- name: "{{ play_name }}Checking {{ ids_zip }} exists"
-  stat:
-    path: "{{ download_dir }}{{ ids_zip }}"
-  register: ip_zip
-
-- name: "Downloading {{ ids_zip }}"
-  get_url:
-    url: "{{ ids_src }}"
-    dest: "{{ download_dir }}"
-  when: ip_zip.stat.exists == false
-
-#---
-
-#---Unzipping IDS---
-
-- name: "{{ play_name }}Checking {{ ids_path }} exists"
-  stat:
-    path: "{{ ids_path }}"
-  register: ip_dir    
-
-- name: "{{ play_name }}Unzipping {{ ids_zip }}"
-  unarchive:
-    src: "{{ download_dir }}{{ ids_zip }}"
-    dest: "{{ user_home }}/"
-    remote_src: yes
-  when: ip_dir.stat.exists == false
+- name: "{{ play_name }}Downloading IDS"
+  include: "download.yml"
+  vars:
+    - download_zip: "{{ ids_zip }}"
+    - download_src: "{{ ids_src }}"
+    - download_path: "{{ ids_path }}"
+    - download_dest: "{{ user_home }}" 
 
 #---
 

@@ -1,0 +1,66 @@
+---
+
+# Most of the plugins have the same basic setup
+# This file condenses the download and unzip tasks into one
+
+
+#---Download Directory---
+
+- name: "{{ play_name }}Checking download directory '{{ download_dir }}' - Creating if non-existent"
+  file:
+    path: "{{ download_dir }}"
+    state: directory
+
+#---Download Zip---
+
+- name: "{{ play_name }}Checking if {{ download_zip }} exists"
+  stat:
+    path: "{{ download_dir }}{{ download_zip }}"
+  become: yes
+  become_user: root
+  become_method: sudo
+  register: dwn_zip
+
+- name: "{{ play_name }}Downloading {{ download_zip }}"
+  get_url:
+    url: "{{ download_src }}"
+    dest: "{{ download_dir }}{{ download_zip }}"
+  when: dwn_zip.stat.exists == false
+
+#---
+
+#---Unzip Container---
+
+- name: "{{ play_name }}Checking if {{ download_path }} exists"
+  stat:
+    path: "{{ download_path }}"
+  become: yes
+  become_user: root
+  become_method: sudo
+  register: dwn_path
+
+- name: "{{ play_name }}Unzipping {{ download_zip }} as user"
+  unarchive:
+    src: "{{ download_dir }}{{ download_zip }}"
+    dest: "{{ download_dest }}"
+    remote_src: yes
+  when:
+    - download_dest != "/root/"
+    - dwn_path.stat.exists == false
+
+- name: "{{ play_name }}Unzipping {{ download_zip }} as root"
+  unarchive:
+    src: "{{ download_dir }}{{ download_zip }}"
+    dest: "/root/"
+    owner: root
+    group: root
+    remote_src: yes
+  become: yes
+  become_user: root
+  become_method: sudo
+  when:
+    - download_dest == "/root/"
+    - dwn_path.stat.exists == false
+
+#---
+

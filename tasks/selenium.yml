@@ -1,5 +1,7 @@
 ---
 
+#---Dependencies---
+
 - name: "{{ play_name }}Installing Dependencies for Yum"
   yum:
     name: "{{ item }}"
@@ -26,7 +28,6 @@
   when:
     - ansible_pkg_mgr == "apt"
 
-
 - name: "{{ play_name }}Installing dependencies with Pip"
   pip:
     name: "{{ item }}"
@@ -38,6 +39,10 @@
     - pyvirtualdisplay
     - selenium
 
+#---
+
+#---Test directory---
+
 - name: "{{ play_name }}Creating test directories"
   file:
     path: "{{ item }}"
@@ -45,6 +50,10 @@
   with_items:
     - "{{ download_dir }}"
     - "{{ test_dir }}"
+
+#---
+
+#---Web drivers---
 
 - name: "{{ play_name }}Downloading Webdrivers"
   get_url:
@@ -63,6 +72,11 @@
     - "{{ geckodriver_zip }}"
     - "{{ chromedriver_zip }}"
 
+#---Files---
+ # There is a bug with geckodriver that soemtimes prevents marionette working since the port can't be declared in selenium
+ # The the workaround for this is to use an executable shell script containing the geckodriver executable and the marionette port CL arg
+ # Keep an eye on the bug here (https://bugzilla.mozilla.org/show_bug.cgi?id=1421766)
+
 - name: "{{ play_name }}Copying Selenium Script and geckodriver workaround script"
   copy:
     src: "{{ role_path }}/files/{{ item.src }}"
@@ -72,6 +86,9 @@
     - { src: topcat_test.py,  mode: "u=rw,g=rw,o=rw" }
     - { src: gecko.sh,        mode: "u=rwx,g=rwx,o=rwx" }
 
+  # In theory these files should be created automatically by geckodriver and travis
+  # But I've had intances where errors have been thrown because they are trying to write to a file that doesn't exist or a file that's owned by a different user
+  # So to be safe I've added this task to create blank files to write to
 - name: "{{ play_name }}Creating Blank files with travis friendly permissions"
   file:
     path: "{{ test_dir }}/{{ item }}"
@@ -81,7 +98,11 @@
     - geckodriver.log
     - topcat_test_output
 
+  # This is the only task that has to be run by ansible since it uses the variables from ansible
+  # All other tasks in this file could, in theory be performed by travis or the selenium script
 - name: "{{ play_name }}Templating Arguments for Selenium Script"
   template:
     src: "{{ role_path }}/files/test_args.txt"
     dest: "{{ test_dir }}/"
+
+#---

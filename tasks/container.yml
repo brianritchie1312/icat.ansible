@@ -1,39 +1,14 @@
 ---
 
-- name: "{{ play_name }}Loading Pre-playbook Check"
-  include: "preplay.yml"
-
-#---
-
 #---Download Container---
 
-- name: "{{ play_name }}Checking if {{ container_zip }} exists"
-  stat:
-    path: "{{ download_dir }}{{ container_zip }}"
-  register: ctr_zip
-
-- name: "{{ play_name }}Downloading {{ container_zip }}"
-  get_url:
-    url: "{{ container_src }}"
-    dest: "{{ download_dir }}{{ container_zip }}"
-  when: ctr_zip.stat.exists == false
-
-#---
-
-#---Unzip Container---
-
-- name: "{{ play_name }}Checking if {{ container_path }} exists"
-  stat:
-    path: "{{ container_path }}"
-  register: ctr_dir
-
-- name: "{{ play_name }}Unzipping {{ container_zip }}"
-  unarchive:
-    src: "{{ download_dir }}{{ container_zip }}"
-    dest: "{{ user_home }}"
-    remote_src: yes
-  when:
-    - ctr_dir.stat.exists == false
+- name: "{{ play_name }}Downloading and Unzipping {{ container_zip }}"
+  include: "download.yml"
+  vars:
+    - download_zip: "{{ container_zip }}"
+    - download_src: "{{ container_src }}"
+    - download_path: "{{ container_path }}"
+    - download_dest: "{{ user_home }}"
 
 #---
 

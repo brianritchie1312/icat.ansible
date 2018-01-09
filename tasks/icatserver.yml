@@ -1,7 +1,7 @@
 ---
 
-- name: "{{ play_name }}Loading Pre-playbook Check"
-  include: "preplay.yml"
+- name: "{{ play_name }}Starting {{ container_domain }} before tasks"
+  include: "startdomain.yml"
 
 #---
 
@@ -14,32 +14,13 @@
 
 #---Downloading ICAT Server---
 
-- name: "{{ play_name }}Checking if {{ icat_zip }} exists"
-  stat:
-    path: "{{ download_dir }}{{ icat_zip }}"
-  register: is_zip
-
-- name: "{{ play_name }}Downloading {{ icat_zip }}"
-  get_url:
-    url: "{{ icat_src }}"
-    dest: "{{ download_dir }}"
-  when: is_zip.stat.exists == false
-
-#---
-
-#---Unzipping Icat Server---
-
-- name: "{{ play_name }}Checking if {{ icat_path }} exists"
-  stat:
-    path: "{{ icat_path }}"
-  register: is_dir
-
-- name: "{{ play_name }}Unzipping {{ icat_zip }}"
-  unarchive:
-    src: "{{ download_dir }}{{ icat_zip }}"
-    dest: "{{ user_home }}/"
-    remote_src: yes
-  when: is_dir.stat.exists == false
+- name: "{{ play_name }}Downloading ICAT server"
+  include: "download.yml"
+  vars:
+    - download_zip: "{{ icat_zip }}"
+    - download_src: "{{ icat_src }}"
+    - download_path: "{{ icat_path }}"
+    - download_dest: "{{ user_home }}"
 
 #---
 

@@ -1,7 +1,7 @@
 ---
 
-- name: "{{ play_name }}Loading Pre-playbook Check"
-  include: "preplay.yml"
+- name: "{{ play_name }}Starting {{ container_domain }} before tasks"
+  include: "startdomain.yml"
 
 #---
 
@@ -111,32 +111,13 @@
 
 #---Downloading Authn---
 
-- name: "{{ play_name }}Checking if {{ authn_zip }} exists"
-  stat:
-    path: "{{ download_dir }}{{ authn_zip }}"
-  register: sa_zip
-
-- name: "{{ play_name }}Downloading {{ authn_zip }}"
-  get_url:
-    url: "{{ authn_src }}"
-    dest: "{{ download_dir }}"
-  when: sa_zip.stat.exists == false
-
-#---
-
-#---Unzipping Authn---
-
-- name: "{{ play_name }}Checking if {{ authn_path }} exists"
-  stat:
-    path: "{{ authn_path }}"
-  register: sa_dir
-
-- name: "{{ play_name }}Unzipping {{ authn_zip }}"
-  unarchive:
-    src: "{{ download_dir }}{{ authn_zip }}"
-    dest: "{{ user_home }}"
-    remote_src: yes
-  when: sa_dir.stat.exists == false
+- name: "{{ play_name }}Downloading"
+  include: "download.yml"
+  vars:
+    - download_zip: "{{ authn_zip }}"
+    - download_src: "{{ authn_src }}"
+    - download_path: "{{ authn_path }}"
+    - download_dest: "{{ user_home }}"
 
 #---
 

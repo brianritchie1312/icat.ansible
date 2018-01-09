@@ -6,7 +6,7 @@ pycat_pkg:
   - - python-argparse
     - python-lxml
 
-pycat_url: "https://icatproject.org/misc/python-icat/download/{{ pycat_zip }}"
+pycat_src: "https://icatproject.org/misc/python-icat/download/{{ pycat_zip }}"
 pycat_zip: "python-icat-{{ pycat_version }}.tar.gz"
 pycat_path: "/root/python-icat-{{ pycat_version }}"
 

@@ -1,7 +1,7 @@
 ---
 
-- name: "{{ play_name }}Loading Pre-playbook Check"
-  include: "preplay.yml"
+- name: "{{ play_name }}Starting {{ container_domain }} before tasks"
+  include: "startdomain.yml"
 
 #---
 
@@ -27,32 +27,13 @@
 
 #---Downloading Storage plugin---
 
-- name: "{{ play_name }}Checking if {{ atorage_zip }} exists"
-  stat:
-    path: "{{ download_dir }}{{ storage_zip }}"
-  register: sp_zip
-
-- name: "{{ play_name }}Downloading '{{ storage_zip }}' to '{{ download_dir }}'"
-  get_url:
-    url: "{{ storage_src }}"
-    dest: "{{ download_dir }}"
-  when: sp_zip.stat.exists == false
-
-#---
-
-#---Unziping Storage Plugin---
-
-- name: "{{ play_name }}Checking if {{ storage_path }} exists"
-  stat:
-    path: "{{ storage_path }}"
-  register: sp_dir
-
-- name: "{{ play_name }}Unziping {{ storage_zip }}"
-  unarchive:
-    src: "{{ download_dir }}{{ storage_zip }}"
-    dest: "{{ user_home }}/"
-    remote_src: yes
-  when: sp_dir.stat.exists == false
+- name: "{{ play_name }}Downloading IDS Storage Plugin"
+  include: "download.yml"
+  vars:
+    - download_zip: "{{ storage_zip }}"
+    - download_src: "{{ storage_src }}"
+    - download_path: "{{ storage_path }}"
+    - download_dest: "{{ user_home }}"
 
 #---
 

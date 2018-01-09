@@ -32,9 +32,3 @@
     - check_ctr.stat.exists == true
     - "ctr_dom in check_ctr_doms.stdout"
 
-#---Download Directory---
-
-- name: "{{ play_name }}Checking download directory '{{ download_dir }}' - Creating if non-existent"
-  file:
-    path: "{{ download_dir }}"
-    state: directory

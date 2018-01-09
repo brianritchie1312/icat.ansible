@@ -41,7 +41,7 @@
 #---Update Package Lists---
  # This is not explicitly neccesary but some machines may require it
 
-- name: Updating Package Lists for Yum
+- name: "{{ play_name }}Updating Package Lists for Yum"
   yum:
     name: '*'
     state: latest
@@ -55,7 +55,7 @@
     - root
     - yum
 
-- name: Updating Package Cache for Apt
+- name: "{{ play_name }}Updating Package Cache for Apt"
   apt:
     update_cache: yes
   when:
@@ -127,6 +127,8 @@
     container_zip: "{{ glassfish_zip }}"
     container_path: "{{ glassfish_path }}"
     container_version: "{{ glassfish_version }}"
+  when:
+    - container_name == "glassfish"
   tags:
     - always
 
@@ -156,7 +158,9 @@
 #---
 
 #---Authentication---
- # The same playbook will be run for each plugin so you may see DB tasks being skipped even if set to true, don't worry, the playbook will be run again and the relevent plugin will be run
+ # The same playbook will be run for each plugin so you may see DB tasks being skipped even if set to true
+ # don't worry, the playbook will be run again and the relevent plugin will be run.
+ # For Example: If all four plugins are enabled the playbook will run four times, once for each plugin
 
 - name: "{{ play_name }}Loading Simple Authenticaton install"
   include: "authn.yml"
@@ -321,6 +325,7 @@
 
 #---Cleanup---
  # This is meant to reduce some clutter, most files are downloaded to the download_dir but some scripts need to be in specific directories when run. This moves them back to download_dir after running.
+ # Any files you wish to move to the download_dir should be added to the with_items list below
 
 - name: "Cleanup : Moving all uneeded files to {{ download_dir }}"
   command: "mv -f {{ item }} {{ download_dir }}"
@@ -338,6 +343,8 @@
 
 #---Selenium---
  # This step is only needed for travis/selenium testing
+ # It does NOT run the selenium test, or install any browsers
+ # It currently just creates a directory, downloads webdrivers, copies the script and templates the args file
 
 - name: "{{ play_name }}Loading Selenium Setup"
   include: "selenium.yml"
