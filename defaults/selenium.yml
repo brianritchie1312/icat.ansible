@@ -1,6 +1,6 @@
 ---
 
-test_dir: "{{ download_dir }}/topcat_tests"
+test_dir: "{{ user_home }}/topcat_tests"
 
 geckodriver_version: 0.19.1
 geckodriver_src: "https://github.com/mozilla/geckodriver/releases/download/v{{ geckodriver_version }}/{{ geckodriver_zip }}"

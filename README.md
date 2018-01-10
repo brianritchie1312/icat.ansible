@@ -226,6 +226,11 @@ TODO
 Changelog
 ---------
 
+#### 10/01/18(2)
+* Minor Output Improvements in selenium script
+* selenium.yml installs firefox and chrome if variable set in config.yml
+* Removed firefox, chrome, pyvirtual display install from travis
+
 #### 10/01/18
 * Improved Commenting
 * Disabled authn plugins are now removed from topcat.json, the solution is imperfect but functional

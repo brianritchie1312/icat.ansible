@@ -4,11 +4,10 @@
  # Geckodriver excutable should be bash script with '/path/to/executable "$@" --marionette-port 2828' INSIDE
  # Python2.7 must be withn system PATH
  # pyvirtualdisplay and xvfb are needed for virtual displays
- # If --user-admin is not included, --user-data will be assumed to be admin
 
 # TODO
-    # If possible, no reliance on ansible
-      # Install chosen browser
+    # If possible, no reliance on ansible (except args file)
+      # Install chosen browsers
       # Install webdrivers
       # Install selenium, pyvirtualdisplay, etc.
     # Replace time.sleep with reliable wait_until
@@ -23,10 +22,6 @@
 
 # Print, this has been imported to allow 'print("string", end="")'
 from __future__ import print_function
-
-# Path
-#from __future__ import pathlib
-# from pathlib2 import Path
 
 # Selenium
 from selenium import webdriver
@@ -167,6 +162,8 @@ parser.add_argument('--log-level',
 #                          ])
 
 # args = parser.parse_args(['--help'])
+
+# Uncomment the line below line when using actual CLI arguments
 
 args = parser.parse_args()
 
@@ -502,7 +499,7 @@ def browse_click(level, target, element):
     if (element_exists('i[translate="ENTITIES.' + target.upper() + '.NAME"]') == True):
         print(txt.Success)
     else:
-        print(txt.Failed + " ( Can't find + on page:" + "ENTITIES." + target.upper() + ".NAME" + " | on page: " + browser.current_url + ")")
+        print(txt.Failed + " ( Can't find 'ENTITIES." + target.upper() + ".NAME' | on page: " + browser.current_url + ")")
 #-END-
 
 # Click non-active section of row and check if info tab appears
@@ -531,7 +528,7 @@ def datanav_infotab(level, url):
 
 # Test Modules
   # These modules are mainly for organisation and do not affect the code itself, except in naming conventions
-    #--Browser--
+    #--URL--
         # Open browser and navigate to url
     #--Login--
         # Attempt to login as specific user
@@ -545,12 +542,14 @@ def datanav_infotab(level, url):
         # Check adding to, removing from and clearing cart works as expected
     #--Download--
         # Download via action, https cart and globus. Check everything works as expected (eg. zip rename, download method)
+    #--Browsers--
+        # Configure and Load each individual browser
     #--Other--
         # Other tests that may need to be added, check silvia's checklist
     #--Master--
         # The function that calls all the others
 
-#---Browser---------------------------------------------------------------------
+#---URL---------------------------------------------------------------------
 
 #-Navigate to Topcat home page and check if redirected to login
 def test_url():
@@ -948,7 +947,7 @@ def test_download_cart():
 
 # Check if download is marked as 'Availiable' is downloads window
 def test_download_available():
-    print("Download Is Available in Downloads: ", end='')
+    print("Download marked as 'Available' in Downloads: ", end='')
     if (element_exists(obj_downloads_icon)):
 
         # If downloads not already open
@@ -1153,7 +1152,7 @@ def test_browser():
     # User without access to test date (if included in CLI args)
     if (args.user_nodata != None):
         print("")
-        print(txt.SUBHEADING + '[ No Data User Test ]' + txt.BASIC)
+        print(txt.SUBHEADING + '[ No-Data User Test ]' + txt.BASIC)
         test_login(user_nodata_mech, user_nodata_name, user_nodata_pass)
         #---Nav---
         test_nav_toolbar_admin(False)

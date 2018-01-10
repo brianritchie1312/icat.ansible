@@ -2,6 +2,9 @@
 
 #---Dependencies---
 
+#-Xvfb-
+ # Used by pyvirtual display
+
 - name: "{{ play_name }}Installing Dependencies for Yum"
   yum:
     name: "{{ item }}"
@@ -10,7 +13,6 @@
   become_user: root
   become_method: sudo
   with_items:
-    - firefox
     - xorg-x11-server-Xvfb
   when:
     - ansible_pkg_mgr == "yum"
@@ -23,10 +25,12 @@
   become_user: root
   become_method: sudo
   with_items:
-    - firefox
     - xvfb
   when:
     - ansible_pkg_mgr == "apt"
+
+#-pyvirtualdisply-
+ # Used when GUI is unavailiable
 
 - name: "{{ play_name }}Installing dependencies with Pip"
   pip:
@@ -38,6 +42,62 @@
   with_items:
     - pyvirtualdisplay
     - selenium
+
+#---
+
+
+#---Browsers--
+
+#-Firefox-
+
+- name: "{{ play_name }}Installing Firefox"
+  package:
+    name: firefox
+    state: present
+  become: yes
+  become_user: root
+  become_method: sudo
+  when:
+    - firefox == true
+
+
+#-Chrome-
+
+- name: "{{ play_name }}Get Key for chrome for apt"
+  apt_key: 
+    url: https://dl-ssl.google.com/linux/linux_signing_key.pub
+    state: present
+  become: yes
+  become_user: root
+  become_method: sudo
+  when:
+    - ansible_pkg_mgr == 'apt'
+    - chrome == true
+
+- name: "{{ play_name }}Add chrome repo to apt"
+  apt_repository:
+    repo: "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main"
+    filename: "google-chrome"
+    state: present
+    update_cache: yes
+  become: yes
+  become_user: root
+  become_method: sudo
+  when:
+    - ansible_pkg_mgr == 'apt'
+    - chrome == true
+
+- name: "{{ play_name }}Install Chrome"
+  apt:
+    name: google-chrome-stable
+    state: present
+  become: yes
+  become_user: root
+  become_method: sudo
+  when:
+    - ansible_pkg_mgr == 'apt'
+    - chrome == true
+
 
 #---
 
@@ -54,6 +114,7 @@
 #---
 
 #---Web drivers---
+ # This will download webdrivers for all supported browser regardless if browser is installed or not
 
 - name: "{{ play_name }}Downloading Webdrivers"
   get_url:
@@ -72,6 +133,7 @@
     - "{{ geckodriver_zip }}"
     - "{{ chromedriver_zip }}"
 
+
 #---Files---
  # There is a bug with geckodriver that soemtimes prevents marionette working since the port can't be declared in selenium
  # The the workaround for this is to use an executable shell script containing the geckodriver executable and the marionette port CL arg
@@ -87,8 +149,8 @@
     - { src: gecko.sh,        mode: "u=rwx,g=rwx,o=rwx" }
 
   # In theory these files should be created automatically by geckodriver and travis
-  # But I've had intances where errors have been thrown because they are trying to write to a file that doesn't exist or a file that's owned by a different user
-  # So to be safe I've added this task to create blank files to write to
+  # But I've had instances where errors have been thrown because they are trying to write to a file that doesn't exist or a file that's owned by a different user
+  # So to be safe I've added this task to create blank files with rw permisions for everyone to write to
 - name: "{{ play_name }}Creating Blank files with travis friendly permissions"
   file:
     path: "{{ test_dir }}/{{ item }}"

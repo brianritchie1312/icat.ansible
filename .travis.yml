@@ -26,16 +26,11 @@ dist: trusty
 
  #--Before Install--
 
-addons:
-  firefox: latest
-  chrome: stable
-
  #--Install--
 
 install:
   - pip install ansible
   - pip install selenium
-  - pip install pyvirtualdisplay
 
  #--Before Script--
 
@@ -61,7 +56,6 @@ script:
 # Reduce changed tasks to lowest possible number (0 if possible) then check that changed value does not exceed that, fail if it does 
 #
 # Interface Test
-# Make this variable
   - "cd /home/user1/icatdownloads/topcat_tests"
   - "cat test_args.txt | sudo xargs python topcat_test.py | tee topcat_test_output"
   - "cat topcat_test_output | grep Failed && exit 1 || exit 0"
