@@ -5,6 +5,9 @@
 
 #---
 
+#---Setting Variables---
+ # This file is run by each plugin so each plugin will set variables fro itself before running
+
 - name: "{{ play_name }}Setting Variables for Authn Simple"
   set_fact:
     authn_version: "{{ simple_version }}"
@@ -30,17 +33,23 @@
     authn_cnf_list: "{{ container_cnf_list }}"
   when: authn_plugin == "anon"
 
-#---
 
+# It seems that, despite the documentation saying to use 'db.vendor', older versions still prefer 'db.target'
+#
+  # The container block in *setup.properties is slightly different in DB versions older than 2.0.0
+  # It has a variable called 'db.vendor' instead of 'db.target', it's the same value but a different name
 - name: "{{ play_name }}Replacing target with vendor for DB versions older than 2.0.0"
   set_fact:
-    authn_cnf_list: "{{ authn_cnf_list }} + {{ mysql_cnf_list | replace('target','vendor') }}"
+    authn_cnf_list: "{{ authn_cnf_list | replace('target','vendor') }}"
   when:
     - authn_plugin == "db"
     - db_version | version_compare('2.0.0', '<') == true
 
+
+#---
+
 #---Changing Sub Domains for older versions---
- # Older versions of these plugins are hosted on 'www.icatproject.org' not 'repo.icatproject.org'
+ # Older versions of these plugins are hosted on 'www.icatproject.org/mvn/' not 'repo.icatproject.org'
  # This corrects that
 
 - name: "{{ play_name }}Reseting URL variable"
@@ -159,6 +168,8 @@
 #---Setup Users---
 
 #--Simple--
+ # Simple authentication user setup is...simple
+ # This gathers a list of usernames from config.yml then stores them a single string and pastes it into setup.properties
 
 - name: "{{ play_name }}Gathering User list for Authn Simple (Simple Only)"
   set_fact:
@@ -192,6 +203,8 @@
 
 
 #--DB--
+ # DB user setup also takes a list of usernames and passwords from config.yml then put them into file
+ # The file is then imported into the icat database and deleted
 
 - name: "{{ play_name }}Checking if PASSWD.text exists"
   stat:
@@ -227,6 +240,7 @@
   tags:
     - db
 
+ # This will delete all users before importing to prevent old users still having access
 - name: "{{ play_name }}Deleting PASSWD table if requested (DB Only)"
   lineinfile:
     path: "{{ download_dir }}passwd.sql"
@@ -239,6 +253,7 @@
   tags:
     - db
   
+  # This will only delete duplicate users preventing multiple users under the same name causing errors
 - name: "{{ play_name}}Deleting duplicate users in PASSWD if requested (DB Only)"
   lineinfile:
     path: "{{ download_dir }}passwd.sql"
@@ -274,6 +289,8 @@
     - db
 
 #--LDAP--
+ # I don't know how ldap works so user setup for ldap will have to go here in future
+ # For now, these variables look important so they will be modified in case someone who knows what they mean wishes to
 
 - name: "{{ play_name }}Adding Ldap server to {{ authn_prop }} (LDAP Only)"
   lineinfile:
@@ -303,6 +320,7 @@
 #---
 
 #--Quick Test--
+ # Check the url of the plugin to compare version numbers
 
 - name: "{{ play_name }}Checking Installed Authenticator Version"
   command: "curl {{ icat_url }}/authn.{{ authn_plugin }}/version"

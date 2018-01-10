@@ -201,7 +201,6 @@ TODO
         * Fix Storage setup script not working (or use conditional fail)
         * Consider replacing env_path with shell scripts for sourcing
     * topcat.json
-        * Currently topcat.json is modified to add all authn plugins to list in topcat. This should be replaced to only include enabled plugins.
         * Create task to remove all disabled facilities from topcat.json
         * Currently all four authn plugins are added to topcat.json, this should be changed to only add ones that exist
     * Misc
@@ -226,6 +225,10 @@ TODO
 
 Changelog
 ---------
+
+#### 10/01/18
+* Improved Commenting
+* Disabled authn plugins are now removed from topcat.json, the solution is imperfect but functional
 
 #### 09/01/18
 * Improved Commenting

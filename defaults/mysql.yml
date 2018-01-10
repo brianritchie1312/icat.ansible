@@ -33,6 +33,7 @@ mysql_cnf_eng: InnoDB
 
 mysql_secure: mysql_secure_installation
 
+# This is not used by mysql.yml but is used by authn.yml, icatserver.yml and topcat.yml
 mysql_cnf_list:
    - - { regexp: '^db.target',   line: 'db.target      = mysql' }
      - { regexp: '^db.driver',   line: 'db.driver      = com.mysql.jdbc.jdbc2.optional.MysqlDataSource' }

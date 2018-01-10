@@ -122,24 +122,97 @@
   when:
     - topcat_version | version_compare('2.3.0','>=') == true
 
-#---JSON AUTHENTICATORS---    
+#---
 
-# TODO create tasks to remove any disabled authenticators
+#---JSON AUTHENTICATORS---    
+ # Authns are added then removed because using lineinfile, to add lines, will only replace the last instance
+ # If multiple facilities are present then only the last will change
+ # Pending any methods of guaranteeing the correct facility is modified, this will change all of them
+
+#-Add all plugins to topcat.json-
 
 - name: "{{ play_name }}Adding Authentication types to {{ topcat_json }}"
   replace:
     path: "{{ topcat_path }}/{{ topcat_json }}"
     regexp: '"authenticationTypes": \[(?s)(.*?)\]'
     replace: '"authenticationTypes": [
-\n                { "title": "Simple", "plugin": "simple" },
-\n                { "title": "DB",     "plugin": "db" },
-\n                { "title": "LDAP",   "plugin": "ldap" },
+\n                { "title": "Simple", "plugin": "simple" }
+\n                { "title": "DB",     "plugin": "db" }
+\n                { "title": "LDAP",   "plugin": "ldap" }
 \n                { "title": "Anon",   "plugin": "anon" }
 \n            ]'    
 
+
+#-Remove unused plugins-
+ # TODO - Use better regexp
+
+- name: "{{ play_name }}Removing Authn Simple from topcat.json if not enabled"
+  replace:
+    path: "{{ topcat_path }}/{{ topcat_json }}"
+    regexp: '\n                { "title": "Simple", "plugin": "simple" }'
+    replace: ''
+  when:
+    - authn_simple == false
+
+- name: "{{ play_name }}Removing Authn DB from topcat.json if not enabled"
+  replace:
+    path: "{{ topcat_path }}/{{ topcat_json }}"
+    regexp: '\n                { "title": "DB",     "plugin": "db" }'
+    replace: ''
+  when:
+    - authn_db == false
+
+- name: "{{ play_name }}Removing Authn LDAP from topcat.json if not enabled"
+  replace:
+    path: "{{ topcat_path }}/{{ topcat_json }}"
+    regexp: '\n                { "title": "LDAP",   "plugin": "ldap" }'
+    replace: ''
+  when:
+    - authn_ldap == false
+
+- name: "{{ play_name }}Removing Authn Anon from topcat.json if not enabled"
+  replace:
+    path: "{{ topcat_path }}/{{ topcat_json }}"
+    regexp: '\n                { "title": "Anon",   "plugin": "anon" }'
+    replace: ''
+  when:
+    - authn_anon == false
+
+
+#-Add commas-
+ # This will add a comma to each plugin if the plugins after it exist
+ # This is an imperfect solution as it requires the four plugins to be in a specific order 
+
+- name: "{{ play_name }}Adding comma after Simple if other plugins are installed"
+  replace:
+    path: "{{ topcat_path }}/{{ topcat_json }}"
+    regexp: '"plugin": "simple" }'
+    replace: '"plugin": "simple" },'
+  when:
+    - authn_simple == true
+    - ( authn_db == true ) or ( authn_ldap == true ) or ( authn_anon == true )
+
+- name: "{{ play_name }}Adding comma after DB if LDAP/Anon plugins are installed"
+  replace:
+    path: "{{ topcat_path }}/{{ topcat_json }}"
+    regexp: '"plugin": "db" }'
+    replace: '"plugin": "db" },'
+  when:
+    - authn_db == true
+    - ( authn_ldap == true ) or ( authn_anon == true )
+
+- name: "{{ play_name }}Adding comma after LDAP if other plugins are installed"
+  replace:
+    path: "{{ topcat_path }}/{{ topcat_json }}"
+    regexp: '"plugin": "ldap" }'
+    replace: '"plugin": "ldap" },'
+  when:
+    - authn_ldap == true
+    - authn_anon == true
+
 #---
 
-#---Install---
+#---Content Folder---
 
 - name: "{{ play_name }}Copying content.example for version newer than 2.3.0"
   command: cp {{ content_path }}.example {{ content_path }} -r
@@ -179,4 +252,3 @@
     - topcat_version not in curl_topcat.stdout
 
 #---
-

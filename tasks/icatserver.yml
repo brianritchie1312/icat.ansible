@@ -5,6 +5,10 @@
 
 #---
 
+#---Changing names for version older than 4.9.0---
+ # Older version use 'icat.properties' and 'icat-setup.properties'
+ # Newer versions use 'run.properties' and 'setup.properties'
+
 - name: "{{ play_name }}Changing filenames for versions older than 4.9.0"
   set_fact:
     icat_setup: icat-setup.properties
@@ -154,6 +158,7 @@
     replace: "!authn.simple"
   when: authn_simple == false
 
+ # Restful plugins uses urls instead of jndi, 2.0.0 is the first restful version of authn simple
 - name: "{{ play_name }}Replacing authn.simple.url with authn.simple.jndi for versions before 2.0.0"
   lineinfile:
     path: "{{ icat_path }}/{{ icat_prop }}"
@@ -180,6 +185,7 @@
     replace: "!authn.db"
   when: authn_db == false
 
+  # Restful plugins uses urls instead of jndi, DB does not yet have a restful version (09/01/18)
 - name: "{{ play_name }}Replacing authn.db.url with authn.db.jndi"
   lineinfile:
     path: "{{ icat_path }}/{{ icat_prop }}"
@@ -188,7 +194,7 @@
   when:
     - authn_db == true
     - db_version | version_compare('2.0.0','<') == true
-# Uncomment when earliest restful version is known
+# Uncomment when restful version known
 
 #--
 

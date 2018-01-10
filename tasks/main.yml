@@ -358,3 +358,14 @@
     - user
     - selenium
 
+#---
+
+#---End---
+
+- name: "Install Complete"
+  debug:
+    msg:
+      - "Install Complete"
+      - "Go to '{{ icat_url }}' to test."
+  tags:
+    - end
