@@ -99,14 +99,16 @@ If you prefer to use your own playbook, follow steps 1-3 above then
 
 ##### Here are some useful options to add onto command line
 
-| Option                            | Function |
-|:---------------------------------:|:--------:|
-| -vvvv                             | Add extra verbosity, increase output text (useful for debugging) |
-| --list-tags                       | List tags used in role. |
-| --tags "tag1, tag2,..."           | Only play tasks tagged with whatever you put in the quotes (use comma separation for multiple tags). |
-| --skip-tags "tag1, tag2,..."      | Play all tasks except those in the quotes. Some tasks have the 'always' tag, meaning they will always be run unless `--skip-tags "always"` is used, regardless of how other tags are setup and skipped. |
-| --diff                            | Detailed look at what changes have been made to files. |
-| --extra-vars "var_name=var_value" | Overwrite variables from the command line , see 'presets' below. Use a space separated list. |
+| Option                              | Function |
+|:-----------------------------------:|:--------:|
+| -vvvv                               | Add extra verbosity, increase output text (useful for debugging) |
+| --list-tags                         | List tags used in role. |
+| --tags "tag1, tag2,..."             | Only play tasks tagged with whatever you put in the quotes (use comma separation for multiple tags). |
+| --skip-tags "tag1, tag2,..."        | Play all tasks except those in the quotes. Some tasks have the 'always' tag, meaning they will always be run unless `--skip-tags "always"` is used, regardless of how other tags are setup and skipped. |
+| --diff                              | Detailed look at what changes have been made to files. |
+| -e, --extra-vars "varname=varvalue" | Overwrite variables from the command line , see 'presets' below. Use a space separated list. Note Boolean values don't seem to work in this format. |
+| -e '{varname: varvalue}'            | Same as above but boolean values should work in this format. However in this format every variable needs it's own '-e' |
+*NOTE: if you need a large number of extra vars, consider using a preset, see below.*
 
 You can find more here: https://www.mankier.com/1/ansible-playbook
 
@@ -122,6 +124,14 @@ To use them simply add this to the command line.
 ```Shell
 --extra-vars "@presets/filename.yml"
 ```
+
+For example:
+```Shell
+--extra-vars "@presets/travis_4.9.1.yml"
+```
+
+Will run the installer with variables specialised for travis testing icat.server 4.9.1
+
 
 *Note: These will only overwrite the variables that are specified, any variables not in the file will be taken from elsewhere.*
 
@@ -171,6 +181,7 @@ These configurations have only been tested to a basic level (ie. they run withou
 |Default_4.9.1 | Sl6/Ubuntu 14.04 |2.3.1.0  |1.8.0 |5.1.73 |--         |4.1.2.174 |2.0.0         |2.0.0     |--          |--          |1.1.0   |4.9.1 |1.8.0|1.4.0        |2.3.6   |
 |Travis_4.9.1  | Ubuntu 14.04     |2.4.1.0  |1.8.0 |5.6    |--         |4.1.2.174 |2.0.0         |2.0.0     |2.0.0       |2.0.0       |1.1.0   |4.9.1 |1.8.0|1.4.0        |2.3.6   |
 |Default_4.8.0 | SL6/Ubuntu 14.04 |2.3.1.0  |1.8.0 |5.1.73 |4.0        |--        |1.1.0         |1.2.0     |1.2.0       |1.1.1       |--      |4.8.0 |1.7.0|1.3.3        |2.2.1   |
+*NOTE: default_4.8.0 seems to have been recently broken, python-icat won't work with and you'll need to add `--skip-tags "check"` to skip the url checks at the end of each plugin (some older plugins don't have '/version' pages - see below)*
 
 
 Notes
@@ -185,6 +196,7 @@ Notes
 * Some tasks involve finding a file with partial name instead of an absolute path. In these cases it will select the first matching file. For example If you have multiple 'mysql-connector-java-*.jar' files in /usr/share/java it will only use the first one. 
 * Sometimes adding boolean variables to --extra-vars cause them to return false even when set to true, assigning the value in a preset file seems to work anyway.
 * Topcat_test assumes all cart downloads are '.zip's
+* Some older versions of plugins don't seem to have '/{plugin}/version' urls or have different ones, so if running older versions (eg. default_4.8.0) you may need to add `--skip-tags "check"` to the command line
 
 TODO
 ----
@@ -197,6 +209,7 @@ TODO
         * Improve feedback (eg. run automatic tests and report back with the debug module)
         * Improve Idempotence
         * Modify regexp to be more robust (eg. use '^' and double check escape slashes)
+        * Fix older version problems (ie. url checks, python-icat), see notes
     * Workarounds
         * Fix Storage setup script not working (or use conditional fail)
         * Consider replacing env_path with shell scripts for sourcing
@@ -207,6 +220,9 @@ TODO
         * Setup Non-LILS facility
         * Split Topcat Admin user into Data/Admin User
         * Make pycat.yml more adaptable (eg. pycat version numbers, control which user gets data, clearer args"
+        * Figure out ids.storage url check (ie. /{plugin}/version)
+        * Figure out how to test older plugins without url '/version' or figure out the earliest version with them and skip test on earlier versions
+        * Install Chrome with Yum
 * Selenium
     * Remove gecko.sh once bug is fixed
     * Allow selenium to rerun even if port is used (eg. autokill ps using port or auto select new port)
@@ -219,12 +235,36 @@ TODO
     * More detailed tests for search and infotabs
     * Add skips similar to ansible tags
     * Improve Debug Output (eg. detailed log file)   
+    * Browse Proposal->Invesigation sometimes returns failed, fix
+    * For file existence check, add wait/timeout instead of waiting a fixed amount of time.
 * Travis
     * Test Idempotence
     * Get chrome selenium test working
 
 Changelog
 ---------
+
+#### 11/01/18
+* Renamed yml files for organisation purposes. (The fact that the alphabetical order is slightly different to the order they are run really annoys me)
+    * 'main.yml' is unchanged, it's name is important
+    * Root installed depencies start with 'dep_'
+    * User installed plugins and container start with 'setup_'
+    * Testdata and selenium start with 'test_'
+    * Tasks included in multiple yml files start with 'include_'
+    * 'lucene' is now 'icat_lucene'
+    * 'icat' is now 'icat_server'
+    * 'ids' is now 'ids_server'
+    * 'storage' is now 'ids_storage'
+* Renamed high level variables (those in config.yml) to similar pattern from above. Lower level variables are unchanged and considering how tedious it was to change the high level ones, they'll probably stay that way
+    * 'lucene' is now 'icat_lucene'
+    * 'icat' is now 'icat_server'
+    * 'ids' is now 'ids_server'
+    * 'storage' is now 'ids_storage'
+* Corrected some missing variables
+* Added 'check' tag to skip url checks (some older plugins don't seem to have '/version' urls)
+* Readded 'your facility...' replaced by fac_short_name in topcat.json, it's only needed in older versions but is safe to leave in for newer versions
+* Improved Readme
+* Removed old utils.yml
 
 #### 10/01/18(2)
 * Minor Output Improvements in selenium script

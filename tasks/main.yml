@@ -74,7 +74,7 @@
  # Only needed if java version < 1.8.0
 
 - name: "{{ play_name }}Loading Java Install"
-  include: java.yml
+  include: "dep_java.yml"
   when:
     - java == true
   vars:
@@ -88,7 +88,7 @@
 #---Install MySQL---
 
 - name: "{{ play_name }}Loading MySQl Install and Config"
-  include: "mysql.yml"
+  include: "dep_mysql.yml"
   when:
     - mysql == true
   vars:
@@ -115,9 +115,6 @@
 
 #---
 
-# All plays from this point on will run preplay.yml before it's own tasks
- # This starts glassfish domain if it exists and is not running
- # And creates download_dir if non-existent
 
 #---Container---
 
@@ -144,7 +141,7 @@
     - always
 
 - name: "{{ play_name }}Loading {{ container_name | title }} install" 
-  include: "container.yml" 
+  include: "setup_container.yml" 
   become: yes
   become_user: "{{ user_name }}"
   when:
@@ -163,7 +160,7 @@
  # For Example: If all four plugins are enabled the playbook will run four times, once for each plugin
 
 - name: "{{ play_name }}Loading Simple Authenticaton install"
-  include: "authn.yml"
+  include: "setup_authn.yml"
   become: yes
   become_user: "{{ user_name }}"
   vars:
@@ -178,7 +175,7 @@
     - simple
 
 - name: "{{ play_name }}Loading DB Authenticaton install"
-  include: "authn.yml"
+  include: "setup_authn.yml"
   become: yes
   become_user: "{{ user_name }}"
   vars:
@@ -193,7 +190,7 @@
     - db
 
 - name: "{{ play_name }}Loading LDAP Authenticaton install"
-  include: "authn.yml"
+  include: "setup_authn.yml"
   become: yes
   become_user: "{{ user_name }}"
   vars:
@@ -208,7 +205,7 @@
     - ldap
 
 - name: "{{ play_name }}Loading Anon Authenticaton install"
-  include: "authn.yml"
+  include: "setup_authn.yml"
   become: yes
   become_user: "{{ user_name }}"
   vars:
@@ -227,13 +224,13 @@
 #---Lucene---
 
 - name: "{{ play_name }}Loading Lucene Install"
-  include: "lucene.yml"
+  include: "setup_icat_lucene.yml"
   become: yes
   become_user: "{{ user_name }}"
   vars:
-    play_name: "Lucene ({{ lucene_version}}) : "
+    play_name: "ICAT Lucene ({{ icat_lucene_version}}) : "
   when:
-    - lucene == true
+    - icat_lucene == true
   tags:
     - user
     - lucene
@@ -242,13 +239,13 @@
 #---ICATServer---
 
 - name: "{{ play_name }}Loading ICAT server install"
-  include: "icatserver.yml"
+  include: "setup_icat_server.yml"
   become: yes
   become_user: "{{ user_name }}"
   vars:
-    play_name: "ICAT Server ({{ icat_version }}) : "
+    play_name: "ICAT Server ({{ icat_server_version }}) : "
   when:
-    - icat == true
+    - icat_server == true
   tags:
     - user
     - icat
@@ -259,13 +256,13 @@
  # Setup Script sometimes returns fatal errors (currently ignored as purpose is still achieved)
 
 - name: "{{ play_name }}Loading Storage Plugin Install"
-  include: "storage.yml"
+  include: "setup_ids_storage.yml"
   become: yes
   become_user: "{{ user_name }}"
   vars:
-    play_name: "IDS Storage ({{ storage_version }}) : "
+    play_name: "IDS Storage ({{ ids_storage_version }}) : "
   when:
-    - storage == true
+    - ids_storage == true
   tags:
     - user
     - storage
@@ -275,13 +272,13 @@
 #---IDS---
 
 - name: "{{ play_name }}Loading IDS Install"
-  include: "ids.yml"
+  include: "setup_ids_server.yml"
   become: yes
   become_user: "{{ user_name }}"
   vars:
-    play_name: "IDS ({{ ids_version }}) : "
+    play_name: "IDS ({{ ids_server_version }}) : "
   when:
-    - ids == true
+    - ids_server == true
   tags:
     - user
     - ids
@@ -291,7 +288,7 @@
 #---Topcat Interface---
 
 - name: "{{ play_name }}Loading TopCat Install"
-  include: "topcat.yml"
+  include: "setup_topcat.yml"
   become: yes
   become_user: "{{ user_name }}"
   vars:
@@ -308,7 +305,7 @@
  # Ingest script currently forced to timeout after 60 secs otherwise it would run for ~17mins (replace with smaller file)
 
 - name: "{{ play_name }}Loading Python Icat Install"
-  include: "pycat.yml"
+  include: "test_ingest_pycat.yml"
   become: yes
   become_user: "{{ user_name }}"
   vars:
@@ -347,7 +344,7 @@
  # It currently just creates a directory, downloads webdrivers, copies the script and templates the args file
 
 - name: "{{ play_name }}Loading Selenium Setup"
-  include: "selenium.yml"
+  include: "test_selenium.yml"
   become: yes
   become_user: "{{ user_name }}"
   vars:

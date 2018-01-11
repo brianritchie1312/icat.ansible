@@ -1,0 +1,10 @@
+---
+
+lucene_src: "https://repo.icatproject.org/repo/org/icatproject/icat.lucene/{{ icat_lucene_version }}/{{ lucene_zip }}"
+lucene_zip: "icat.lucene-{{ icat_lucene_version }}-distro.zip"
+lucene_path: "{{ user_home }}/icat.lucene"
+
+lucene_setup: setup.properties
+lucene_prop: run.properties
+
+lucene_dir: "{{ user_home }}/icat/data/lucene"

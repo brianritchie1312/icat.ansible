@@ -1,0 +1,11 @@
+---
+
+ids_src: "https://{{ sub_domain }}.icatproject.org/{{ url_mvn }}repo/org/icatproject/ids.server/{{ ids_server_version }}/{{ ids_zip }}"
+ids_zip: ids.server-{{ ids_server_version }}-distro.zip
+ids_path: "{{ user_home }}/ids.server"
+
+# These will be automatically changed for older versions
+ids_setup: setup.properties
+ids_prop: run.properties
+
+two_level: false

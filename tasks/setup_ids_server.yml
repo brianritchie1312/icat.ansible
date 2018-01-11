@@ -1,7 +1,7 @@
 ---
 
 - name: "{{ play_name }}Starting {{ container_domain }} before tasks"
-  include: "startdomain.yml"
+  include: "include_startdomain.yml"
 
 #---
 
@@ -10,27 +10,27 @@
     sub_domain: repo
     url_mvn: 
   when:
-    - ids_version | version_compare('1.7.0', '>=') == true
+    - ids_server_version | version_compare('1.7.0', '>=') == true
 
 - name: "{{ play_name }}Changing URL for versions older than 1.7.0"
   set_fact:
     sub_domain: www
     url_mvn: mvn/
   when:
-    - ids_version | version_compare('1.7.0', '<') == true
+    - ids_server_version | version_compare('1.7.0', '<') == true
 
 - name: "{{ play_name }}Changing Filenames for versions older than 1.8.0"
   set_fact:
     ids_setup: ids-setup.properties
     ids_prop: ids.properties
   when:
-    - ids_version | version_compare('1.8.0', '<') == true
+    - ids_server_version | version_compare('1.8.0', '<') == true
 
 
 #---Downloading IDS---
 
 - name: "{{ play_name }}Downloading IDS"
-  include: "download.yml"
+  include: "include_download.yml"
   vars:
     - download_zip: "{{ ids_zip }}"
     - download_src: "{{ ids_src }}"
@@ -68,7 +68,7 @@
     line: libraries=ids.storage_file*.jar
     state: present
   when:
-    - storage == true
+    - ids_storage == true
 
 #---
 
@@ -113,7 +113,7 @@
     - { regexp: "plugin.main.dir",    line: "plugin.main.dir = {{ dir_main }}" }
     - { regexp: "plugin.archive.dir", line: "plugin.archive.dir = {{ dir_archive }}" }
   when:
-    - storage_version | version_compare('1.4.0','>=') == true
+    - ids_storage_version | version_compare('1.4.0','>=') == true
 
 - name: "{{ play_name }}Disabling archive"
   replace:
@@ -149,16 +149,20 @@
 - name: "{{ play_name }}Checking Installed IDS Version"
   command: "curl {{ icat_url }}/ids/version"
   register: curl_ids
+  tags:
+    - check
 
 - name: "{{ play_name }}Failing If IDS Output Incorrect"
   fail:
     msg:
       - 'IDS has a problem.'
-      - 'Expected stdout: "{"version":"{{ ids_version }}"}"'
+      - 'Expected stdout: "{"version":"{{ ids_server_version }}"}"'
       - 'Actual stdout:   "{{ curl_ids.stdout }}"'
       - 'NOTE: Only version number is check all other text and syntax are ignored.'
   when:
-    - ids_version not in curl_ids.stdout
+    - ids_server_version not in curl_ids.stdout
+  tags:
+    - check
 
 #---
 

@@ -1,14 +1,14 @@
 ---
 
 - name: "{{ play_name }}Starting {{ container_domain }} before tasks"
-  include: "startdomain.yml"
+  include: "include_startdomain.yml"
 
 #---
 
 #---Downloading TopCat---
 
 - name: "{{ play_name }}Downloading TopCat"
-  include: "download.yml"
+  include: "include_download.yml"
   vars:
     - download_zip: "{{ topcat_zip }}"
     - download_src: "{{ topcat_src }}"
@@ -91,7 +91,8 @@
     - "{{ topcat_lang }}"
     - "{{ topcat_css }}"
 
-# First item uses 'https://' to avoid changing transport type variable, older versions have no 'http' type
+  # First item uses 'https://' to avoid changing transport type variable, older versions have no 'http' type
+  # 'your facility...' is the placeholder for older versions, 'LILS' is the placeholder for newer versions. There is only one occurance of either and replace won't add anything if the regexp doesn'y match, so it should be safe to have them both in this task regardless of which actually get's used
 - name: "{{ play_name }}Configuring {{ topcat_json }}"
   replace:
     path: "{{ topcat_path }}/{{ topcat_json }}"
@@ -102,9 +103,11 @@
     - { regexp: "8181",                     rep: "{{ icat_port }}" }
     - { regexp: "18080",                    rep: "{{ icat_port }}" }
     - { regexp: "localhost",                rep: "{{ inventory_hostname }}" }
-#    - { regexp: 'your facility name[^"]*',  rep: "{{ fac_short_name }}" }
+    - { regexp: '"your facility name[^"]*', rep: "{{ fac_short_name }}" }
     - { regexp: "LILS",                     rep: "{{ fac_short_name }}" }
     - { regexp: "Lorum Ipsum Light Source", rep: "{{ fac_long_name }}" }
+
+
 
 #---
 # TODO replace with task to remove all facilities not in mysql \/

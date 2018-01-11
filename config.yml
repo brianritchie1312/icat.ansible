@@ -10,22 +10,24 @@
     # Choose what you want installed
     # Most of these are dependent on each other so be careful when changing
 
-#  |Playbook		|Description				|Tags					|Tasks (All use main.yml)	|Variables(All use config.yml)
+#  |Playbook		|Description				|Tags					
     update: true         # Update Package list/cache		root, update			
-    java: true           # Installs java			root, java				java.yml			java.yml
-    mysql: true          # Installs Mysql			root, mysql, pexpect 			mysql.yml			mysql.yml
+    java: true           # Installs java			root, java
+    mysql: true          # Installs Mysql			root, mysql, pexpect
     createuser: true     # Creates non-root user		createuser		
-    container: true      # Installs glassfish/payara		user, container				container.yml, preplay.yml	container.yml
-    authn: true          # Installs Authentication Plugins	user, authn, simple, db, ldap, anon     authn.yml, preplay.yml		authn.yml, container.yml, mysql.yml
-    lucene: true         # Installs icat.lucene			user, lucene				lucene.yml, preplay.yml		lucene.yml, container.yml
-    icat: true           # Installs Icat			user, icat				icatserver.yml, preplay.yml     icat.yml, container.yml
-    topcat: true         # Installs Topcat			user, topcat				topcat.yml			topcat.yml, container.yml
-    testdata: true       # Ingests data with python-icat	user, pycat, testdata			pycat.yml, preplay.yml		pycat.yml, container.yml
+    container: true      # Installs glassfish/payara		user, container	
+    authn: true          # Installs Authentication Plugins	user, authn, simple/db/ldap/anon
+    icat_lucene: true    # Installs icat.lucene			user, lucene
+    icat_server: true    # Installs Icat			user, icat
+    ids_storage: true    # Installs IDS storage plugin
+    ids_server: true     # Installs IDS server
+    topcat: true         # Installs Topcat			user, topcat
+    testdata: true       # Ingests data with python-icat	user, pycat, testdata
     cleanup: true        # Moves unused files into download_dir root, cleanup
 
-    selenium: false      # Setup test env for selenium		selenium				selenium.yml			selenium.yml
-    firefox: false       # Install firefox for selenium's use   selenium                                selenium.yml
-    chrome: false        # Install chrome for selenium's use    selenium				selenium.yml
+    selenium: false      # Setup test env for selenium		selenium
+    firefox: false       # Install firefox for selenium's use   selenium                          
+    chrome: false        # Install chrome for selenium's use    selenium
 
 # Selenium is only needed for travis testing
 
@@ -43,13 +45,13 @@
     anon_version: 2.0.0
 
     # ICAT and Plugins
-    icat_version: 4.9.1
-    storage_version: 1.4.0
-    ids_version: 1.8.0
-    lucene_version: 1.1.0
-    utils_version: 0
+    icat_lucene_version: 1.1.0
+    icat_server_version: 4.9.1
+    ids_storage_version: 1.4.0
+    ids_server_version: 1.8.0
     topcat_version: 2.3.6
     
+    pycat_version: 0.13.1
 
    #---Container---
     # One and only one of these must be enabled, comment out the other

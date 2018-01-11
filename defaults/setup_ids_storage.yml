@@ -1,7 +1,7 @@
 ---
 
-storage_src: http://{{ sub_domain }}.icatproject.org/{{ url_mvn }}repo/org/icatproject/ids.storage_file/{{ storage_version }}/{{ storage_zip }}
-storage_zip: ids.storage_file-{{ storage_version }}-distro.zip
+storage_src: http://{{ sub_domain }}.icatproject.org/{{ url_mvn }}repo/org/icatproject/ids.storage_file/{{ ids_storage_version }}/{{ storage_zip }}
+storage_zip: ids.storage_file-{{ ids_storage_version }}-distro.zip
 storage_path: "{{ user_home }}/ids.storage_file"
 
 dir_main: "{{ user_home }}/{{ icat_name }}/main"

@@ -1,10 +1,8 @@
 ---
 
-#icat_version: 4.8.0
-# Only tested with 4.8.0
 
-icat_src: "https://repo.icatproject.org/repo/org/icatproject/icat.server/{{ icat_version }}/{{ icat_zip }}"
-icat_zip: icat.server-{{ icat_version }}-distro.zip
+icat_src: "https://repo.icatproject.org/repo/org/icatproject/icat.server/{{ icat_server_version }}/{{ icat_zip }}"
+icat_zip: icat.server-{{ icat_server_version }}-distro.zip
 icat_path: "{{ user_home }}/icat.server"
 
 # These are automatically changed for versions older than 4.9.0

@@ -25,8 +25,10 @@ ldap_version: 1.2.0
 anon_version: 1.1.1
 
 #---ICAT and Plugins---
-lucene: false
-icat: true
+icat_lucene: false
+
+icat_server: true
+
 storage: true
 ids: true
 testdata: true
@@ -34,9 +36,9 @@ topcat: true
 
 delete_fac: false
 
-icat_version: 4.8.0
-storage_version: 1.3.3
-ids_version: 1.7.0
+icat_server_version: 4.8.0
+ids_storage_version: 1.3.3
+ids_server_version: 1.7.0
 topcat_version: 2.2.1
 
 #---Users---

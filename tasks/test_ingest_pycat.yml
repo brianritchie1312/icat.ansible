@@ -1,8 +1,9 @@
 ---
 
 - name: "{{ play_name }}Starting {{ container_domain }} before tasks"
-  include: "startdomain.yml"
+  include: "include_startdomain.yml"
 
+  # This is here since the download_dir must exist, for scripts, before any zips are downloaded
 - name: "{{ play_name }}Checking download directory '{{ download_dir }}' - Creating if non-existent"
   file:
     path: "{{ download_dir }}"
@@ -141,7 +142,7 @@
 #---Downloading PyCAT---
 
 - name: "{{ play_name }}Downloading Python-ICAT"
-  include: "download.yml"
+  include: "include_download.yml"
   vars:
     - download_zip: "{{ pycat_zip }}"
     - download_src: "{{ pycat_src }}"

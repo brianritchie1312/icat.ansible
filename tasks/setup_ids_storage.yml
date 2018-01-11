@@ -1,7 +1,7 @@
 ---
 
 - name: "{{ play_name }}Starting {{ container_domain }} before tasks"
-  include: "startdomain.yml"
+  include: "include_startdomain.yml"
 
 #---
 
@@ -11,7 +11,7 @@
     url_mvn: 
     storage_setup: setup.properties
   when:
-    - storage_version | version_compare('1.4.0', '>=')
+    - ids_storage_version | version_compare('1.4.0', '>=')
 
 - name: "{{ play_name }}Changing url for versions older than 1.4.0"
   set_fact:
@@ -19,7 +19,7 @@
     url_mvn: mvn/
     storage_setup: ids.storage_file-setup.properties
   when:
-    - storage_version | version_compare('1.4.0', '<') == true
+    - ids_storage_version | version_compare('1.4.0', '<') == true
 
 #---
 
@@ -28,7 +28,7 @@
 #---Downloading Storage plugin---
 
 - name: "{{ play_name }}Downloading IDS Storage Plugin"
-  include: "download.yml"
+  include: "include_download.yml"
   vars:
     - download_zip: "{{ storage_zip }}"
     - download_src: "{{ storage_src }}"
@@ -59,7 +59,7 @@
     - "{{ storage_main }}"
     - "{{ storage_archive }}"
   when:
-    - storage_version | version_compare('1.4.0', '<') == true
+    - ids_storage_version | version_compare('1.4.0', '<') == true
   
 - name: "{{ play_name }}Configuring directory properties files for versions older than 1.4.0"
   lineinfile:
@@ -70,7 +70,7 @@
     - { file: "{{ storage_main }}",    line: "dir = {{ dir_main }}" }
     - { file: "{{ storage_archive }}", line: "dir = {{ dir_archive }}" }
   when:
-    - storage_version | version_compare('1.4.0', '<') == true
+    - ids_storage_version | version_compare('1.4.0', '<') == true
 
 #---Setup Properties---
 
@@ -107,3 +107,5 @@
     - install
 
 #---
+# TODO add url check as soon as i figure out what urls ids.storage has
+ # eg. /ids.storage/version
