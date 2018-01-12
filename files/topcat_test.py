@@ -494,7 +494,7 @@ def browse_click(level, target, element):
 
     element_wait((By.CSS_SELECTOR, obj_row_link))
     element_click(obj_row_link)
-    time.sleep(1)
+    time.sleep(3)
 
     if (element_exists('i[translate="ENTITIES.' + target.upper() + '.NAME"]') == True):
         print(txt.Success)
