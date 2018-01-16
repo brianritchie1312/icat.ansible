@@ -143,33 +143,14 @@ To run the selenium tests (Topcat UI testing), you will need python 2.7.
 
 This test is NOT automatically run by ansible, however if 'selenium: true' is set in config.yml or a preset it will setup the environment for the script to be run by travis or a user.
 
-Example:
+Example (as user1):
 ```Shell
-python topcat_test.py --url http://localhost:8080 --user-data simple root pass --user-nodata db root password --virtual-display
+cd ~/Topcat_Selenium-master
+python topcat_selenium_test.py --url http://localhost:8080 --user-data simple root pass --user-nodata db root password --virtual-display
 ```
 
-The script has several command line arguments:
+See [Topcat_Selenium](https://github.com/JHaydock-Pro/Topcat_Selenium) for more.
 
-| Option                                          | Required? | If Not Used                     | Example                             | Function                                                                                 |
-|:-----------------------------------------------:|:---------:|:-------------------------------:|:-----------------------------------:|:----------------------------------------------------------------------------------------:|
-| --url {url}                                     | Yes       | Throws Error                    | --url http://localhost:8080         | The url and port number of the topcat interface.                                         |
-| --fac-short {facility}                          | No        | 'LILS' used                     | --fac-short LILS                    | The short name of the facility, used in URLs.                                            |
-| --fac-long {facility}                           | No        | 'Lorum Ipsum Light Source' Used | --fac-long Lorum Ipsum Light Source | The long name of the facilty, used in text elements.                                     |
-| --user-data {mechanism} {username} {password}   | Yes       | Throws Error                    | --user-data simple root pass        | The plugin, username and password of the user with access to the testdata.               |
-| --user-nodata {mechanism} {username} {password} | No        | No Data User Tests Ignored      | --user-nodata db root password      | The plugin, username and password of the user without access to the testdata.            |
-| --user-admin {mechanism} {username} {password}  | No        | Data User assumed to be admin   | --user-admin simple root pass       | The plugin, username and password of the admin user.                                     | 
-| --virtual-display			          | No        | Standard GUI used               | --virtual-display                   | Creates a virtual display with pyvirtualdisplay. Use if standard GUI is unavailiable.    |
-| --path {path}                                   | No        | Script's current directory used | --path /home/user1/tests            | Directory where webdriver excutables are and files will be downloaded to.                |
-| --browsers {browser1} {browser2} ...            | No        | Only firefox tested             | --browsers firefox chrome           | List of browsers to test. (Supported: firefox, chrome)                                                                |
-| --log-level {loglevel}                          | No        | Default log level used          | --log-level trace                   | Log level of webdrivers. Currently only geckodriver.log (firefox webdriver) is modified. |
-
-*Note 1: Ansible only installs firefox, any other browsers must be manually installed.*
-
-*Note 2: The script currently only supports Firefox and Chrome*
-
-*Note 3: There is currently a bug with geckodriver (Firefox Webdriver) making it impossible to specify the marionette port within the selenium script, the workaround for this is to point the script to a shell script, containing the executable and the marionette port argument, instead of pointing directly to the excutable. https://bugzilla.mozilla.org/show_bug.cgi?id=1421766*
-
-*Note 4: If the script fails for whatever reason, you may need to close the browser manually (kill from command line if needed) to free up the port before running again.*
 
 Tested Configurations
 ---------------------
@@ -181,6 +162,7 @@ These configurations have only been tested to a basic level (ie. they run withou
 |Default_4.9.1 | Sl6/Ubuntu 14.04 |2.3.1.0  |1.8.0 |5.1.73 |--         |4.1.2.174 |2.0.0         |2.0.0     |--          |--          |1.1.0   |4.9.1 |1.8.0|1.4.0        |2.3.6   |
 |Travis_4.9.1  | Ubuntu 14.04     |2.4.1.0  |1.8.0 |5.6    |--         |4.1.2.174 |2.0.0         |2.0.0     |2.0.0       |2.0.0       |1.1.0   |4.9.1 |1.8.0|1.4.0        |2.3.6   |
 |Default_4.8.0 | SL6/Ubuntu 14.04 |2.3.1.0  |1.8.0 |5.1.73 |4.0        |--        |1.1.0         |1.2.0     |1.2.0       |1.1.1       |--      |4.8.0 |1.7.0|1.3.3        |2.2.1   |
+
 *NOTE: default_4.8.0 seems to have been recently broken, python-icat won't work with and you'll need to add `--skip-tags "check"` to skip the url checks at the end of each plugin (some older plugins don't have '/version' pages - see below)*
 
 
@@ -195,7 +177,6 @@ Notes
 * If you are using a VM with pip 1.0 installed, run `pip install --index-url=https://pypi.python.org/simple/ -U pip` to upgrade.
 * Some tasks involve finding a file with partial name instead of an absolute path. In these cases it will select the first matching file. For example If you have multiple 'mysql-connector-java-*.jar' files in /usr/share/java it will only use the first one. 
 * Sometimes adding boolean variables to --extra-vars cause them to return false even when set to true, assigning the value in a preset file seems to work anyway.
-* Topcat_test assumes all cart downloads are '.zip's
 * Some older versions of plugins don't seem to have '/{plugin}/version' urls or have different ones, so if running older versions (eg. default_4.8.0) you may need to add `--skip-tags "check"` to the command line
 
 TODO
@@ -224,25 +205,16 @@ TODO
         * Figure out how to test older plugins without url '/version' or figure out the earliest version with them and skip test on earlier versions
         * Install Chrome with Yum
 * Selenium
-    * Remove gecko.sh once bug is fixed
-    * Allow selenium to rerun even if port is used (eg. autokill ps using port or auto select new port)
-    * Add support for other browsers (eg. Chromium, Edge, Safari)
-    * Replace time delays in selenium with appropriate wait_until()
-    * Fix chrome launch in travis (or use chromium)
-    * Auto close failed selenium browsers
-    * Add upwards browsing tests
-    * Add Globus tests if possible
-    * More detailed tests for search and infotabs
-    * Add skips similar to ansible tags
-    * Improve Debug Output (eg. detailed log file)   
-    * Browse Proposal->Invesigation sometimes returns failed, fix
-    * For file existence check, add wait/timeout instead of waiting a fixed amount of time.
+    * See https://github.com/JHaydock-Pro/Topcat_Selenium
 * Travis
     * Test Idempotence
     * Get chrome selenium test working
 
 Changelog
 ---------
+
+#### 16/01/18
+* Separated Selenium script (moved to https://github.com/JHaydock-Pro/Topcat_Selenium)
 
 #### 11/01/18
 * Renamed yml files for organisation purposes. (The fact that the alphabetical order is slightly different to the order they are run really annoys me)
