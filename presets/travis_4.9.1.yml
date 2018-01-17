@@ -12,7 +12,6 @@ travis_path: /home/user1/Topcat_Selenium-master
 #---System User---
 
 user_name: user1
-user_home: "/home/{{ user_home }}"
 
 #---Setup--
 java: true
