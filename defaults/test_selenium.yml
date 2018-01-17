@@ -2,14 +2,6 @@
 
 test_dir: "{{ user_home }}/topcat_tests"
 
-geckodriver_version: 0.19.1
-#geckodriver_src: "https://github.com/mozilla/geckodriver/releases/download/v{{ geckodriver_version }}/{{ geckodriver_zip }}"
-#geckodriver_zip: "geckodriver-v{{ geckodriver_version }}-linux64.tar.gz"
-
-chromedriver_version: 2.33
-#chromedriver_src: "https://chromedriver.storage.googleapis.com/{{ chromedriver_version }}/{{ chromedriver_zip }}"
-#chromedriver_zip: "chromedriver_linux64.zip"
-
-ts_zip: Topcat_Selenium-master.zip
-ts_src: https://github.com/JHaydock-Pro/Topcat_Selenium/archive/master.zip
-ts_path: "{{ user_home }}/Topcat_Selenium-master"
+ts_zip: "Topcat_Selenium-{{ ts_version }}.zip"
+ts_src: "https://github.com/JHaydock-Pro/Topcat_Selenium/archive/{{ ts_version }}.zip"
+ts_path: "{{ user_home }}/Topcat_Selenium-{{ ts_version }}"

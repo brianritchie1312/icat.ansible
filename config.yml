@@ -53,6 +53,13 @@
     
     pycat_version: 0.13.1
 
+    # Selenium
+     # ts = topcat selenium test script, use 'master' for latest
+    ts_version: master
+
+    geckodriver_version: 0.19.1
+    chromedriver_version: 2.35
+
    #---Container---
     # One and only one of these must be enabled, comment out the other
 
