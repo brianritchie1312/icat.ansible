@@ -2,6 +2,18 @@
 # Intended for use with .travis.yml
  # Near duplicate of default_4.9.1
 
+#---Travis---
+# NOTE!
+ # This line is used by travis so if you change any of the variables featured, make sure to change the
+ # Change this line if {{ user_name}}, {{ user_home }}, {{ ts_version }} or {{ ts_path }} are changed
+
+travis_path: /home/user1/Topcat_Selenium-master
+
+#---System User---
+
+user_name: user1
+user_home: "/home/{{ user_home }}"
+
 #---Setup--
 java: true
 mysql: true
@@ -88,6 +100,12 @@ authn_db_users:
 #---Selenium Setup---
 
 selenium: true
+ts_version: master
+
 firefox: true
+geckodriver_version: 0.19.1
+
 chrome: true
+chromedriver_version: 2.35
+
 

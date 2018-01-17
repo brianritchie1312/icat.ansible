@@ -56,10 +56,10 @@ script:
 # Reduce changed tasks to lowest possible number (0 if possible) then check that changed value does not exceed that, fail if it does 
 #
 # Interface Test
-  - "cd /home/user1/Topcat_Selenium-master"
+  - "cd $(cat presets/travis_4.9.1.yml | grep travis_path | sed 's/travis_path: //g')"
   - "cat test_args | sudo xargs python topcat_selenium_test.py | tee topcat_test_output"
   - "cat topcat_test_output | grep Failed && exit 1 || echo 'No Fails'"
-  - "cat topcat_test_output | grep error && exit 1 || echo 'No Errors'"
+  - "cat topcat_test_output | grep Exception && exit 1 || echo 'No Errors'"
 
 
  #--After Script--
