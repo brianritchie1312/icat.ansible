@@ -20,10 +20,6 @@ branches:
 sudo: required
 dist: trusty
 
-# Find way to grab this from ansible
-env:
-  - TEST_DIR=/home/user1/Topcat_Selenium-master
-
 #---Services---
 
 #-----BEGIN BUILD-----
@@ -60,7 +56,7 @@ script:
 # Reduce changed tasks to lowest possible number (0 if possible) then check that changed value does not exceed that, fail if it does 
 #
 # Interface Test
-  - "cd TEST_DIR"
+  - "cd /home/user1/Topcat_Selenium-master"
   - "cat test_args | sudo xargs python topcat_selenium_test.py | tee topcat_test_output"
   - "cat topcat_test_output | grep Failed && exit 1 || echo 'No Fails'"
   - "cat topcat_test_output | grep error && exit 1 || echo 'No Errors'"
