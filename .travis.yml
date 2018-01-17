@@ -58,7 +58,7 @@ script:
 # Interface Test
 # Make test_dir a variable
   - "cd /home/user1/Topcat_Selenium-master"
-  - "cat test_args | sudo xargs python topcat_selenium.py | tee topcat_test_output"
+  - "cat test_args | sudo xargs python topcat_selenium_test.py | tee topcat_test_output"
   - "cat topcat_test_output | grep Failed && exit 1 || echo 'No Fails'"
   - "cat topcat_test_output | grep error && exit 1 || echo 'No Errors'"
 
