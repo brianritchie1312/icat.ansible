@@ -63,7 +63,7 @@ script:
 #
 # Interface Test
   - "cd $(cat presets/travis_4.9.1.yml | grep travis_path | sed 's/travis_path: //g')"
-  - "cat test_args | sudo xargs python topcat_selenium_test.py"
+  - "cat test_args | sudo xargs xvfb-run python topcat_selenium_test.py"
 
 
  #--After Script--
