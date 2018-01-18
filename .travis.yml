@@ -57,9 +57,7 @@ script:
 #
 # Interface Test
   - "cd $(cat presets/travis_4.9.1.yml | grep travis_path | sed 's/travis_path: //g')"
-  - "cat test_args | sudo xargs python topcat_selenium_test.py | tee topcat_test_output"
-  - "cat topcat_test_output | grep Failed && exit 1 || echo 'No Fails'"
-  - "cat topcat_test_output | grep Exception && exit 1 || echo 'No Errors'"
+  - "cat test_args | sudo xargs python topcat_selenium_test.py"
 
 
  #--After Script--
