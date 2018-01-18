@@ -178,6 +178,7 @@ Notes
 * Some tasks involve finding a file with partial name instead of an absolute path. In these cases it will select the first matching file. For example If you have multiple 'mysql-connector-java-*.jar' files in /usr/share/java it will only use the first one. 
 * Sometimes adding boolean variables to --extra-vars cause them to return false even when set to true, assigning the value in a preset file seems to work anyway.
 * Some older versions of plugins don't seem to have '/{plugin}/version' urls or have different ones, so if running older versions (eg. default_4.8.0) you may need to add `--skip-tags "check"` to the command line
+* If you wish to change the installed version of a plugin, you'll need to remove the current version as the zipfiles won't extract when the plugin directory already exists
 
 TODO
 ----

@@ -20,6 +20,12 @@ branches:
 sudo: required
 dist: trusty
 
+addons:
+  apt:
+    packages:
+      - firefox
+      - google-chrome-stable
+
 #---Services---
 
 #-----BEGIN BUILD-----

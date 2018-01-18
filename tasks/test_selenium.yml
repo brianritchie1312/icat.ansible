@@ -138,6 +138,16 @@
 #---
 
 #---Download Topcat_Selenium---
+ # The download.yml only downloads a new zip if the current one doesn't exist
+ # Since Topcat_Selenium-master.zip has no version numbers in it's name, it will assume any zip of that name is the latest
+ # This task removes any master version so the actual newest master version is downloaded
+
+- name: "{{ play_name }}Removing old version of Topcat_Selenium-master.zip"
+  file:
+    path: "{{ download_dir }}Topcat_Selenium-master.zip"
+    state: absent
+  when:
+    - ts_version == "master"
 
 - name: "{{ play_name }}Downloading Topcat_Selenium"
   include: include_download.yml
