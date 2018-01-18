@@ -91,7 +91,7 @@
     line: "{{ item.line }}"
   with_items:
     - { regexp: '^rootUserNames',    line: 'rootUserNames = {{ icat_admin_mech }}/{{ icat_admin_user }}' }
-    - { regexp: '^lucene.directory', line: 'lucene.directory = {{ lucene_dir }}' }
+    - { regexp: '^lucene\\.directory', line: 'lucene.directory = {{ lucene_dir }}' }
 
 
 # TODO - replace with more robust regexp
@@ -130,13 +130,13 @@
 - name: "{{ play_name }}Setting Authn List to {{ authn_list }}"
   lineinfile:
     dest: "{{ icat_path }}/{{ icat_prop }}"
-    regexp: authn.list
+    regexp: authn\\.list
     line: "authn.list = {{ authn_list }}"
 
 - name: "{{ play_name }}Adding Authenticator Lines to {{ icat_prop }}"
   lineinfile:
     dest: "{{ icat_path }}/{{ icat_prop }}"
-    regexp: "^authn.simple.friendly"
+    regexp: "^authn\\.simple\\.friendly"
     line: "authn.simple.friendly = Simple"
     insertafter: "authn.simple"
 
@@ -147,14 +147,14 @@
 - name: "{{ play_name }}Configuring {{ icat_prop }} - Uncommenting Authn Simple Lines"
   replace:
     path: "{{ icat_path }}/{{ icat_prop }}"
-    regexp: "^!authn.simple"
+    regexp: "^!authn\\.simple"
     replace: "authn.simple"
   when: authn_simple == true
 
 - name: "{{ play_name }}Configuring {{ icat_prop }} - Commenting Out Authn Simple Lines"
   replace:
     path: "{{ icat_path }}/{{ icat_prop }}"
-    regexp: "^authn.simple"
+    regexp: "^authn\\.simple"
     replace: "!authn.simple"
   when: authn_simple == false
 
@@ -162,7 +162,7 @@
 - name: "{{ play_name }}Replacing authn.simple.url with authn.simple.jndi for versions before 2.0.0"
   lineinfile:
     path: "{{ icat_path }}/{{ icat_prop }}"
-    regexp: "^authn.simple.url"
+    regexp: "^authn\\.simple.url"
     line: "authn.simple.jndi  = java:global/authn.simple-{{ simple_version }}/SIMPLE_Authenticator"
   when:
     - authn_simple == true
@@ -174,14 +174,14 @@
 - name: "{{ play_name }}Configuring {{ icat_prop }} - Uncommenting Authn DB Lines"
   replace:
     path: "{{ icat_path }}/{{ icat_prop }}"
-    regexp: "^!authn.db"
+    regexp: "^!authn\\.db"
     replace: "authn.db"
   when: authn_db == true
 
 - name: "{{ play_name }}Configuring {{ icat_prop }} - Commenting Out Authn DB Lines"
   replace:
     path: "{{ icat_path }}/{{ icat_prop }}"
-    regexp: "^authn.db"
+    regexp: "^authn\\.db"
     replace: "!authn.db"
   when: authn_db == false
 
@@ -189,7 +189,7 @@
 - name: "{{ play_name }}Replacing authn.db.url with authn.db.jndi"
   lineinfile:
     path: "{{ icat_path }}/{{ icat_prop }}"
-    regexp: "^authn.db.url"
+    regexp: "^authn\\.db\\.url"
     line: "authn.db.jndi  = java:global/authn.db-{{ db_version }}/DB_Authenticator"
   when:
     - authn_db == true
@@ -203,21 +203,21 @@
 - name: "{{ play_name }}Configuring {{ icat_prop }} - Uncommenting Authn LDAP Lines"
   replace:
     path: "{{ icat_path }}/{{ icat_prop }}"
-    regexp: "^!authn.ldap"
+    regexp: "^!authn\\.ldap"
     replace: "authn.ldap"
   when: authn_ldap == true
 
 - name: "{{ play_name }}Configuring {{ icat_prop }} - Commenting Out Authn LDAP Lines"
   replace:
     path: "{{ icat_path }}/{{ icat_prop }}"
-    regexp: "^authn.ldap"
+    regexp: "^authn\\.ldap"
     replace: "!authn.ldap"
   when: authn_ldap == false
 
 - name: "{{ play_name }}Replacing authn.ldap.url with authn.ldap.jndi for versions before 2.0.0"
   lineinfile:
     path: "{{ icat_path }}/{{ icat_prop }}"
-    regexp: "^authn.ldap.url"
+    regexp: "^authn\\.ldap\\.url"
     line: "authn.ldap.jndi  = java:global/authn.ldap-{{ ldap_version }}/LDAP_Authenticator"
   when:
     - authn_ldap == true
@@ -230,21 +230,21 @@
 - name: "{{ play_name }}Configuring {{ icat_prop }} - Uncommenting Authn Anon Lines"
   replace:
     path: "{{ icat_path }}/{{ icat_prop }}"
-    regexp: "^!authn.anon"
+    regexp: "^!authn\\.anon"
     replace: "authn.anon"
   when: authn_anon == true
 
 - name: "{{ play_name }}Configuring {{ icat_prop }} - Commenting Out Authn Anon Lines"
   replace:
     path: "{{ icat_path }}/{{ icat_prop }}"
-    regexp: "^authn.anon"
+    regexp: "^authn\\.anon"
     replace: "!authn.anon"
   when: authn_anon == false
 
 - name: "{{ play_name }}Replacing authn.anon.url withn authn.anon.jndi for versions before 2.0.0"
   lineinfile:
     path: "{{ icat_path }}/{{ icat_prop }}"
-    regexp: "^authn.anon.url"
+    regexp: "^authn\\.anon\\.url"
     line: "authn.anon.jndi  = java:global/authn.anon-{{ anon_version }}/ANON_Authenticator"
   when:
     - authn_anon == true

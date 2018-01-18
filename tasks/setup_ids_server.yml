@@ -96,13 +96,13 @@
     regexp: "{{ item.regexp }}"
     line: "{{ item.line }}"
   with_items:
-    - { regexp: "icat.url",               line: "icat.url = {{ icat_url }}" }
-    - { regexp: "cache.dir",              line: "cache.dir = {{ user_home }}/{{ icat_name }}/main/ids/cache/" }
-    - { regexp: "rootUserNames",          line: "rootUserNames = {{ icat_admin_mech }}/{{ icat_admin_user }}" }
-    - { regexp: "reader",                 line: "reader = {{ icat_admin_mech }} username {{ icat_admin_user }} password {{ icat_admin_pass }}" }
-    - { regexp: "storageUnit",            line: "storageUnit = datafile" }
-    - { regexp: ".lastIdFile",            line: "filesCheck.lastIdFile = {{ user_home }}/{{ icat_name }}/main/ids/lastIdFile" }
-    - { regexp: ".errorLog",              line: "filesCheck.errorLog = {{ user_home }}/{{ icat_name }}/main/ids/errorLog" }
+    - { regexp: "^icat\\.url",      line: "icat.url = {{ icat_url }}" }
+    - { regexp: "^cache\\.dir",     line: "cache.dir = {{ user_home }}/{{ icat_name }}/main/ids/cache/" }
+    - { regexp: "^rootUserNames",  line: "rootUserNames = {{ icat_admin_mech }}/{{ icat_admin_user }}" }
+    - { regexp: "^reader",         line: "reader = {{ icat_admin_mech }} username {{ icat_admin_user }} password {{ icat_admin_pass }}" }
+    - { regexp: "^storageUnit",    line: "storageUnit = datafile" }
+    - { regexp: "^\\.lastIdFile",   line: "filesCheck.lastIdFile = {{ user_home }}/{{ icat_name }}/main/ids/lastIdFile" }
+    - { regexp: "^\\.errorLog",     line: "filesCheck.errorLog = {{ user_home }}/{{ icat_name }}/main/ids/errorLog" }
 
 - name: "{{ play_name }}Adding storage directories for storage plugin versions 1.4.0 or newer"
   lineinfile:
@@ -110,8 +110,8 @@
     regexp: "{{ item.regexp }}"
     line: "{{ item.line }}"
   with_items:
-    - { regexp: "plugin.main.dir",    line: "plugin.main.dir = {{ dir_main }}" }
-    - { regexp: "plugin.archive.dir", line: "plugin.archive.dir = {{ dir_archive }}" }
+    - { regexp: "^plugin\\.main\\.dir",    line: "plugin.main.dir = {{ dir_main }}" }
+    - { regexp: "plugin\\.archive\\.dir", line: "plugin.archive.dir = {{ dir_archive }}" }
   when:
     - ids_storage_version | version_compare('1.4.0','>=') == true
 
@@ -121,7 +121,7 @@
     regexp: "{{ item.regexp }}"
     replace: "{{ item.rep }}"
   with_items:
-    - { regexp: "^plugin.archive",        rep: "!plugin.archive" }
+    - { regexp: "^plugin\\.archive",       rep: "!plugin.archive" }
     - { regexp: "^writeDelaySeconds",     rep: "!writeDelaySeconds" }
     - { regexp: "^startArchivingLevel",   rep: "!startArchivingLevel" }
     - { regexp: "^stopArchivingLevel",    rep: "!stopArchivingLevel" }

@@ -1,6 +1,6 @@
 ICAT Installer
 =============
-[![Build Status](https://travis-ci.org/JHaydock-Pro/ICAT-Ansible.svg?branch=PolyVersion)](https://travis-ci.org/JHaydock-Pro/ICAT-Ansible)
+[![Build Status](https://travis-ci.org/JHaydock-Pro/icat.ansible.svg?branch=PolyVersion)](https://travis-ci.org/JHaydock-Pro/icat.ansible)
  
 Installer for ICAT, Topcat and all their dependencies.
 Intended for testing purposes.
@@ -14,7 +14,7 @@ Requirements
 ------------
 
 * RedHat or Debian flavoured OS and root access
-* At least python 2.6 (selenium test requires 2.7)
+* At least python 2.6 (Selenium test requires 2.7)
 * Ansible and it's dependencies (Only needed on host machine)
 * Ideally a fresh machine but should work regardless
 * Probably a bunch of other stuff I forgot
@@ -212,6 +212,9 @@ TODO
 
 Changelog
 ---------
+
+#### 18/01/18
+* Improved regexp
 
 #### 16/01/18
 * Separated Selenium script (moved to https://github.com/JHaydock-Pro/Topcat_Selenium)
