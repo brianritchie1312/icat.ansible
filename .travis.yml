@@ -64,7 +64,11 @@ script:
 # Interface Test
   - "cd $(cat presets/travis_4.9.1.yml | grep travis_path | sed 's/travis_path: //g')"
   - "cat test_args | sudo xargs xvfb-run python topcat_selenium_test.py"
-
+#
+# Experiemental Interface test (Uncomment once getting args from ansible is figured out)
+#  - "mkdir Topcat_Selnium_Tests"
+#  - "cd Topcat_Selnium_Tests"
+#  - "cat test_args | sudo xargs xvfb-run python topcat_selenium_test.py"
 
  #--After Script--
 

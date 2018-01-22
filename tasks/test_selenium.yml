@@ -132,53 +132,27 @@
   when:
     - chrome == true
     - ansible_pkg_mgr == 'apt'
-# Uncomment pkg_mgr conditional once yum chrome works
+# Remove pkg_mgr conditional once yum chrome works
 
 
 #---
 
 #---Download Topcat_Selenium---
- # The download.yml only downloads a new zip if the current one doesn't exist
- # Since Topcat_Selenium-master.zip has no version numbers in it's name, it will assume any zip of that name is the latest
- # This task removes any master version so the actual newest master version is downloaded
 
-- name: "{{ play_name }}Removing old version of Topcat_Selenium-master.zip"
+- name: "{{ play_name }}Making Test directory"
   file:
-    path: "{{ download_dir }}Topcat_Selenium-master.zip"
-    state: absent
-  when:
-    - ts_version == "master"
+    path: "{{ ts_path }}"
+    state: directory
 
-- name: "{{ play_name }}Downloading Topcat_Selenium"
-  include: include_download.yml
-  vars:
-    - download_zip: "{{ ts_zip }}"
-    - download_src: "{{ ts_src }}"
-    - download_path: "{{ ts_path }}"
-    - download_dest: "{{ user_home }}"
-
-#---
-
-#---
-
-  # In theory these files should be created automatically by geckodriver and travis
-  # But I've had instances where errors have been thrown because they are trying to write to a file that doesn't exist or a file that's owned by a different user
-  # So to be safe I've added this task to create blank files with rw permisions for everyone to write to
-- name: "{{ play_name }}Creating Blank files with travis friendly permissions"
-  file:
-    path: "{{ ts_path }}/{{ item }}"
-    state: touch
-    mode: "u=rw,g=rw,o=rw"
-  with_items:
-    - geckodriver.log
-    - topcat_test_output
+- name: "{{ play_name }}Getting selenium script"
+  get_url:
+    url: "{{ ts_url }}"
+    dest: "{{ ts_path }}/"
 
 #---
 
 #---Template Arguments---
 
-  # This is the only task that has to be run by ansible since it uses the variables from ansible
-  # All other tasks in this file could, in theory be performed by travis or the selenium script
 - name: "{{ play_name }}Templating Arguments for Selenium Script"
   template:
     src: "{{ role_path }}/templates/test_args"

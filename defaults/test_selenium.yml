@@ -1,7 +1,5 @@
 ---
 
-test_dir: "{{ user_home }}/topcat_tests"
+ts_url: "https://raw.githubusercontent.com/JHaydock-Pro/Topcat_Selenium/{{ ts_version }}/topcat_selenium_test.py"
+ts_path: "{{ user_home }}/Topcat_Selenium"
 
-ts_zip: "Topcat_Selenium-{{ ts_version }}.zip"
-ts_src: "https://github.com/JHaydock-Pro/Topcat_Selenium/archive/{{ ts_version }}.zip"
-ts_path: "{{ user_home }}/Topcat_Selenium-{{ ts_version }}"

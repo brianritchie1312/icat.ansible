@@ -214,6 +214,10 @@ TODO
 Changelog
 ---------
 
+#### 19/01/18
+* Selenium now uses get_url instead of downloading the zip
+* Removed log and output files
+
 #### 18/01/18
 * Improved regexp
 
