@@ -7,7 +7,7 @@
  # This line is used by travis so if you change any of the variables featured, make sure to change the
  # Change this line if {{ user_name}}, {{ user_home }}, {{ ts_version }} or {{ ts_path }} are changed
 
-travis_path: /home/user1/Topcat_Selenium-master
+travis_path: /home/user1/Topcat_Selenium
 
 #---System User---
 
