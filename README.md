@@ -1,5 +1,5 @@
-ICAT Installer
-=============
+ICAT Ansible
+============
 [![Build Status](https://travis-ci.org/JHaydock-Pro/icat.ansible.svg?branch=PolyVersion)](https://travis-ci.org/JHaydock-Pro/icat.ansible)
  
 Installer for ICAT, Topcat and all their dependencies.

@@ -104,7 +104,7 @@
     - { regexp: "18080",                    rep: "{{ icat_port }}" }
     - { regexp: "localhost",                rep: "{{ inventory_hostname }}" }
     - { regexp: '"your facility name[^"]*', rep: '"{{ fac_short_name }}' }
-    - { regexp: 'LILS',                     rep: 'NOTLILS' }
+    - { regexp: 'LILS',                     rep: '{{ fac_short_name }}' }
     - { regexp: 'Lorum Ipsum Light Source', rep: "{{ fac_long_name }}" }
 
 
