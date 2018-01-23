@@ -163,13 +163,10 @@ These configurations have only been tested to a basic level (ie. they run withou
 |Travis_4.9.1  | Ubuntu 14.04     |2.4.1.0  |1.8.0 |5.6    |--         |4.1.2.174 |2.0.0         |2.0.0     |2.0.0       |2.0.0       |1.1.0   |4.9.1 |1.8.0|1.4.0        |2.3.6   |
 |Default_4.8.0 | SL6/Ubuntu 14.04 |2.3.1.0  |1.8.0 |5.1.73 |4.0        |--        |1.1.0         |1.2.0     |1.2.0       |1.1.1       |--      |4.8.0 |1.7.0|1.3.3        |2.2.1   |
 
-*NOTE: default_4.8.0 seems to have been recently broken, python-icat won't work with and you'll need to add `--skip-tags "check"` to skip the url checks at the end of each plugin (some older plugins don't have '/version' pages - see below)*
-
 
 Notes
 -----
 
-* The setup excutable for the storage plugin returns a fatal error but still performs it's function (currently it's set to ignore this error but this needs to be improved)
 * Some tasks will fail even when correct (Mysql password reset and icat ingest). These errors are ignored with a conditional fail following them. It should return a fatal error if the previous task failed in anyway that was not the expected failure (eg. the ingest returns a different error than async timeout).
 * Hosts must be added to `/etc/ansible/hosts` or `tests/inventory` and have valid ssh keys, simply SSHing into target machine once beforehand should work.
 * All package installs (except pexpect) are set to present instead of latest, this greatly improves speed but may cause some problems if you have an old version of a package but with the same name, I have yet to encounter this (except for Pexpect)
@@ -206,13 +203,17 @@ TODO
         * Figure out how to test older plugins without url '/version' or figure out the earliest version with them and skip test on earlier versions
         * Install Chrome with Yum
 * Selenium
-    * See https://github.com/JHaydock-Pro/Topcat_Selenium
+    * See [Topcat_Selenium](https://github.com/JHaydock-Pro/Topcat_Selenium)
 * Travis
     * Test Idempotence
     * Get chrome selenium test working
 
 Changelog
 ---------
+
+#### 23/01/18
+* removed ignore_errors from storage setup, it just seems to work consistently now, no idea why
+* corrected regexp for replace task in topcat.json
 
 #### 19/01/18
 * Selenium now uses get_url instead of downloading the zip
