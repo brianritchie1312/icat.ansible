@@ -24,10 +24,7 @@
     topcat: true         # Installs Topcat			user, topcat
     testdata: true       # Ingests data with python-icat	user, pycat, testdata
     cleanup: true        # Moves unused files into download_dir root, cleanup
-
     selenium: false      # Setup test env for selenium		selenium
-    firefox: false       # Install firefox for selenium's use   selenium                          
-    chrome: false        # Install chrome for selenium's use    selenium
 
 # Selenium is only needed for travis testing
 

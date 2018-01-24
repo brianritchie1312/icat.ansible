@@ -108,6 +108,7 @@ If you prefer to use your own playbook, follow steps 1-3 above then
 | --diff                              | Detailed look at what changes have been made to files. |
 | -e, --extra-vars "varname=varvalue" | Overwrite variables from the command line , see 'presets' below. Use a space separated list. Note Boolean values don't seem to work in this format. |
 | -e '{varname: varvalue}'            | Same as above but boolean values should work in this format. However in this format every variable needs it's own '-e' |
+
 *NOTE: if you need a large number of extra vars, consider using a preset, see below.*
 
 You can find more here: https://www.mankier.com/1/ansible-playbook
@@ -175,7 +176,7 @@ Notes
 * Some tasks involve finding a file with partial name instead of an absolute path. In these cases it will select the first matching file. For example If you have multiple 'mysql-connector-java-*.jar' files in /usr/share/java it will only use the first one. 
 * Sometimes adding boolean variables to --extra-vars cause them to return false even when set to true, assigning the value in a preset file seems to work anyway.
 * Some older versions of plugins don't seem to have '/{plugin}/version' urls or have different ones, so if running older versions (eg. default_4.8.0) you may need to add `--skip-tags "check"` to the command line
-* If you wish to change the installed version of a plugin, you'll need to remove the current version as the zipfiles won't extract when the plugin directory already exists
+* If you wish to change the installed version of a plugin, you may need to remove the current version (ie. delete the entire directory) as the zipfiles won't extract when the plugin directory already exists
 
 TODO
 ----
@@ -185,31 +186,27 @@ TODO
     * Learn how ldap works and implement proper setup and test if possible
 * Ansible
     * General    
-        * Improve feedback (eg. run automatic tests and report back with the debug module)
         * Improve Idempotence
-        * Modify regexp to be more robust (eg. use '^' and double check escape slashes)
-        * Fix older version problems (ie. url checks, python-icat), see notes
     * Workarounds
-        * Fix Storage setup script not working (or use conditional fail)
         * Consider replacing env_path with shell scripts for sourcing
     * topcat.json
         * Create task to remove all disabled facilities from topcat.json
-        * Currently all four authn plugins are added to topcat.json, this should be changed to only add ones that exist
     * Misc
         * Setup Non-LILS facility
         * Split Topcat Admin user into Data/Admin User
         * Make pycat.yml more adaptable (eg. pycat version numbers, control which user gets data, clearer args"
         * Figure out ids.storage url check (ie. /{plugin}/version)
         * Figure out how to test older plugins without url '/version' or figure out the earliest version with them and skip test on earlier versions
-        * Install Chrome with Yum
 * Selenium
     * See [Topcat_Selenium](https://github.com/JHaydock-Pro/Topcat_Selenium)
 * Travis
     * Test Idempotence
-    * Get chrome selenium test working
 
 Changelog
 ---------
+
+#### 24/01/18
+* Removed browser installs, now handled by travis or user
 
 #### 23/01/18
 * removed ignore_errors from storage setup, it just seems to work consistently now, no idea why
