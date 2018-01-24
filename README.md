@@ -10,6 +10,7 @@ https://github.com/icatproject
 https://icatproject.org/
  
 
+
 Requirements
 ------------
 
@@ -19,11 +20,15 @@ Requirements
 * Ideally a fresh machine but should work regardless
 * Probably a bunch of other stuff I forgot
 * Patience
+
+
   
 Role Variables
 -------------
 
 See `config.yml` and .yml files in `defaults/`
+
+
 
 How to use
 ----------
@@ -116,6 +121,8 @@ You can find more here: https://www.mankier.com/1/ansible-playbook
 If you wish to reduce clutter you can stop skipped tasks from playing by adding `display_skipped_hosts = False` to `ansible.cfg`  
 or you can add `stdout_callback = actionable` to ansible.cfg to only display tasks that return changed or failed.
 
+
+
 Presets
 -------
 There are several preset configurations for convenience in the `presets/` directory. These are yml/json files with lists of variables to overwrite allowing for easy reconfiguration with digging around in the config.yml or other variable files.
@@ -137,8 +144,11 @@ Will run the installer with variables specialised for travis testing icat.server
 *Note: These will only overwrite the variables that are specified, any variables not in the file will be taken from elsewhere.*
 
 
+
 Selenium
 --------
+
+https://github.com/JHaydock-Pro/Topcat_Selenium
 
 To run the selenium tests (Topcat UI testing), you will need python 2.7.
 
@@ -146,11 +156,10 @@ This test is NOT automatically run by ansible, however if 'selenium: true' is se
 
 Example (as user1):
 ```Shell
-cd ~/Topcat_Selenium-master
+cd ~/Topcat_Selenium
 python topcat_selenium_test.py --url http://localhost:8080 --user-data simple root pass --user-nodata db root password --virtual-display
 ```
 
-See [Topcat_Selenium](https://github.com/JHaydock-Pro/Topcat_Selenium) for more.
 
 
 Tested Configurations
@@ -158,11 +167,13 @@ Tested Configurations
 
 These configurations have only been tested to a basic level (ie. they run without fatal errors and the end product seems to be operational). These configuration should match the config files in presets/.
 
-| Config       | OSs              | Ansible | Java | MySQL | Glassfish | Payara   | Simple Authn | DB Authn | LDAP Authn | Anon Authn | Lucene | ICAT | IDS | IDS Storage | Topcat |
-|:------------:|:----------------:|:-------:|:----:|:-----:|:---------:|:--------:|:------------:|:--------:|:----------:|:----------:|:------:|:----:|:---:|:-----------:|:------:|
-|Default_4.9.1 | Sl6/Ubuntu 14.04 |2.3.1.0  |1.8.0 |5.1.73 |--         |4.1.2.174 |2.0.0         |2.0.0     |--          |--          |1.1.0   |4.9.1 |1.8.0|1.4.0        |2.3.6   |
-|Travis_4.9.1  | Ubuntu 14.04     |2.4.1.0  |1.8.0 |5.6    |--         |4.1.2.174 |2.0.0         |2.0.0     |2.0.0       |2.0.0       |1.1.0   |4.9.1 |1.8.0|1.4.0        |2.3.6   |
-|Default_4.8.0 | SL6/Ubuntu 14.04 |2.3.1.0  |1.8.0 |5.1.73 |4.0        |--        |1.1.0         |1.2.0     |1.2.0       |1.1.1       |--      |4.8.0 |1.7.0|1.3.3        |2.2.1   |
+| Config       | OSs              | MySQL | Glassfish | Payara   | authn.simple | authn.db | authn.ldap | authn.anon | icat.lucene | icat.server | ids.server | ids.storage_file | topcat |
+|:------------:|:----------------:|:-----:|:---------:|:--------:|:------------:|:--------:|:----------:|:----------:|:-----------:|:-----------:|:----------:|:----------------:|:------:|
+|Default_4.9.1 | Sl6/Ubuntu 14.04 |5.1.73 |--         |4.1.2.174 |2.0.0         |2.0.0     |--          |--          |1.1.0        |4.9.1        |1.8.0       |1.4.0             |2.3.6   |
+|Travis_4.9.1  | Ubuntu 14.04     |5.6    |--         |4.1.2.174 |2.0.0         |2.0.0     |2.0.0       |2.0.0       |1.1.0        |4.9.1        |1.8.0       |1.4.0             |2.3.6   |
+|Default_4.8.0 | SL6/Ubuntu 14.04 |5.1.73 |4.0        |--        |1.1.0         |1.2.0     |1.2.0       |1.1.1       |--           |4.8.0        |1.7.0       |1.3.3             |2.2.1   |
+
+
 
 
 Notes
@@ -177,6 +188,9 @@ Notes
 * Sometimes adding boolean variables to --extra-vars cause them to return false even when set to true, assigning the value in a preset file seems to work anyway.
 * Some older versions of plugins don't seem to have '/{plugin}/version' urls or have different ones, so if running older versions (eg. default_4.8.0) you may need to add `--skip-tags "check"` to the command line
 * If you wish to change the installed version of a plugin, you may need to remove the current version (ie. delete the entire directory) as the zipfiles won't extract when the plugin directory already exists
+* If are seeing images of cows you have cowsay installed, add `ANSIBLE_NOCOWS=1` to command line or `ansible.cfg`. Alternativly you could use `cowsay -l`, pick one of the options then add `ANSIBLE_COW_SELECTION=<your chosen 'cow'>` to command line or `ansible.cfg`. Install cowsay with `apt/yum install cowsay`
+
+
 
 TODO
 ----
@@ -201,6 +215,9 @@ TODO
     * See [Topcat_Selenium](https://github.com/JHaydock-Pro/Topcat_Selenium)
 * Travis
     * Test Idempotence
+
+
+
 
 Changelog
 ---------
