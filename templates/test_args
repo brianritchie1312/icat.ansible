@@ -2,7 +2,7 @@
 --user-data {{ icat_admin_mech }} {{ icat_admin_user }} {{ icat_admin_pass }} 
 --user-nodata db {{ authn_db_users[0].user }} {{ authn_db_users[0].pass }} 
 --virtual-display
---browsers firefox chrome
+--browsers firefox
 --geckodriver 0.19.1
 --chromedriver 2.35
 --on-fail EXIT

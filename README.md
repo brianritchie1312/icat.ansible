@@ -188,7 +188,7 @@ Notes
 * Sometimes adding boolean variables to --extra-vars cause them to return false even when set to true, assigning the value in a preset file seems to work anyway.
 * Some older versions of plugins don't seem to have '/{plugin}/version' urls or have different ones, so if running older versions (eg. default_4.8.0) you may need to add `--skip-tags "check"` to the command line
 * If you wish to change the installed version of a plugin, you may need to remove the current version (ie. delete the entire directory) as the zipfiles won't extract when the plugin directory already exists
-* If are seeing images of cows you have cowsay installed, add `ANSIBLE_NOCOWS=1` to command line or `ansible.cfg`. Alternativly you could use `cowsay -l`, pick one of the options then add `ANSIBLE_COW_SELECTION=<your chosen 'cow'>` to command line or `ansible.cfg`. Install cowsay with `apt/yum install cowsay`
+* If are seeing images of cows you have cowsay installed, add `ANSIBLE_NOCOWS=1` to command line or `ansible.cfg`. Alternativly you could use `cowsay -l`, pick one of the options then add `ANSIBLE_COW_SELECTION=<your chosen 'cow'>` to command line or `ansible.cfg` and have some fun. You can install cowsay with `apt/yum install cowsay`.
 
 
 
@@ -221,6 +221,9 @@ TODO
 
 Changelog
 ---------
+
+#### 02/02/18
+* Temporary removal of chrome from Topcat_Selenium arguments due to latest release bug, see [Topcat_Selenium]{https://github.com/JHaydock-Pro/Topcat_Selenium} for details
 
 #### 24/01/18
 * Removed browser installs, now handled by travis or user
