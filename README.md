@@ -11,40 +11,28 @@ https://icatproject.org/
  
 
 
-Requirements
+Dependencies
 ------------
 
-* RedHat or Debian flavoured OS and root access
-* At least python 2.6 (Selenium test requires 2.7)
-* Ansible and it's dependencies (Only needed on host machine)
-* Ideally a fresh machine but should work regardless
-* Probably a bunch of other stuff I forgot
+* One Master machine with:
+	* Yum/Apt enabled OS (eg. Ubuntu).
+	* [Ansible](http://docs.ansible.com/ansible/latest/intro_installation.html) and it's dependencies (most are installed automatically with ansible).
+	* SSH and root access to all slave machines or 'hosts'.
+	* Python 2.6+ (Selenium Tests will require python2.7 but don't need to run on same machine, see [Topcat_Selenium](https://github.com/JHaydock-Pro/Topcat_Selenium).
+* At least one (should support any number) of slave machines to install ICAT on. This can include the master machine, just point it to 'localhost'.
 * Patience
 
-
   
-Role Variables
--------------
-
-See `config.yml` and .yml files in `defaults/`
-
-
-
 How to use
 ----------
 
-1. Install [Ansible](http://docs.ansible.com/ansible/latest/intro_installation.html). The simplest method is.
-
-    ```Shell
-    sudo apt-get install python-pip
-    pip install ansible
-    ```
+1. Install [Ansible](http://docs.ansible.com/ansible/latest/intro_installation.html).
 
 2. Download or clone this repository
 
 3. Modify `config.yml` and yml files in `defaults/` as desired. Or use/create a preset (see below).
 
-4. Add hosts to `tests/inventory` 
+4. Add hostnames (of slave machines) to `tests/inventory` 
 
 5. Navigate to role directory and run:
 
@@ -52,48 +40,47 @@ How to use
     ANSIBLE_CONFIG=ansible.cfg ansible-playbook -i tests/inventory tests/test.yml 
     ```
 
-If you are running on localhost, you may need to add
+    If localhost is your only slave host, you may need to add
 
-```Shell
---connection=local
-```
+    ```Shell
+    --connection=local
+    ```
 
-If you are running on remote hosts, add hostname to inventory and run add the following options
+    If you are running on remote hosts, add hostname to inventory and run add the following options
+    
+    ```Shell
+    --user {SUDO USER ON REMOTE HOST} --ask-pass
+    ```
 
-```Shell
---user {SUDO USER ON REMOTE HOST} --ask-pass
-```
+    If remote hosts include debian systems add
 
-If remote hosts include debian systems add
-
-```Shell
---user {SUDO USER ON REMOTE HOST} --ask-pass --ask-sudo-pass
-```
+    ```Shell
+    --user {SUDO USER ON REMOTE HOST} --ask-pass --ask-sudo-pass
+    ```
 
 ## Or
 
-If you prefer to use your own playbook, follow steps 1-3 above then
+If you prefer to use your own playbook to launch the role, follow steps 1-3 above then:
 
-4. Move role to `/etc/ansible/roles/{ROLE NAME}` or add this to your `/etc/ansible/ansible.cfg` file
+4. Move role to `/etc/ansible/roles/icat.ansible` **or** add this to your `/etc/ansible/ansible.cfg` file
 
     ```Shell
     [defaults]
     roles_path={PATH TO DIRECTORY CONTAINING ROLE}
     ```
 
-5. Add hostnames to `/etc/ansible/hosts' or add them to your own inventory and add this the the command line
+5. Add hostnames to `/etc/ansible/hosts` **or** add them to your own inventory and add this the the command line
 
     ```Shell
     -i {PATH TO INVENTORY}
     ```
 
-
-6. Copy `tests/test.yml` or the following block into your own yml playbook.
+6. Copy `tests/test.yml` **or** the following block into your own yml playbook. (replace 'localhost' chosen slaves in space separated list)
 
     ```Shell
-    - hosts: localhost # Any hosts or host groups added to inventory or ansible hosts file separated by spaces
+    - hosts: localhost
       roles:
-         - { role: ICAT-Ansible, become: yes, become_user: root}
+         - { role: icat.ansible, become: yes, become_user: root}
     ```
 
 7. Then run
@@ -122,10 +109,26 @@ If you wish to reduce clutter you can stop skipped tasks from playing by adding 
 or you can add `stdout_callback = actionable` to ansible.cfg to only display tasks that return changed or failed.
 
 
+Role Variables
+-------------
+
+Most variables are stored in `config.yml` or in .yml files in `/defaults/`. Most variables are separated by plugin, however some plugin variables are used by multiple plugins (eg. container list).
+
+
+Variables are called with jinja2 templating and ansible supports many jinja [filters](http://docs.ansible.com/ansible/latest/playbooks_filters.html).
+
+
+Variables can also be stored as [lists or dictionaries](http://docs.ansible.com/ansible/latest/YAMLSyntax.html#yaml-basics). Lists can be used in [loops](http://docs.ansible.com/ansible/latest/playbooks_loops.html).
+
+
+All variables can be plain text or [hash encrypted](http://docs.ansible.com/ansible/latest/faq.html#how-do-i-generate-crypted-passwords-for-the-user-module). Ansible also supports [hash filters](http://docs.ansible.com/ansible/latest/playbooks_filters.html#hash-filters) and [vaults](http://docs.ansible.com/ansible/latest/playbooks_vault.html). If you are using any actual data/passwords then vaults should be used.
+
+
+
 
 Presets
 -------
-There are several preset configurations for convenience in the `presets/` directory. These are yml/json files with lists of variables to overwrite allowing for easy reconfiguration with digging around in the config.yml or other variable files.
+There are several preset configurations for convenience in the `presets/` directory. These are yml/json files with lists of variables to overwrite allowing for easy reconfiguration without digging around in the config.yml or other variable files.
 
 To use them simply add this to the command line.
 
@@ -133,33 +136,14 @@ To use them simply add this to the command line.
 --extra-vars "@presets/filename.yml"
 ```
 
-For example:
+For example, this adding this to the command line will run the installer with variables specialised for travis testing icat.server 4.9.1
+
 ```Shell
 --extra-vars "@presets/travis_4.9.1.yml"
 ```
 
-Will run the installer with variables specialised for travis testing icat.server 4.9.1
-
 
 *Note: These will only overwrite the variables that are specified, any variables not in the file will be taken from elsewhere.*
-
-
-
-Selenium
---------
-
-https://github.com/JHaydock-Pro/Topcat_Selenium
-
-To run the selenium tests (Topcat UI testing), you will need python 2.7.
-
-This test is NOT automatically run by ansible, however if 'selenium: true' is set in config.yml or a preset it will setup the environment for the script to be run by travis or a user.
-
-Example (as user1):
-```Shell
-cd ~/Topcat_Selenium
-python topcat_selenium_test.py --url http://localhost:8080 --user-data simple root pass --user-nodata db root password --virtual-display
-```
-
 
 
 Tested Configurations
@@ -173,15 +157,27 @@ These configurations have only been tested to a basic level (ie. they run withou
 |Travis_4.9.1  | Ubuntu 14.04     |5.6    |--         |4.1.2.174 |2.0.0         |2.0.0     |2.0.0       |2.0.0       |1.1.0        |4.9.1        |1.8.0       |1.4.0             |2.3.6   |
 |Default_4.8.0 | SL6/Ubuntu 14.04 |5.1.73 |4.0        |--        |1.1.0         |1.2.0     |1.2.0       |1.1.1       |--           |4.8.0        |1.7.0       |1.3.3             |2.2.1   |
 
+Selenium
+--------
 
+https://github.com/JHaydock-Pro/Topcat_Selenium
 
+To run the selenium tests (Topcat UI testing), you will need python 2.7.
+
+This test is **NOT** automatically run by ansible, however if 'selenium: true' is set in config.yml or a preset it will setup the environment for the script to be run by travis or a user. The script should be able to be run by ansible but a user won't be able to read it's output.
+
+Example (as user1):
+```Shell
+cd ~/Topcat_Selenium
+python topcat_selenium_test.py --url http://localhost:8080 --user-data simple root pass --user-nodata db root password --virtual-display
+```
 
 Notes
 -----
 
 * Some tasks will fail even when correct (Mysql password reset and icat ingest). These errors are ignored with a conditional fail following them. It should return a fatal error if the previous task failed in anyway that was not the expected failure (eg. the ingest returns a different error than async timeout).
 * Hosts must be added to `/etc/ansible/hosts` or `tests/inventory` and have valid ssh keys, simply SSHing into target machine once beforehand should work.
-* All package installs (except pexpect) are set to present instead of latest, this greatly improves speed but may cause some problems if you have an old version of a package but with the same name, I have yet to encounter this (except for Pexpect)
+* Many package installs (except pexpect) are set to present instead of latest, this greatly improves speed but may cause some problems if you have an old version of a package but with the same name, I have yet to encounter this (except for Pexpect). Simply replace `state: present` with `state: latest`.
 * If you already have mysql installed be sure to change the `mysql_root_pass` variable in `config.yml`
 * If you are using a VM with pip 1.0 installed, run `pip install --index-url=https://pypi.python.org/simple/ -U pip` to upgrade.
 * Some tasks involve finding a file with partial name instead of an absolute path. In these cases it will select the first matching file. For example If you have multiple 'mysql-connector-java-*.jar' files in /usr/share/java it will only use the first one. 
@@ -474,3 +470,4 @@ Changelog
 #### 18/10/2017
 * migrated to single role
 * split playbooks by OS family and task
+
