@@ -136,7 +136,7 @@
 
 - name: "{{ play_name }}Installing IDS"
   environment:
-    PATH: "{{ ansible_env.PATH }}:{{ container_path }}/bin"
+    PATH: "{{ container_path }}/bin:{{ ansible_env.PATH }}"
   shell:
     cmd: ./setup install
     chdir: "{{ ids_path }}"
