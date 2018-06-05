@@ -1,6 +1,6 @@
 ICAT Ansible
 ============
-[![Build Status](https://travis-ci.org/JHaydock-Pro/icat.ansible.svg?branch=PolyVersion)](https://travis-ci.org/JHaydock-Pro/icat.ansible)
+[![Build Status](https://travis-ci.org/icatproject-contrib/icat.ansible.svg?branch=master)](https://travis-ci.org/icatproject-contrib/icat.ansible)
  
 Installer for ICAT, Topcat and all their dependencies.
 Intended for testing purposes.
