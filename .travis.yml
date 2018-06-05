@@ -8,12 +8,15 @@ notifications:
 language: python
 python:
   - "2.7"
+  - "3.5"
+  - "3.6"
 
 #---Branches---
 
 branches:
   only:
     - master
+    - travis_config
 
 #---Environment---
 
