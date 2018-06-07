@@ -23,11 +23,7 @@ matrix:
     - python: "2.7"
       env: ANSIBLE_VERSION="2.4.2"  # Version in RHEL7 repo
     - python: "2.7"
-      env: ANSIBLE_VERSION="2.3.3"  # Last 2.3.x version
-    - python: "2.7"
-      env: ANSIBLE_VERSION="2.2.3"  # Last 2.2.x version
-    - python: "2.7"
-      env: ANSIBLE_VERSION="2.1.6"  # Last 2.1.x version     
+      env: ANSIBLE_VERSION="2.3.3"  # Last 2.3.x version  
     - python: "3.5"
       env: ANSIBLE_VERSION="2.5.4"      
     - python: "3.6"
