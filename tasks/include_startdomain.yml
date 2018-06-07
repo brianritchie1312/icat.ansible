@@ -12,7 +12,7 @@
 
 - name: "{{ play_name }}Checking {{ container_domain }}"
   environment:
-    PATH: "{{ ansible_env.PATH }}:{{ container_path }}/bin"
+    PATH: "{{ container_path }}/bin:{{ ansible_env.PATH }}"
   command: "nohup asadmin list-domains"
   when: check_ctr.stat.exists == true
   register: check_ctr_doms
@@ -23,7 +23,7 @@
 
 - name: "{{ play_name }}Starting {{ container_domain }}"
   environment:
-    PATH: "{{ ansible_env.PATH }}:{{ container_path }}/bin"
+    PATH: "{{ container_path }}/bin:{{ ansible_env.PATH }}"
   command: "nohup {{ item }}"
   with_items:
     - "asadmin start-domain {{ container_domain }}"

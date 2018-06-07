@@ -36,13 +36,13 @@
 
 - name: "{{ play_name }}Stopping {{ container_domain }}"
   environment:
-    PATH: "{{ ansible_env.PATH }}:{{ container_path }}/bin"
+    PATH: "{{ container_path }}/bin:{{ ansible_env.PATH }}"
   command: "nohup asadmin stop-domain {{ container_domain }}"
   when: ctr_dom.stat.exists == true
 
 - name: "{{ play_name }}Running setup script"
   environment:
-    PATH: "{{ ansible_env.PATH }}:{{ container_path }}/bin"
+    PATH: "{{ container_path }}/bin:{{ ansible_env.PATH }}"
   command: "python {{ user_home }}/setup-glassfish.py {{ container_domain }} 75% {{ mysql_root_pass }}"
   tags:
     - install
@@ -65,7 +65,7 @@
 
 - name: "{{ play_name }}Restarting {{ container_domain }}"
   environment:
-    PATH: "{{ ansible_env.PATH }}:{{ container_path }}/bin"
+    PATH: "{{ container_path }}/bin:{{ ansible_env.PATH }}"
   command: "nohup {{ item }}"
   with_items:
   - "asadmin restart-domain {{ container_domain }}"
