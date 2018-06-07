@@ -23,13 +23,15 @@ matrix:
     - python: "2.6"
       env: ANSIBLE_VERSION="2.5.3"  # Version in RHEL6 EPEL repo
     - python: "2.7"
+      env: ANSIBLE_VERSION="2.5.4"  # Latest version
+    - python: "2.7"
       env: ANSIBLE_VERSION="2.4.2"  # Version in RHEL7 repo
     - python: "2.7"
       env: ANSIBLE_VERSION="2.3.3"  # Last 2.3.x version  
     - python: "3.5"
-      env: ANSIBLE_VERSION="2.5.4"      
+      env: ANSIBLE_VERSION="2.5.4"  # Latest version 
     - python: "3.6"
-      env: ANSIBLE_VERSION="2.5.4"      
+      env: ANSIBLE_VERSION="2.5.4"  # Latest version
 
 sudo: required
 dist: trusty
