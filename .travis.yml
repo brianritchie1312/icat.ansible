@@ -6,11 +6,6 @@ notifications:
 #---Language---
 
 language: python
-python:
-  - "2.6"
-  - "2.7"
-  - "3.5"
-  - "3.6"
 
 #---Branches---
 
@@ -28,11 +23,11 @@ matrix:
     - python: "2.7"
       env: ANSIBLE_VERSION="2.4.2"  # Version in RHEL7 repo
     - python: "2.7"
-      env: ANSIBLE_VERSION="1.5.4"  # Version in Ubuntu 16.04
+      env: ANSIBLE_VERSION="2.3.3"  # Last 2.3.x version
     - python: "2.7"
-      env: ANSIBLE_VERSION="2.0.0"  # Version in Ubuntu 16.04
+      env: ANSIBLE_VERSION="2.2.3"  # Last 2.2.x version
     - python: "2.7"
-      env: ANSIBLE_VERSION="2.1.1"  # Version in Ubuntu 16.04      
+      env: ANSIBLE_VERSION="2.1.6"  # Last 2.1.x version     
     - python: "3.5"
       env: ANSIBLE_VERSION="2.5.4"      
     - python: "3.6"
