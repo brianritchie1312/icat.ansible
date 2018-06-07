@@ -7,6 +7,8 @@ notifications:
 
 language: python
 
+cache: pip
+
 #---Branches---
 
 branches:
