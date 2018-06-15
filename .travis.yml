@@ -9,13 +9,6 @@ language: python
 
 cache: pip
 
-#---Branches---
-
-branches:
-  only:
-    - master
-    - travis_config
-
 #---Environment---
 
 matrix:
