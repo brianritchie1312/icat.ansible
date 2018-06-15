@@ -1,8 +1,8 @@
 ---
 
 mysql_pkg_yum:
-  - - mysql-server
-    - mysql
+  - - mariadb-server
+    - mariadb
     - MySQL-python
     - python-suds
     - python-requests

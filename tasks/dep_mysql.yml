@@ -85,7 +85,7 @@
 
 - name: "{{ play_name }}Setting Servicename to 'mysql' when service can't be found"
   set_fact:
-    mysql_service: mysql
+    mysql_service: mariadb
   when:
     - sql_service.matched == 0
 
