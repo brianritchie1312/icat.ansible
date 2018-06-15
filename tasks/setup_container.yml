@@ -54,7 +54,7 @@
 - name: "{{ play_name }}Finding mysql java connector"
   find:
     paths: /usr/share/java
-    patterns: 'mysql-connector-java-*.jar'
+    patterns: 'mysql-connector-java*.jar'
   register: sql_java
 
 - name: "{{ play_name }}Moving Java Connector File for {{ container_domain }} and MySQL"
