@@ -82,7 +82,7 @@
 #--Quick Test--
 
 - name: "{{ play_name }}Checking Installed Lucene Version"
-  command: "curl {{ icat_url }}/icat.lucene/version"
+  command: "curl -k {{ icat_url }}/icat.lucene/version"
   register: curl_lucene
   tags:
     - check

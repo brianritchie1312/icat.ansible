@@ -269,7 +269,7 @@
 #--Quick Test--
 
 - name: "{{ play_name }}Checking Installed ICAT Version"
-  command: "curl {{ icat_url }}/icat/version"
+  command: "curl -k {{ icat_url }}/icat/version"
   register: curl_icat
   tags:
     - check

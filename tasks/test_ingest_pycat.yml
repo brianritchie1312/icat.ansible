@@ -219,7 +219,7 @@
 #TODO-create smaller file so forced timeout is not required
 
 - name: "{{ play_name }}Running ICAT ingest"
-  command: "icatingest.py --url {{ icat_url }}/ICATService/ICAT?wsdl -a {{ icat_admin_mech }} -u {{ icat_admin_user }} -p {{ icat_admin_pass }} -i {{ download_dir }}{{ ingest_file }}"
+  command: "icatingest.py --no-check-certificate --url {{ icat_url }}/ICATService/ICAT?wsdl -a {{ icat_admin_mech }} -u {{ icat_admin_user }} -p {{ icat_admin_pass }} -i {{ download_dir }}{{ ingest_file }}"
   when: 
     - 'fac_short_name not in icat_facs.stdout'
   register: ingest_output

@@ -241,7 +241,7 @@
 #--Quick Test--
 
 - name: "{{ play_name }}Checking Installed TopCat Version"
-  command: "curl {{ icat_url }}/topcat/version"
+  command: "curl -k {{ icat_url }}/topcat/version"
   register: curl_topcat
 
 - name: "{{ play_name }}Failing If TopCat Output Incorrect"

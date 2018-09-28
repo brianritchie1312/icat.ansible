@@ -324,7 +324,7 @@
  # Check the url of the plugin to compare version numbers
 
 - name: "{{ play_name }}Checking Installed Authenticator Version"
-  command: "curl {{ icat_url }}/authn.{{ authn_plugin }}/version"
+  command: "curl -k {{ icat_url }}/authn.{{ authn_plugin }}/version"
   register: curl_authn
   tags:
     - check

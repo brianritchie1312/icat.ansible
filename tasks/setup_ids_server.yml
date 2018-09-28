@@ -147,7 +147,7 @@
 #--Quick Test--
 
 - name: "{{ play_name }}Checking Installed IDS Version"
-  command: "curl {{ icat_url }}/ids/version"
+  command: "curl -k {{ icat_url }}/ids/version"
   register: curl_ids
   tags:
     - check

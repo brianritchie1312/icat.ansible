@@ -46,7 +46,7 @@
     icat_server_version: 4.9.1
     ids_storage_version: 1.4.0
     ids_server_version: 1.8.0
-    topcat_version: 2.3.6
+    topcat_version: 2.4.0
     
     pycat_version: 0.13.1
 
@@ -77,9 +77,16 @@
    #---ICAT Configure---
     # inventory_hostname = name used in hosts above
     # It's similar to using 'localhost' except topcat interface can used by browsers on remote machines
+    # Explicitly setting inventory_hostname to the host's fqdn works for a local secure installation,
+    # but the correct approach is probably to put the fqdn into tests/inventory
+    inventory_hostname: host-172-16-114-102.nubes.stfc.ac.uk
  
-    icat_url: http://{{ inventory_hostname }}:{{ icat_port }}
-    icat_port: 8080
+    # insecure http/8080 configuration
+    # icat_url: http://{{ inventory_hostname }}:{{ icat_port }}
+    # icat_port: 8080
+    # secure https configuration
+    icat_url: https://{{ inventory_hostname }}:{{ icat_port }}
+    icat_port: 8181
     # URL used to access database
 
     icat_name: icat
@@ -135,8 +142,8 @@
    #---Non-Root System User---
     # The user that will run all non-root tasks
 
-    user_name: user1
-    user_pass: pass
+    user_name: glassfish
+    user_pass: bubbleicatcar
 
     user_home: "/home/{{ user_name }}"
     download_dir: "{{ user_home }}/icatdownloads/"
