@@ -79,7 +79,7 @@
     # It's similar to using 'localhost' except topcat interface can used by browsers on remote machines
     # Explicitly setting inventory_hostname to the host's fqdn works for a local secure installation,
     # but the correct approach is probably to put the fqdn into tests/inventory
-    inventory_hostname: host-172-16-114-102.nubes.stfc.ac.uk
+    # inventory_hostname: host-172-16-114-102.nubes.stfc.ac.uk
  
     # insecure http/8080 configuration
     # icat_url: http://{{ inventory_hostname }}:{{ icat_port }}
@@ -142,8 +142,8 @@
    #---Non-Root System User---
     # The user that will run all non-root tasks
 
-    user_name: glassfish
-    user_pass: bubbleicatcar
+    user_name: user1
+    user_pass: pass
 
     user_home: "/home/{{ user_name }}"
     download_dir: "{{ user_home }}/icatdownloads/"
