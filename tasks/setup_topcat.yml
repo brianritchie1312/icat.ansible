@@ -63,13 +63,21 @@
     remote_src: yes
   when:
     - tp_prop.stat.exists == false
-  
+
+# Define LILS as the only facility,
+# set its icat/idsUrls to icat_url,
+# and *unset* its download types (will then default to idsUrl) 
+
 - name: "{{ play_name }}Configuring {{ topcat_prop }}"
   lineinfile:
     path: "{{ topcat_path }}/{{ topcat_prop }}"
     regexp: "{{ item.regexp }}"
     line: "{{ item.line }}"
   with_items:
+    - { regexp: "^facility\\list",  line: "facility.list = LILS"}
+    - { regexp: "^facility\\LILS\\icatUrl", line: "facility.LILS.icatUrl = {{ icat_url }}"}
+    - { regexp: "^facility\\LILS\\idsUrl", line: "facility.LILS.idsUrl = {{ icat_url }}"}
+    - { regexp: "^facility\\LILS\\downloadType", line: ""}
     - { regexp: "^mail\\enable",    line: "mail.enable = {{ email_enable }}"}
     - { regexp: "^ids\\getStatus",  line: "ids.getStatus.max = 100" }
     - { regexp: "^poll\\delay",     line: "poll.delay = 600" }
@@ -91,7 +99,7 @@
     - "{{ topcat_lang }}"
     - "{{ topcat_css }}"
 
-  # First item uses 'https://' to avoid changing transport type variable, older versions have no 'http' type
+  # ASSUMES that topcatUrl, icatUrl and idsUrl are the same, so OK to use icat_url for all three
   # 'your facility...' is the placeholder for older versions, 'LILS' is the placeholder for newer versions. There is only one occurance of either and replace won't add anything if the regexp doesn'y match, so it should be safe to have them both in this task regardless of which actually get's used
 - name: "{{ play_name }}Configuring {{ topcat_json }}"
   replace:
@@ -99,10 +107,7 @@
     regexp: "{{ item.regexp }}"
     replace: "{{ item.rep }}"
   with_items:
-    - { regexp: "https://",                 rep: "http://" }
-    - { regexp: "8181",                     rep: "{{ icat_port }}" }
-    - { regexp: "18080",                    rep: "{{ icat_port }}" }
-    - { regexp: "localhost",                rep: "{{ inventory_hostname }}" }
+    - { regexp: "http://localhost:8080",    rep: "{{ icat_url }}" }
     - { regexp: '"your facility name[^"]*', rep: '"{{ fac_short_name }}' }
     - { regexp: 'LILS',                     rep: '{{ fac_short_name }}' }
     - { regexp: 'Lorum Ipsum Light Source', rep: "{{ fac_long_name }}" }
