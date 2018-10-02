@@ -49,6 +49,57 @@
 
 #---
 
+#---Importing Container Certificate Into Java Keystore---
+
+#---
+
+# The glassfish certificate folder should be
+# "{{ container_path }}/glassfish/domains/{{ container_domain }}/config"
+
+# export the certificate
+- name: "{{ play_name }}Export the container certificate"
+  shell:
+    cmd: keytool -export -keystore keystore.jks -file cert.der -storepass changeit -alias s1as
+    chdir: "{{ container_path }}/glassfish/domains/{{ container_domain }}/config"
+
+# Find the JRE, and /lib/security
+# 
+- name: "{{ play_name }}Find the JRE"
+  shell: which java
+  register: java_loc
+
+# Set java_security_folder
+- set_fact:
+    java_security_folder: "{{ java_loc.stdout | realpath | dirname }}/../lib/security"
+
+- name: "{{ play_name }}Show java_security_folder value"
+  debug:
+    msg: "java_security_folder = {{ java_security_folder }}"
+
+# Create jssecacerts if necessary
+- name: "{{ play_name }}Checking if jssecacerts exists"
+  stat:
+    path: "{{ java_security_folder }}/jssecacerts"
+  register: jsse_stat
+
+- name: "{{ play_name }}create jssecacerts"
+  copy:
+    src: "{{ java_security_folder }}/cacerts"
+    dest: "{{ java_security_folder }}/jssecacerts"
+  become: yes
+  become_user: root
+  when: jsse_stat.stat.exists == false
+
+# Import the glassfish certificate
+- name: "Import container certificate into the JRE"
+  shell:
+    cmd: "keytool -import -keystore jssecacerts -file {{ container_path }}/glassfish/domains/{{ container_domain }}/config/cert.der -storepass changeit -alias {{ inventory_hostname }} -noprompt"
+    chdir: "{{ java_security_folder }}"
+  become: yes
+  become_user: root
+  tags:
+    - root
+
 #---Configuring Domain---
 
 - name: "{{ play_name }}Finding mysql java connector"
